@@ -8,10 +8,10 @@ struct DSLParser;
 
 #[derive(Debug, Clone)]
 enum Stmt {
-    VarDecl(String, Expr),
     Assign(String, Expr),
     If(Expr, Vec<Stmt>),
     While(Expr, Vec<Stmt>),
+    For(String, Expr, Expr, Vec<Stmt>),
     EOI
 }
 
@@ -52,11 +52,19 @@ fn build_stmt(pair: pest::iterators::Pair<Rule>) -> Stmt {
             let body: Vec<Stmt> = inner.map(build_stmt).collect();
             Stmt::If(cond, body)
         }
-        Rule::loop_stmt => {
+        Rule::while_loop_stmt => {
             let mut inner = pair.into_inner();
             let cond = build_expr(inner.next().unwrap());
             let body: Vec<Stmt> = inner.map(build_stmt).collect();
             Stmt::While(cond, body)
+        }
+        Rule::for_loop_stmt => {
+            let mut inner = pair.into_inner();
+            let ident = inner.next().unwrap().as_str().to_string();
+            let start_num = build_expr(inner.next().unwrap());
+            let end_num = build_expr(inner.next().unwrap());
+            let body: Vec<Stmt> = inner.map(build_stmt).collect();
+            Stmt::For(ident, start_num, end_num, body)
         }
         Rule::EOI => {
             println!("EOI");
@@ -137,10 +145,6 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
 
 fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
     match stmt {
-        Stmt::VarDecl(name, expr) => {
-            let val = eval_expr(expr, env);
-            env.insert(name.clone(), val);
-        }
         Stmt::Assign(name, expr) => {
             let val = eval_expr(expr, env);
             println!("{:?}", val);
@@ -161,16 +165,6 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
         }
         Stmt::While(cond, body) => {
 
-            fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
-                let res = eval_expr(cond, env);
-                let res = match res {
-                    DataType::Number(n) => n,
-                    _ => unreachable!()
-                };
-
-                res == 1.0
-            }
-
             while is_true(&cond, &env) {
 
                 for s in body {
@@ -178,8 +172,42 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
                 }
             }
         }
+        Stmt::For(ident, start_num, end_num, body) => {
+            let mut control = eval_to_num(&start_num, &env);
+
+            env.insert(ident.clone(), DataType::Number(control));
+
+            while control < eval_to_num(end_num, &env) {
+                for s in body {
+                    exec_stmt(s, env);
+                }
+
+                control = to_num(env.get(ident).unwrap());
+                control += 1.0;
+                *env.get_mut(ident).unwrap() = DataType::Number(control);
+            }
+        }
         Stmt::EOI => {}
     }
+}
+
+fn to_num(data: &DataType) -> f64 {
+    match data {
+        DataType::Number(n) => *n,
+        _ => unreachable!()
+    }
+}
+
+fn eval_to_num(cond: &Expr, env: &HashMap<String, DataType>) -> f64 {
+    let res = eval_expr(cond, env);
+    match res {
+        DataType::Number(n) => n,
+        _ => unreachable!()
+    }
+}
+
+fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
+    eval_to_num(cond, env) == 1.0
 }
 
 fn main() {
@@ -187,6 +215,15 @@ fn main() {
         X = 4.5;
         loop while X > -8
             if X > -8 then
+                X = X - 1.5;
+            end if
+        end loop
+    "#;
+
+    let code = r#"
+        X = 4.5;
+        loop I from -81 to 10
+            if X > -99 then
                 X = X - 1.5;
             end if
         end loop

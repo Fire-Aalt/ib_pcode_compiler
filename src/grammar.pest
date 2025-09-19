@@ -1,11 +1,12 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 
 program   = { SOI ~ stmt* ~ EOI }
-stmt      = _{ assign | if_stmt | loop_stmt }
+stmt      = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt }
 
 assign    = { ident ~ "=" ~ expr ~ ";" }
 if_stmt   = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
-loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
+while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
+for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
 
 operation = _{ add | subtract | multiply | divide | power | greater | lesser }
     add      = { "+" }
