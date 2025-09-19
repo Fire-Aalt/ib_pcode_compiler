@@ -8,14 +8,19 @@ if_stmt   = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
 
-operation = _{ add | subtract | multiply | divide | power | greater | lesser }
+operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
     add      = { "+" }
     subtract = { "-" }
     multiply = { "*" }
     divide   = { "/" }
     power    = { "^" }
+    modulo   = { "%" }
+    equal   = { "==" }
+    not_equal = { "!=" }
+    greater_equal  = { ">=" }
+    less_equal   = { "<=" }
     greater  = { ">" }
-    lesser  = { "<" }
+    less   = { "<" }
 
 expr      = { term ~ (operation ~ term)* }
 term      = _{ ident | number | "(" ~ expr ~ ")" }

@@ -19,7 +19,7 @@ enum Stmt {
 enum Expr {
     Ident(String),
     Data(DataType),
-    BinOp(Box<Expr>, String, Box<Expr>),
+    BinOp(Box<Expr>, Operator, Box<Expr>),
 }
 
 #[derive(Debug, Clone)]
@@ -27,6 +27,23 @@ enum DataType {
     Number(f64),
     String(String),
 }
+
+#[derive(Debug, Clone)]
+enum Operator {
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Modulo,
+    Power,
+    Greater,
+    Less,
+    GreaterEqual,
+    LessEqual,
+    Equal,
+    NotEqual,
+}
+
 
 fn build_ast(pair: pest::iterators::Pair<Rule>) -> Vec<Stmt> {
     assert_eq!(pair.as_rule(), Rule::program);
@@ -85,7 +102,24 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
             let mut left = build_expr(inner.next().unwrap());
             while let Some(op) = inner.next() {
                 let right = build_expr(inner.next().unwrap());
-                left = Expr::BinOp(Box::new(left), op.as_str().to_string(), Box::new(right));
+
+                let op = match op.as_rule() {
+                    Rule::add => Operator::Add,
+                    Rule::subtract => Operator::Subtract,
+                    Rule::multiply => Operator::Multiply,
+                    Rule::divide => Operator::Divide,
+                    Rule::power => Operator::Power,
+                    Rule::modulo => Operator::Modulo,
+                    Rule::greater => Operator::Greater,
+                    Rule::less => Operator::Less,
+                    Rule::greater_equal => Operator::GreaterEqual,
+                    Rule::less_equal => Operator::LessEqual,
+                    Rule::equal => Operator::Equal,
+                    Rule::not_equal => Operator::NotEqual,
+                    _ => unreachable!(),
+                };
+
+                left = Expr::BinOp(Box::new(left), op, Box::new(right));
             }
             left
         }
@@ -114,25 +148,19 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
                         _ => unreachable!()
                     };
 
-                    DataType::Number(match op.as_str() {
-                        "+" => l + r,
-                        "-" => l - r,
-                        "*" => l * r,
-                        "/" => l / r,
-                        "%" => l % r,
-                        ">" =>  {
-                            match l > r {
-                                true => 1.0,
-                                false => 0.0,
-                            }
-                        },
-                        "<" =>  {
-                            match l < r {
-                                true => 1.0,
-                                false => 0.0,
-                            }
-                        },
-                        _ => panic!("unknown operator"),
+                    DataType::Number(match op {
+                        Operator::Add => l + r,
+                        Operator::Subtract => l - r,
+                        Operator::Multiply => l * r,
+                        Operator::Divide => l / r,
+                        Operator::Power => l.powf(r),
+                        Operator::Modulo => l % r,
+                        Operator::Greater => to_num_bool(l > r),
+                        Operator::Less => to_num_bool(l < r),
+                        Operator::GreaterEqual => to_num_bool(l >= r),
+                        Operator::LessEqual => to_num_bool(l <= r),
+                        Operator::Equal => to_num_bool(l == r),
+                        Operator::NotEqual => to_num_bool(l != r)
                     })
                 },
                 DataType::String(l) => {
@@ -147,26 +175,17 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
     match stmt {
         Stmt::Assign(name, expr) => {
             let val = eval_expr(expr, env);
-            println!("{:?}", val);
             env.insert(name.clone(), val);
         }
         Stmt::If(cond, body) => {
-            let res = eval_expr(cond, env);
-            let res = match res {
-                DataType::Number(n) => n,
-                _ => unreachable!()
-            };
-
-            if res != 0.0 {
+            if eval_to_num(cond, &env) != 0.0 {
                 for s in body {
                     exec_stmt(s, env);
                 }
             }
         }
         Stmt::While(cond, body) => {
-
             while is_true(&cond, &env) {
-
                 for s in body {
                     exec_stmt(s, env);
                 }
@@ -198,6 +217,13 @@ fn to_num(data: &DataType) -> f64 {
     }
 }
 
+fn to_num_bool(data: bool) -> f64 {
+    match data {
+        true => 1.0,
+        false => 0.0,
+    }
+}
+
 fn eval_to_num(cond: &Expr, env: &HashMap<String, DataType>) -> f64 {
     let res = eval_expr(cond, env);
     match res {
@@ -214,7 +240,7 @@ fn main() {
     let code = r#"
         X = 4.5;
         loop while X > -8
-            if X > -8 then
+            if X == -8 then
                 X = X - 1.5;
             end if
         end loop
@@ -223,7 +249,7 @@ fn main() {
     let code = r#"
         X = 4.5;
         loop I from -81 to 10
-            if X > -99 then
+            if X >= -99 then
                 X = X - 1.5;
             end if
         end loop
