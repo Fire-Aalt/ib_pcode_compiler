@@ -1,0 +1,22 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+
+program   = { SOI ~ stmt* ~ EOI }
+stmt      = _{ var_decl | assign | if_stmt | loop_stmt }
+
+var_decl  = { "let" ~ ident ~ "=" ~ expr ~ ";" }
+assign    = { ident ~ "=" ~ expr ~ ";" }
+if_stmt   = { "if" ~ expr ~ "{" ~ stmt* ~ "}" }
+loop_stmt = { "while" ~ expr ~ "{" ~ stmt* ~ "}" }
+
+operation = _{ add | subtract | multiply | divide | power }
+    add      = { "+" }
+    subtract = { "-" }
+    multiply = { "*" }
+    divide   = { "/" }
+    power    = { "^" }
+
+expr      = { term ~ (operation ~ term)* }
+term      = _{ ident | number | "(" ~ expr ~ ")" }
+ident     = @{ ASCII_ALPHA ~ ASCII_ALPHANUMERIC* }
+number    = @{ int ~ ("." ~ ASCII_DIGIT*)? }
+int       = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
