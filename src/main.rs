@@ -1,6 +1,9 @@
 use pest::Parser;
 use pest_derive::Parser;
 use std::collections::HashMap;
+use crate::utils::utils::*;
+
+pub mod utils;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -125,7 +128,9 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
         Rule::term => build_expr(pair.into_inner().next().unwrap()),
         Rule::ident => Expr::Ident(pair.as_str().to_string()),
         Rule::number => Expr::Data(DataType::Number(pair.as_str().parse().unwrap())),
-        Rule::string => Expr::Data(DataType::String(pair.as_str().to_string())),
+        Rule::string => {
+            Expr::Data(DataType::String(fix_quotes_plain(pair.as_str())))
+        },
         _ => unreachable!(),
     }
 }
@@ -272,11 +277,11 @@ fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
 fn main() {
     let code = r#"
         X = 4.5
-        A = 'fsdfsdf'
+        A = "fsdfsdf"
 
         // comment
         loop I from -81 to 10
-            output I + X, A + A, X
+            output "sdads \"dsadsd\" " <= "4"
             if X >= -99 then
                 X = X - 1.5
             end if

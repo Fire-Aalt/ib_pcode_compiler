@@ -33,4 +33,4 @@ term      = _{ ident | number | string | "(" ~ expr ~ ")" }
 ident     = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
 number    = @{ int ~ ("." ~ ASCII_DIGIT*)? }
 int       = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
-string = @{ "'" ~ ( "''" | (!"'" ~ ANY) )* ~ "'" }
+string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
