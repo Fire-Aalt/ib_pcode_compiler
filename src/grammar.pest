@@ -7,10 +7,12 @@ stmt = _{ assign_stmt | increment_stmt | decrement_stmt | if_stmt | while_loop_s
 increment_stmt = { ident ~ "++" }
 decrement_stmt = { ident ~ "--" }
 assign_stmt = { ident ~ assign_operation ~ expr }
-assign_operation = _{ assign | assign_add | assign_subtract }
+assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | assign_divide }
     assign = { "=" }
     assign_add = { "+=" }
     assign_subtract = { "-=" }
+    assign_multiply = { "*=" }
+    assign_divide = { "/=" }
 
 if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }

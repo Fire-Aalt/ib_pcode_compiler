@@ -1,10 +1,12 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use std::ops::{Add, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
     Assign(String, AssignOperator, Expr),
+    Increment(String),
+    Decrement(String),
     If(Expr, Vec<Stmt>),
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
@@ -51,6 +53,8 @@ pub enum AssignOperator {
     Assign,
     AssignAdd,
     AssignSubtract,
+    AssignMultiply,
+    AssignDivide,
 }
 
 #[derive(Clone)]
@@ -86,15 +90,35 @@ impl Sub for Value {
     type Output = Value;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        match self {
-            Value::Number(lhs) => {
-                match rhs {
-                    Value::Number(rhs) => Value::Number(lhs - rhs),
-                    Value::String(_) => Value::String(String::from("Nan"))
-                }
-            },
-            Value::String(_) => Value::String(String::from("Nan"))
-        }
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs - rhs)
+    }
+}
+
+impl Mul for Value {
+    type Output = Value;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs * rhs)
+    }
+}
+
+impl Div for Value {
+    type Output = Value;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs / rhs)
+    }
+}
+
+fn only_number_with_number_op(lhs: Value, rhs: Value, action: fn(f64, f64) -> f64) -> Value {
+    match lhs {
+        Value::Number(lhs) => {
+            match rhs {
+                Value::Number(rhs) => Value::Number(action(lhs, rhs)),
+                Value::String(_) => Value::String(String::from("Nan"))
+            }
+        },
+        Value::String(_) => Value::String(String::from("Nan"))
     }
 }
 

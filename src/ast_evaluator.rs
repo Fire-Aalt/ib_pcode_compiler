@@ -4,7 +4,7 @@ use crate::utils::{to_num_bool, to_string_bool};
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
-use std::ops::{Add, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 
 
@@ -111,7 +111,17 @@ impl AST {
                     AssignOperator::Assign => self.env.assign(name, val),
                     AssignOperator::AssignAdd => self.env.assign(name, self.env.get(name).unwrap() + val),
                     AssignOperator::AssignSubtract => self.env.assign(name, self.env.get(name).unwrap() - val),
+                    AssignOperator::AssignMultiply => self.env.assign(name, self.env.get(name).unwrap() * val),
+                    AssignOperator::AssignDivide => self.env.assign(name, self.env.get(name).unwrap() / val)
                 }
+                None
+            }
+            Stmt::Increment(name) => {
+                self.env.assign(name, self.env.get(name).unwrap() + Value::Number(1.0));
+                None
+            }
+            Stmt::Decrement(name) => {
+                self.env.assign(name, self.env.get(name).unwrap() - Value::Number(1.0));
                 None
             }
             Stmt::If(cond, body) => {

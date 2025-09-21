@@ -21,10 +21,22 @@ impl AST {
                     Rule::assign => AssignOperator::Assign,
                     Rule::assign_add => AssignOperator::AssignAdd,
                     Rule::assign_subtract => AssignOperator::AssignSubtract,
+                    Rule::assign_multiply => AssignOperator::AssignMultiply,
+                    Rule::assign_divide => AssignOperator::AssignDivide,
                     _ => unreachable!(),
                 };
                 let expr = self.build_expr(inner.next().unwrap());
                 Stmt::Assign(ident, op, expr)
+            }
+            Rule::increment_stmt => {
+                let mut inner = pair.into_inner();
+                let ident = inner.next().unwrap().as_str().to_string();
+                Stmt::Increment(ident)
+            }
+            Rule::decrement_stmt => {
+                let mut inner = pair.into_inner();
+                let ident = inner.next().unwrap().as_str().to_string();
+                Stmt::Decrement(ident)
             }
             Rule::if_stmt => {
                 let mut inner = pair.into_inner();

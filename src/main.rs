@@ -51,16 +51,8 @@ fn main() {
         Sussy(A, XR)
         output Meth(45)
 
-        XR -= "Me"
-
-        // comment
-        loop I from -81 to 10
-            if XR >= -99 then
-                XR -= 1.5
-            end if
-
-            output XR
-        end loop
+        XR /= "sdad"
+        output XR
     "#;
 
     let mut ast = compile(code);
