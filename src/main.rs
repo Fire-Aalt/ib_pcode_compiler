@@ -12,6 +12,7 @@ enum Stmt {
     If(Expr, Vec<Stmt>),
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
+    Output(Vec<Expr>),
     EOI
 }
 
@@ -19,7 +20,7 @@ enum Stmt {
 enum Expr {
     Ident(String),
     Data(DataType),
-    BinOp(Box<Expr>, Operator, Box<Expr>),
+    BinOp(Box<Expr>, Operator, Box<Expr>), // Has to be boxed to avoid recursion in the enum definition
 }
 
 #[derive(Debug, Clone)]
@@ -47,11 +48,7 @@ enum Operator {
 
 fn build_ast(pair: pest::iterators::Pair<Rule>) -> Vec<Stmt> {
     assert_eq!(pair.as_rule(), Rule::program);
-
-    println!("{:?}", pair);
-    let x = pair.into_inner().map(build_stmt);
-
-    x.collect()
+    pair.into_inner().map(build_stmt).collect()
 }
 
 fn build_stmt(pair: pest::iterators::Pair<Rule>) -> Stmt {
@@ -83,12 +80,14 @@ fn build_stmt(pair: pest::iterators::Pair<Rule>) -> Stmt {
             let body: Vec<Stmt> = inner.map(build_stmt).collect();
             Stmt::For(ident, start_num, end_num, body)
         }
-        Rule::EOI => {
-            println!("EOI");
-            Stmt::EOI
+        Rule::output_stmt => {
+            let inner = pair.into_inner();
+            let body: Vec<Expr> = inner.map(build_expr).collect();
+            Stmt::Output(body)
         }
+        Rule::EOI => Stmt::EOI,
         _ => {
-            println!("SSS {:?}", pair);
+            println!("Unexpected pair {:?}", pair);
             unreachable!()
         },
     }
@@ -125,10 +124,8 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
         }
         Rule::term => build_expr(pair.into_inner().next().unwrap()),
         Rule::ident => Expr::Ident(pair.as_str().to_string()),
-        Rule::number =>  {
-            println!("called build_expr: {:?}", pair);
-            Expr::Data(DataType::Number(pair.as_str().parse().unwrap()))
-        },
+        Rule::number => Expr::Data(DataType::Number(pair.as_str().parse().unwrap())),
+        Rule::string => Expr::Data(DataType::String(pair.as_str().to_string())),
         _ => unreachable!(),
     }
 }
@@ -143,29 +140,43 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
 
             match l {
                 DataType::Number(l) => {
-                    let r = match r {
-                        DataType::Number(n) => n,
-                        _ => unreachable!()
-                    };
-
-                    DataType::Number(match op {
-                        Operator::Add => l + r,
-                        Operator::Subtract => l - r,
-                        Operator::Multiply => l * r,
-                        Operator::Divide => l / r,
-                        Operator::Power => l.powf(r),
-                        Operator::Modulo => l % r,
-                        Operator::Greater => to_num_bool(l > r),
-                        Operator::Less => to_num_bool(l < r),
-                        Operator::GreaterEqual => to_num_bool(l >= r),
-                        Operator::LessEqual => to_num_bool(l <= r),
-                        Operator::Equal => to_num_bool(l == r),
-                        Operator::NotEqual => to_num_bool(l != r)
-                    })
+                    match r {
+                        DataType::Number(r) => {
+                            DataType::Number(match op {
+                                Operator::Add => l + r,
+                                Operator::Subtract => l - r,
+                                Operator::Multiply => l * r,
+                                Operator::Divide => l / r,
+                                Operator::Power => l.powf(r),
+                                Operator::Modulo => l % r,
+                                Operator::Greater => to_num_bool(l > r),
+                                Operator::Less => to_num_bool(l < r),
+                                Operator::GreaterEqual => to_num_bool(l >= r),
+                                Operator::LessEqual => to_num_bool(l <= r),
+                                Operator::Equal => to_num_bool(l == r),
+                                Operator::NotEqual => to_num_bool(l != r)
+                            })
+                        },
+                        DataType::String(_) => DataType::String(String::from("Nan")),
+                    }
                 },
                 DataType::String(l) => {
-                    panic!()
-                }
+                    match r {
+                        DataType::Number(_) => DataType::String(String::from("Nan")),
+                        DataType::String(r) => {
+                            DataType::String(match op {
+                                Operator::Add => l + &r,
+                                Operator::Greater => to_string_bool(l > r),
+                                Operator::Less => to_string_bool(l < r),
+                                Operator::GreaterEqual => to_string_bool(l >= r),
+                                Operator::LessEqual => to_string_bool(l <= r),
+                                Operator::Equal => to_string_bool(l == r),
+                                Operator::NotEqual => to_string_bool(l != r),
+                                _ => String::from("Nan")
+                            })
+                        },
+                    }
+                },
             }
         }
     }
@@ -178,25 +189,25 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
             env.insert(name.clone(), val);
         }
         Stmt::If(cond, body) => {
-            if eval_to_num(cond, &env) != 0.0 {
+            if is_true(cond, env) {
                 for s in body {
                     exec_stmt(s, env);
                 }
             }
         }
         Stmt::While(cond, body) => {
-            while is_true(&cond, &env) {
+            while is_true(cond, env) {
                 for s in body {
                     exec_stmt(s, env);
                 }
             }
         }
         Stmt::For(ident, start_num, end_num, body) => {
-            let mut control = eval_to_num(&start_num, &env);
+            let mut control = eval_to_num(&start_num, env);
 
             env.insert(ident.clone(), DataType::Number(control));
 
-            while control < eval_to_num(end_num, &env) {
+            while control < eval_to_num(end_num, env) {
                 for s in body {
                     exec_stmt(s, env);
                 }
@@ -206,7 +217,22 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
                 *env.get_mut(ident).unwrap() = DataType::Number(control);
             }
         }
-        Stmt::EOI => {}
+        Stmt::Output(body) => {
+            let mut output = String::new();
+
+            for (i, expr) in body.iter().enumerate() {
+                if i > 0 {
+                    output.push(' ');
+                }
+
+                match eval_expr(&expr, env) {
+                    DataType::Number(n) => output.push_str(&n.to_string()),
+                    DataType::String(s) => output.push_str(&s),
+                }
+            }
+            println!("{}", output);
+        }
+        Stmt::EOI => {},
     }
 }
 
@@ -224,6 +250,13 @@ fn to_num_bool(data: bool) -> f64 {
     }
 }
 
+fn to_string_bool(data: bool) -> String {
+    match data {
+        true => String::from("true"),
+        false => String::from("false"),
+    }
+}
+
 fn eval_to_num(cond: &Expr, env: &HashMap<String, DataType>) -> f64 {
     let res = eval_expr(cond, env);
     match res {
@@ -233,24 +266,19 @@ fn eval_to_num(cond: &Expr, env: &HashMap<String, DataType>) -> f64 {
 }
 
 fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
-    eval_to_num(cond, env) == 1.0
+    eval_to_num(cond, env) != 0.0
 }
 
 fn main() {
     let code = r#"
-        X = 4.5;
-        loop while X > -8
-            if X == -8 then
-                X = X - 1.5;
-            end if
-        end loop
-    "#;
+        X = 4.5
+        A = 'fsdfsdf'
 
-    let code = r#"
-        X = 4.5;
+        // comment
         loop I from -81 to 10
+            output I + X, A + A, X
             if X >= -99 then
-                X = X - 1.5;
+                X = X - 1.5
             end if
         end loop
     "#;

@@ -1,12 +1,14 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program   = { SOI ~ stmt* ~ EOI }
-stmt      = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt }
+stmt      = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt }
 
-assign    = { ident ~ "=" ~ expr ~ ";" }
+assign    = { ident ~ "=" ~ expr }
 if_stmt   = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
+output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 
 operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
     add      = { "+" }
@@ -23,7 +25,12 @@ operation = _{ add | subtract | multiply | divide | power | equal | not_equal | 
     less   = { "<" }
 
 expr      = { term ~ (operation ~ term)* }
-term      = _{ ident | number | "(" ~ expr ~ ")" }
+term      = _{ ident | number | string | "(" ~ expr ~ ")" }
+
+
+
+
 ident     = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
 number    = @{ int ~ ("." ~ ASCII_DIGIT*)? }
 int       = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
+string = @{ "'" ~ ( "''" | (!"'" ~ ANY) )* ~ "'" }
