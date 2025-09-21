@@ -19,7 +19,7 @@ enum Stmt {
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
     Output(Vec<Expr>),
-    Method(Vec<String>, Vec<Stmt>),
+    MethodDeclaration(String, Vec<String>),
     EOI
 }
 
@@ -65,7 +65,7 @@ enum Operator {
 
 struct AST {
     statements: Vec<Stmt>,
-    method_map: HashMap<String, method_def>,
+    method_map: HashMap<String, MethodDef>,
 }
 
 impl Default for AST {
@@ -95,6 +95,7 @@ impl AST {
     }
 
     fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
+        println!("{:?}", pair);
         match pair.as_rule() {
             Rule::assign => {
                 let mut inner = pair.into_inner();
@@ -127,16 +128,39 @@ impl AST {
                 let body: Vec<Expr> = inner.map(|inner| self.build_expr(inner)).collect();
                 Stmt::Output(body)
             }
-            Rule::method_stmt => {
+            Rule::method_decl => {
                 let mut inner = pair.into_inner();
+
                 let method_name = inner.next().unwrap().as_str().to_string();
+                let mut args = Vec::new();
+
+                let try_inner = inner.clone().next().unwrap();
+                match try_inner.as_rule() {
+                    Rule::param_list => {
+                        inner.next(); // consume outer
+                        let mut inner = try_inner.into_inner();
+
+                        while let Some(arg) = inner.next() {
+                            args.push(arg.as_str().to_string());
+                        }
+                    }
+                    _ => {}
+                }
 
                 let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
 
-                Stmt::Method(Vec::new(), body)
+                self.method_map.insert(method_name.clone(), MethodDef {
+                    args: Vec::new(),
+                    body,
+                });
+
+                Stmt::MethodDeclaration(method_name, args)
             }
             Rule::EOI => Stmt::EOI,
-            _ => unreachable!(),
+            _ => {
+                println!("{:?}", pair);
+                unreachable!()
+            },
         }
     }
 
@@ -312,8 +336,8 @@ fn exec_stmt(stmt: &Stmt, env: &mut HashMap<String, DataType>) {
             }
             println!("{}", output);
         }
+        Stmt::MethodDeclaration(_name, _arg_names) => {},
         Stmt::EOI => {},
-        &Stmt::Method(_, _) => todo!(),
     }
 }
 
@@ -352,7 +376,13 @@ fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
 
 fn main() {
     let code = r#"
-        X = 4.5
+
+        method Sussy(A, B)
+            output "Haha"
+        end method
+
+
+        XR = 4.5
         A = input("How was your day?: ")
 
         output A + "Haha"
@@ -360,8 +390,8 @@ fn main() {
 
         // comment
         loop I from -81 to 10
-            if X >= -99 then
-                X = X - 1.5
+            if XR >= -99 then
+                XR = XR - 1.5
             end if
         end loop
     "#;
@@ -389,8 +419,7 @@ fn compile(code: &str) -> AST {
 
 
 #[derive(Clone)]
-struct method_def {
-    pub name: String,
+struct MethodDef {
     pub args: Vec<Expr>,
     pub body: Vec<Stmt>,
 }

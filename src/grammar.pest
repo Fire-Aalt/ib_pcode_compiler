@@ -2,14 +2,21 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt | method_stmt }
+stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt | method_decl}
 
 assign = { ident ~ "=" ~ expr }
 if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
-method_stmt = { "method" ~ ident ~ "(" ~ (ident ~ ",")* ~ ")" ~ stmt* ~ "end method" }
+
+
+method_decl = {
+    "method" ~ method_ident ~  "(" ~ param_list? ~ ")"
+    ~ stmt*
+    ~ "end" ~ "method"
+}
+param_list = { ident ~ ("," ~ ident)* }
 
 operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
     add = { "+" }
@@ -30,7 +37,8 @@ term = _{ ident | number | string | input | "(" ~ expr ~ ")" }
 
 
 input = { "input" ~ "(" ~ expr? ~ ")" }
-ident = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
+ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
+method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? }
 int = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
