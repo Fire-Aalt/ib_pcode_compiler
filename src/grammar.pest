@@ -2,7 +2,7 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt | method_decl}
+stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt | method_decl | method_call }
 
 assign = { ident ~ "=" ~ expr }
 if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
@@ -10,13 +10,15 @@ while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 
+method_call = { method_ident ~ "(" ~ method_call_param_list? ~ ")" }
+method_call_param_list = _{ expr ~ ("," ~ expr)* }
 
 method_decl = {
-    "method" ~ method_ident ~  "(" ~ param_list? ~ ")"
+    "method" ~ method_ident ~  "(" ~ method_decl_param_list? ~ ")"
     ~ stmt*
     ~ "end" ~ "method"
 }
-param_list = { ident ~ ("," ~ ident)* }
+method_decl_param_list = { ident ~ ("," ~ ident)* }
 
 operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
     add = { "+" }
@@ -33,7 +35,7 @@ operation = _{ add | subtract | multiply | divide | power | equal | not_equal | 
     less = { "<" }
 
 expr = { term ~ (operation ~ term)* }
-term = _{ ident | number | string | input | "(" ~ expr ~ ")" }
+term = _{ ident | number | string | input | method_call | "(" ~ expr ~ ")" }
 
 
 input = { "input" ~ "(" ~ expr? ~ ")" }
