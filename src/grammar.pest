@@ -2,9 +2,16 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | method_decl | method_call | method_return | output_stmt }
+stmt = _{ assign_stmt | increment_stmt | decrement_stmt | if_stmt | while_loop_stmt | for_loop_stmt | method_decl | method_call | method_return | output_stmt }
 
-assign = { ident ~ "=" ~ expr }
+increment_stmt = { ident ~ "++" }
+decrement_stmt = { ident ~ "--" }
+assign_stmt = { ident ~ assign_operation ~ expr }
+assign_operation = _{ assign | assign_add | assign_subtract }
+    assign = { "=" }
+    assign_add = { "+=" }
+    assign_subtract = { "-=" }
+
 if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
@@ -25,19 +32,19 @@ method_return = { "return" ~ expr }
 expr = { term ~ (operation ~ term)* }
 term = _{ input | method_call | ident | number | string | "(" ~ expr ~ ")" }
 
-operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
-    add = { "+" }
-    subtract = { "-" }
-    multiply = { "*" }
-    divide = { "/" }
-    power = { "^" }
-    modulo = { "%" }
+operation = _{ equal | not_equal | greater_equal | less_equal | greater | less | add | subtract | multiply | divide | power }
     equal = { "==" }
     not_equal = { "!=" }
     greater_equal = { ">=" }
     less_equal = { "<=" }
     greater = { ">" }
     less = { "<" }
+    add = { "+" }
+    subtract = { "-" }
+    multiply = { "*" }
+    divide = { "/" }
+    power = { "^" }
+    modulo = { "%" }
 
 input = { "input" ~ "(" ~ expr? ~ ")" }
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }

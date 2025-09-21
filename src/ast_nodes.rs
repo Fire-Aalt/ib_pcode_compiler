@@ -1,9 +1,10 @@
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use std::ops::{Add, Sub};
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Assign(String, Expr),
+    Assign(String, AssignOperator, Expr),
     If(Expr, Vec<Stmt>),
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
@@ -45,6 +46,13 @@ pub enum Operator {
     NotEqual,
 }
 
+#[derive(Debug, Clone)]
+pub enum AssignOperator {
+    Assign,
+    AssignAdd,
+    AssignSubtract,
+}
+
 #[derive(Clone)]
 #[derive(Debug)]
 pub struct MethodDef {
@@ -58,11 +66,43 @@ pub enum Value {
     String(String),
 }
 
+impl Add for Value {
+    type Output = Value;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        match self {
+            Value::Number(lhs) => {
+                match rhs {
+                    Value::Number(rhs) => Value::Number(lhs + rhs),
+                    Value::String(rhs) => Value::String(format!("{}{}", lhs, rhs))
+                }
+            },
+            Value::String(lhs) => Value::String(format!("{}{}", lhs, rhs))
+        }
+    }
+}
+
+impl Sub for Value {
+    type Output = Value;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        match self {
+            Value::Number(lhs) => {
+                match rhs {
+                    Value::Number(rhs) => Value::Number(lhs - rhs),
+                    Value::String(_) => Value::String(String::from("Nan"))
+                }
+            },
+            Value::String(_) => Value::String(String::from("Nan"))
+        }
+    }
+}
+
 impl Value {
     pub fn as_num(&self) -> f64 {
         match self {
             Value::Number(n) => *n,
-            _ => unreachable!()
+            Value::String(s) => 0.0,
         }
     }
 

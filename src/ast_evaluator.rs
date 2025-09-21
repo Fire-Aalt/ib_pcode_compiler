@@ -1,9 +1,12 @@
 use crate::ast::AST;
-use crate::ast_nodes::{Expr, MethodDef, Operator, Stmt, Value};
+use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, Value};
 use crate::utils::{to_num_bool, to_string_bool};
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
+use std::ops::{Add, Sub};
+
+
 
 impl AST {
     pub fn traverse(&mut self) {
@@ -101,9 +104,14 @@ impl AST {
 
     fn exec_stmt(&mut self, stmt: &Stmt) -> Option<Value> {
         match stmt {
-            Stmt::Assign(name, expr) => {
+            Stmt::Assign(name, op, expr) => {
                 let val = self.eval_expr(expr);
-                self.env.assign(name, val);
+
+                match op {
+                    AssignOperator::Assign => self.env.assign(name, val),
+                    AssignOperator::AssignAdd => self.env.assign(name, self.env.get(name).unwrap() + val),
+                    AssignOperator::AssignSubtract => self.env.assign(name, self.env.get(name).unwrap() - val),
+                }
                 None
             }
             Stmt::If(cond, body) => {

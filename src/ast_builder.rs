@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::ast::AST;
-use crate::ast_nodes::{Value, Expr, MethodDef, Operator, Stmt};
+use crate::ast_nodes::{Value, Expr, MethodDef, Operator, Stmt, AssignOperator};
 use crate::Rule;
 use crate::utils::fix_quotes_plain;
 
@@ -13,13 +13,18 @@ impl AST {
     }
 
     fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
-        println!("{:?}", pair);
         match pair.as_rule() {
-            Rule::assign => {
+            Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
                 let ident = inner.next().unwrap().as_str().to_string();
+                let op = match inner.next().unwrap().as_rule() {
+                    Rule::assign => AssignOperator::Assign,
+                    Rule::assign_add => AssignOperator::AssignAdd,
+                    Rule::assign_subtract => AssignOperator::AssignSubtract,
+                    _ => unreachable!(),
+                };
                 let expr = self.build_expr(inner.next().unwrap());
-                Stmt::Assign(ident, expr)
+                Stmt::Assign(ident, op, expr)
             }
             Rule::if_stmt => {
                 let mut inner = pair.into_inner();

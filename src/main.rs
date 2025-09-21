@@ -43,18 +43,23 @@ fn main() {
 
 
         XR = 4.5
-        A = input("How was your day?: ")
+        A = 45
 
         output A + "Haha"
         output A + 14
 
+        Sussy(A, XR)
         output Meth(45)
+
+        XR -= "Me"
 
         // comment
         loop I from -81 to 10
             if XR >= -99 then
-                XR = XR - 1.5
+                XR -= 1.5
             end if
+
+            output XR
         end loop
     "#;
 
