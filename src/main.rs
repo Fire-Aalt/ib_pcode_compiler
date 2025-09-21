@@ -21,11 +21,24 @@ fn main() {
     let code = r#"
 
         method Sussy(A, B)
-            if A > 0 then
-                output "Recursion:", A, B
-                A = A - 1
-                Sussy(A, B)
+            if A == 0 then
+                return 0
             end if
+
+            output "Recursion:", A, B
+            A = A - 1
+            return Sussy(A, B)
+        end method
+
+        method Meth(A)
+            A = A - 1
+
+            output A
+            if A == 0 then
+                return 0
+            end if
+
+            return Meth(A)
         end method
 
 
@@ -35,7 +48,7 @@ fn main() {
         output A + "Haha"
         output A + 14
 
-        Sussy(45, 454)
+        output Meth(45)
 
         // comment
         loop I from -81 to 10
@@ -46,6 +59,7 @@ fn main() {
     "#;
 
     let mut ast = compile(code);
+    println!("{:#?}", ast.method_map);
     println!("{}", ast);
 
     run(&mut ast);

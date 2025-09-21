@@ -9,7 +9,8 @@ pub enum Stmt {
     For(String, Expr, Expr, Vec<Stmt>),
     Output(Vec<Expr>),
     MethodDeclaration(String, Vec<String>),
-    MethodCall(String, Vec<Expr>),
+    MethodCall(String, Vec<Box<Expr>>),
+    MethodReturn(Expr),
     EOI
 }
 
@@ -20,6 +21,12 @@ pub enum Expr {
     BinOp(Box<Expr>, Operator, Box<Expr>), // Has to be boxed to avoid recursion in the enum definition
     MethodCall(String, Vec<Box<Expr>>),
     Input(Box<Expr>),
+}
+
+impl From<Box<Expr>> for Expr {
+    fn from(value: Box<Expr>) -> Self {
+        value.into()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -39,6 +46,7 @@ pub enum Operator {
 }
 
 #[derive(Clone)]
+#[derive(Debug)]
 pub struct MethodDef {
     pub args: Vec<String>,
     pub body: Vec<Stmt>,

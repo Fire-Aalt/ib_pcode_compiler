@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::ast_nodes::{Expr, Operator, Stmt, Value};
+use crate::ast_nodes::{Expr, MethodDef, Operator, Stmt, Value};
 use crate::utils::{to_num_bool, to_string_bool};
 use std::collections::HashMap;
 use std::io;
@@ -41,23 +41,17 @@ impl AST {
                 }
             }
             Expr::MethodCall(name, params) => {
-                /*                self.env.push_scope();
-                                for param in params {
-                                    self.env.define(name.clone(), self.eval_expr(&param));
-                                }
+                self.env.push_scope();
 
-                                let def = self.method_map.get(name).unwrap();
-                                for s in def.body {
-                                    self.exec_stmt(&s);
-                                }
+                let def = self.method_map.get(name).unwrap().clone();
+                self.define_method_params(&def, params);
 
-                                self.env.pop_scope();
-
-                /*                for arg in body {
-
-                                }*/
-                */
-                panic!()
+                let returned = match self.exec_body(&def.body) {
+                    Some(returned_val) => returned_val,
+                    None => panic!("No return for method call {}", name)
+                };
+                self.env.pop_scope();
+                returned
             }
             Expr::BinOp(left, op, right) => {
                 let l = self.eval_expr(left);
@@ -105,25 +99,27 @@ impl AST {
         }
     }
 
-    fn exec_stmt(&mut self, stmt: &Stmt) {
+    fn exec_stmt(&mut self, stmt: &Stmt) -> Option<Value> {
         match stmt {
             Stmt::Assign(name, expr) => {
                 let val = self.eval_expr(expr);
                 self.env.assign(name, val);
+                None
             }
             Stmt::If(cond, body) => {
                 if self.is_true(cond) {
-                    for s in body {
-                        self.exec_stmt(s);
-                    }
+                    return self.exec_body(&body)
                 }
+                None
             }
             Stmt::While(cond, body) => {
                 while self.is_true(cond) {
-                    for s in body {
-                        self.exec_stmt(s);
+                    match self.exec_body(&body) {
+                        Some(returned_val) => return Some(returned_val),
+                        None => {}
                     }
                 }
+                None
             }
             Stmt::For(ident, start_num, end_num, body) => {
                 let mut control = self.eval_to_num(&start_num);
@@ -131,14 +127,16 @@ impl AST {
                 self.env.assign(ident, Value::Number(control));
 
                 while control < self.eval_to_num(end_num) {
-                    for s in body {
-                        self.exec_stmt(s);
+                    match self.exec_body(&body) {
+                        Some(returned_val) => return Some(returned_val),
+                        None => {}
                     }
 
                     control = self.env.get(ident).unwrap().as_num();
                     control += 1.0;
                     self.env.assign(ident, Value::Number(control));
                 }
+                None
             }
             Stmt::Output(body) => {
                 let mut output = String::new();
@@ -154,25 +152,38 @@ impl AST {
                     }
                 }
                 println!("{}", output);
+                None
             }
-            Stmt::MethodDeclaration(_name, _arg_names) => {}
+            Stmt::MethodDeclaration(_name, _arg_names) => None,
             Stmt::MethodCall(name, params) => {
                 self.env.push_scope();
 
                 let def = self.method_map.get(name).unwrap().clone();
-
-                for (i, param) in params.iter().enumerate() {
-                    let value = self.eval_expr(param);
-                    self.env.define(def.args[i].clone(), value);
-                }
-
-                for s in &def.body.clone() {
-                    self.exec_stmt(s);
-                }
+                self.define_method_params(&def, params);
+                let returned = self.exec_body(&def.body);
 
                 self.env.pop_scope();
+                returned
             }
-            Stmt::EOI => {}
+            Stmt::MethodReturn(expr) => Some(self.eval_expr(expr)),
+            Stmt::EOI => None,
         }
+    }
+
+    fn define_method_params(&mut self, method_def: &MethodDef, params: &Vec<Box<Expr>>) {
+        for (i, param) in params.iter().enumerate() {
+            let value = self.eval_expr(param);
+            self.env.define(method_def.args[i].clone(), value);
+        }
+    }
+
+    fn exec_body(&mut self, body: &Vec<Stmt>) -> Option<Value> {
+        for s in body {
+            match self.exec_stmt(s) {
+                Some(returned_val) => return Some(returned_val),
+                None => {}
+            }
+        }
+        None
     }
 }

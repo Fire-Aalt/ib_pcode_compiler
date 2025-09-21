@@ -78,9 +78,13 @@ impl AST {
                 let mut inner = pair.into_inner();
 
                 let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Expr> = inner.map(|inner| self.build_expr(inner)).collect();
+                let args: Vec<Box<Expr>> = inner.map(|inner| Box::new(self.build_expr(inner))).collect();
 
                 Stmt::MethodCall(method_name, args)
+            },
+            Rule::method_return => {
+                let mut inner = pair.into_inner();
+                Stmt::MethodReturn(self.build_expr(inner.next().unwrap()))
             },
             Rule::EOI => Stmt::EOI,
             _ => {
