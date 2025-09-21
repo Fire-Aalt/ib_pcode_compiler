@@ -1,6 +1,8 @@
 use pest::Parser;
 use pest_derive::Parser;
 use std::collections::HashMap;
+use std::fmt;
+use std::fmt::{Display, Formatter};
 use crate::utils::utils::*;
 
 pub mod utils;
@@ -30,6 +32,15 @@ enum Expr {
 enum DataType {
     Number(f64),
     String(String),
+}
+
+impl Display for DataType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            DataType::Number(n) => write!(f, "Number({})", n),
+            DataType::String(s) => write!(f, "String(\"{}\")", s),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -288,19 +299,83 @@ fn main() {
         end loop
     "#;
 
+    let ast = compile(code);
+    println!("{:#?}", ast);
+
+    let env = run(ast);
+    println!("Final env: {:?}", env);
+}
+
+
+
+fn compile(code: &str) -> Vec<Stmt> {
     let parsed = DSLParser::parse(Rule::program, code)
         .expect("parse failed")
         .next()
         .unwrap();
 
-    let ast = build_ast(parsed);
-    let mut env = HashMap::new();
+    build_ast(parsed)
+}
 
-    println!("{:#?}", ast);
+fn run(ast: Vec<Stmt>) -> HashMap<String, DataType> {
+    let mut env = HashMap::new();
 
     for stmt in &ast {
         exec_stmt(stmt, &mut env);
     }
+    env
+}
 
-    println!("Final env: {:?}", env);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn case_sensitive() {
+        let code = r#"
+            X = 4.5
+            A = "fsdfsdf"
+
+            // comment
+            loop I from -81 to 10
+                output "sdads \"dsadsd\" " <= "4"
+                if X >= -99 then
+                    X = X - 1.5
+                end if
+            end loop
+        "#;
+
+        let env = compile_and_run(code);
+        assert_env(&env, "A", &DataType::String("fsdfsdf".to_string()));
+        assert_env(&env, "I", &DataType::Number(10.0));
+        assert_env(&env, "X", &DataType::Number(-100.5));
+    }
+
+    fn compile_and_run(code: &str) -> HashMap<String, DataType> {
+        let ast = compile(code);
+        run(ast)
+    }
+}
+
+fn assert_env(env: &HashMap<String, DataType>, var_name: &str, expected: &DataType) {
+    assert!(env.contains_key(var_name), "Variable wasn't created");
+
+    let var = env.get(var_name).unwrap();
+
+    let correct = match var {
+        DataType::Number(n) => {
+            match expected {
+                DataType::Number(e_n) => n == e_n,
+                DataType::String(e_s) => panic!("Expected {} but got {}", e_s, n),
+            }
+        }
+        DataType::String(s) => {
+            match expected {
+                DataType::Number(e_n) => panic!("Expected {} but got {}", e_n, s),
+                DataType::String(e_s) => s == e_s
+            }
+        }
+    };
+    assert!(correct, "Environment variable wasn't as expected. Expected {} but got {}", expected, var);
 }
