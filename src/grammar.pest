@@ -1,35 +1,36 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
-program   = { SOI ~ stmt* ~ EOI }
-stmt      = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt }
+program = { SOI ~ stmt* ~ EOI }
+stmt = _{ assign | if_stmt | while_loop_stmt | for_loop_stmt | output_stmt | method_stmt }
 
-assign    = { ident ~ "=" ~ expr }
-if_stmt   = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
+assign = { ident ~ "=" ~ expr }
+if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
 while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
+method_stmt = { "method" ~ ident ~ "(" ~ (ident ~ ",")* ~ ")" ~ stmt* ~ "end method" }
 
 operation = _{ add | subtract | multiply | divide | power | equal | not_equal | greater_equal | less_equal | greater | less  }
-    add      = { "+" }
+    add = { "+" }
     subtract = { "-" }
     multiply = { "*" }
-    divide   = { "/" }
-    power    = { "^" }
-    modulo   = { "%" }
-    equal   = { "==" }
+    divide = { "/" }
+    power = { "^" }
+    modulo = { "%" }
+    equal = { "==" }
     not_equal = { "!=" }
-    greater_equal  = { ">=" }
-    less_equal   = { "<=" }
-    greater  = { ">" }
-    less   = { "<" }
+    greater_equal = { ">=" }
+    less_equal  = { "<=" }
+    greater = { ">" }
+    less = { "<" }
 
-expr      = { term ~ (operation ~ term)* }
-term      = _{ ident | number | string | input | "(" ~ expr ~ ")" }
+expr = { term ~ (operation ~ term)* }
+term = _{ ident | number | string | input | "(" ~ expr ~ ")" }
 
 
 input = { "input" ~ "(" ~ expr? ~ ")" }
-ident     = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
-number    = @{ int ~ ("." ~ ASCII_DIGIT*)? }
-int       = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
+ident = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
+number = @{ int ~ ("." ~ ASCII_DIGIT*)? }
+int = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
