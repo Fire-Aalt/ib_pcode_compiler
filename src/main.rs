@@ -1,9 +1,10 @@
+use crate::utils::utils::*;
 use pest::Parser;
 use pest_derive::Parser;
 use std::collections::HashMap;
-use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::utils::utils::*;
+use std::io::Write;
+use std::{fmt, io};
 
 pub mod utils;
 
@@ -24,6 +25,7 @@ enum Stmt {
 #[derive(Debug, Clone)]
 enum Expr {
     Ident(String),
+    Input(Box<Expr>),
     Data(DataType),
     BinOp(Box<Expr>, Operator, Box<Expr>), // Has to be boxed to avoid recursion in the enum definition
 }
@@ -66,7 +68,6 @@ fn build_ast(pair: pest::iterators::Pair<Rule>) -> Vec<Stmt> {
 }
 
 fn build_stmt(pair: pest::iterators::Pair<Rule>) -> Stmt {
-    println!("called build_stmt: {:?}", pair);
     match pair.as_rule() {
         Rule::assign => {
             let mut inner = pair.into_inner();
@@ -100,15 +101,11 @@ fn build_stmt(pair: pest::iterators::Pair<Rule>) -> Stmt {
             Stmt::Output(body)
         }
         Rule::EOI => Stmt::EOI,
-        _ => {
-            println!("Unexpected pair {:?}", pair);
-            unreachable!()
-        },
+        _ => unreachable!(),
     }
 }
 
 fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
-    println!("called build_expr: {:?}", pair);
     match pair.as_rule() {
         Rule::expr => {
             let mut inner = pair.into_inner();
@@ -139,8 +136,11 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
         Rule::term => build_expr(pair.into_inner().next().unwrap()),
         Rule::ident => Expr::Ident(pair.as_str().to_string()),
         Rule::number => Expr::Data(DataType::Number(pair.as_str().parse().unwrap())),
-        Rule::string => {
-            Expr::Data(DataType::String(fix_quotes_plain(pair.as_str())))
+        Rule::string => Expr::Data(DataType::String(fix_quotes_plain(pair.as_str()))),
+        Rule::input => {
+            let mut inner = pair.into_inner();
+            let text = build_expr(inner.next().unwrap());
+            Expr::Input(Box::new(text))
         },
         _ => unreachable!(),
     }
@@ -150,6 +150,21 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
     match expr {
         Expr::Ident(name) => env.get(name).unwrap().clone(),
         Expr::Data(n) => n.clone(),
+        Expr::Input(text) => {
+            match eval_expr(&text, env) {
+                DataType::Number(n) => print!("{}", n),
+                DataType::String(s) => print!("{}", s),
+            }
+            io::stdout().flush().unwrap();
+
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).unwrap();
+
+            match input.trim().parse::<f64>() {
+                Ok(number) => DataType::Number(number),
+                Err(_) => DataType::String(input)
+            }
+        }
         Expr::BinOp(left, op, right) => {
             let l = eval_expr(left, env);
             let r = eval_expr(right, env);
@@ -173,12 +188,22 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
                                 Operator::NotEqual => to_num_bool(l != r)
                             })
                         },
-                        DataType::String(_) => DataType::String(String::from("Nan")),
+                        DataType::String(r) => {
+                            DataType::String(match op {
+                                Operator::Add => l.to_string() + &*r,
+                                _ => String::from("Nan"),
+                            })
+                        }
                     }
                 },
                 DataType::String(l) => {
                     match r {
-                        DataType::Number(_) => DataType::String(String::from("Nan")),
+                        DataType::Number(r) => {
+                            DataType::String(match op {
+                                Operator::Add => l + &*r.to_string(),
+                                _ => String::from("Nan"),
+                            })
+                        },
                         DataType::String(r) => {
                             DataType::String(match op {
                                 Operator::Add => l + &r,
@@ -194,7 +219,7 @@ fn eval_expr(expr: &Expr, env: &HashMap<String, DataType>) -> DataType {
                     }
                 },
             }
-        }
+        },
     }
 }
 
@@ -288,11 +313,13 @@ fn is_true(cond: &Expr, env: &HashMap<String, DataType>) -> bool {
 fn main() {
     let code = r#"
         X = 4.5
-        A = "fsdfsdf"
+        A = input("How was your day?: ")
+
+        output A + "Haha"
+        output A + 14
 
         // comment
         loop I from -81 to 10
-            output "sdads \"dsadsd\" " <= "4"
             if X >= -99 then
                 X = X - 1.5
             end if
@@ -339,7 +366,6 @@ mod tests {
 
             // comment
             loop I from -81 to 10
-                output "sdads \"dsadsd\" " <= "4"
                 if X >= -99 then
                     X = X - 1.5
                 end if
@@ -356,26 +382,26 @@ mod tests {
         let ast = compile(code);
         run(ast)
     }
-}
 
-fn assert_env(env: &HashMap<String, DataType>, var_name: &str, expected: &DataType) {
-    assert!(env.contains_key(var_name), "Variable wasn't created");
+    fn assert_env(env: &HashMap<String, DataType>, var_name: &str, expected: &DataType) {
+        assert!(env.contains_key(var_name), "Variable wasn't created");
 
-    let var = env.get(var_name).unwrap();
+        let var = env.get(var_name).unwrap();
 
-    let correct = match var {
-        DataType::Number(n) => {
-            match expected {
-                DataType::Number(e_n) => n == e_n,
-                DataType::String(e_s) => panic!("Expected {} but got {}", e_s, n),
+        let correct = match var {
+            DataType::Number(n) => {
+                match expected {
+                    DataType::Number(e_n) => n == e_n,
+                    DataType::String(e_s) => panic!("Expected {} but got {}", e_s, n),
+                }
             }
-        }
-        DataType::String(s) => {
-            match expected {
-                DataType::Number(e_n) => panic!("Expected {} but got {}", e_n, s),
-                DataType::String(e_s) => s == e_s
+            DataType::String(s) => {
+                match expected {
+                    DataType::Number(e_n) => panic!("Expected {} but got {}", e_n, s),
+                    DataType::String(e_s) => s == e_s
+                }
             }
-        }
-    };
-    assert!(correct, "Environment variable wasn't as expected. Expected {} but got {}", expected, var);
+        };
+        assert!(correct, "Environment variable wasn't as expected. Expected {} but got {}", expected, var);
+    }
 }

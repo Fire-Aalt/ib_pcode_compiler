@@ -25,11 +25,10 @@ operation = _{ add | subtract | multiply | divide | power | equal | not_equal | 
     less   = { "<" }
 
 expr      = { term ~ (operation ~ term)* }
-term      = _{ ident | number | string | "(" ~ expr ~ ")" }
+term      = _{ ident | number | string | input | "(" ~ expr ~ ")" }
 
 
-
-
+input = { "input" ~ "(" ~ expr? ~ ")" }
 ident     = @{ ASCII_ALPHA_UPPER ~ ASCII_DIGIT* }
 number    = @{ int ~ ("." ~ ASCII_DIGIT*)? }
 int       = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
