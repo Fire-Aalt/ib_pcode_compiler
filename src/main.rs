@@ -19,28 +19,28 @@ struct DSLParser;
 
 fn main() {
     let code = r#"
-// --- LOGIC ---
-// The computer can perform more complex LOGIC
-// by using BOOLEAN OPERATORS like AND and OR.
-// For example, consider the problem of inputting a user name and password.
-// Both the account name and the password must be correct.
-// So the NAME AND PASSWORD must be correct.
-// This example program shows how to use AND / OR correctly.
+// === Mice ============
+//  JavaScript has loops, including for loops
+//  like Java and Basic and other languages.
+//  This example uses loops for a poem.
 
- NAME = input("Type your user name")
- PASSWORD = input("Type your password")
+loop A from 1 to 2
+   output "Three blind mice"
+end loop
 
- if  NAME = "bozo"  AND  PASSWORD = "clown"  then
-    output "Correct!"
- end if
+loop B from 3 to 4
+   output "See how they run"
+end loop
 
- if  NAME = "einstein"  AND  PASSWORD = "e=mc2"  then
-    output "Correct!"
- end if
+output "They all ran up to the farmer's wife"
+output "She cut off their tails with a carving knife"
+output "Did you ever see such a sight in your life, as"
 
- if  NAME = "guest"  OR  NAME = "trial"  then
-    output "You will be logged in as a GUEST"
- end if
+C = 5
+loop while C < 20
+   output "Three blind mice"
+   C = C*2
+end loop
 
 
     "#;

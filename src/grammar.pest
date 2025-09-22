@@ -48,7 +48,7 @@ method_return = { "return" ~ expr }
 expr = { logical_or }
 
 logical_or = { logical_and ~ (or ~ logical_and)* }
-logical_and = { comparison  ~ (and ~ comparison )* }
+logical_and = { comparison  ~ (and ~ comparison)* }
 
 comparison = { add_sub ~ ( (equal | not_equal | greater | less | greater_equal | less_equal) ~ add_sub )* }
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }

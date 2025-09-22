@@ -140,7 +140,7 @@ impl AST {
                 let mut control = self.eval_expr(start_num, env).as_num();
                 env.assign(ident, Value::Number(control));
 
-                while control < self.eval_expr(end_num, env).as_num() {
+                while control <= self.eval_expr(end_num, env).as_num() {
                     match self.exec_body(body, env) {
                         Some(returned_val) => return Some(returned_val),
                         None => {}
