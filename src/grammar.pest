@@ -49,7 +49,7 @@ expr = { add_sub ~ ( (equal | not_equal | greater | less | greater_equal | less_
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
 mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
 pow = { term ~ (power ~ pow)? } // right-association
-    equal = { "==" }
+    equal = { "==" | "=" }
     not_equal = { "!=" }
     greater_equal = { ">=" }
     less_equal = { "<=" }

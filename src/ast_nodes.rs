@@ -120,7 +120,12 @@ impl Value {
     pub fn as_num(&self) -> f64 {
         match self {
             Value::Number(n) => *n,
-            Value::String(_) => 0.0,
+            Value::String(s) => {
+                match s.as_str() {
+                    "true" => 1.0,
+                    _ => 0.0
+                }
+            },
         }
     }
 

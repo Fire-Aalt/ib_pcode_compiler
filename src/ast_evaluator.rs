@@ -158,7 +158,7 @@ impl AST {
 
                     match self.eval_expr(expr, env) {
                         Value::Number(n) => output.push_str(&n.to_string()),
-                        Value::String(s) => output.push_str(&s),
+                        Value::String(s) => output.push_str(&s.trim()),
                     }
                 }
                 println!("{}", output);

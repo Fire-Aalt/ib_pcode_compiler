@@ -19,32 +19,55 @@ struct DSLParser;
 
 fn main() {
     let code = r#"
+//*** INPUT, IF..THEN.. , and STRINGS ********************
+//
+// Lucy has trouble remembering things like: 1 km = 0.6 miles
+// She wants to make a program that pops-up conversion factors.
+// She wants to be able to type in a unit, like "km",
+// and see a list of conversions, e.g.: 1 km = 1000 m = 0.6 miles
+// This requires the ability to have a pop-up box that inputs data.
+//
+//********************************************************
 
-        output "=== Simple Calculations ==="
+  UNIT = input("Type a unit")
 
-output "Adding 1...10 = " , 1+2+3+4+5+6+7+8+9+10
+  if  UNIT = "km"  then
+     output "1 km = 1000 m = 0.6 miles"
+  end if
 
-output "10 Factorial = " , 1*2*3*4*5*6*7*8*9*10
+  if  UNIT = "mi"  then
+     output "1 mi = 5280 ft = 1.6 km"
+  end if
 
-output "Fractions = 1/2 + 1/4 + 1/5 = " , 1/2 + 1/4 + 1/5
+  if  UNIT = "ft"  then
+     output "1 ft = 12 in = 30.5 cm"
+  end if
 
-output "Pythagoras = 3^2 + 4^2 = 5^2 = " , 3*3 + 4*4 , " and " , 5*5
+  if  UNIT = "liter"  then
+     output "1 liter = 1000 ml = 1/3 gallon"
+     output "Don't forget that IMPERIAL GALLONS"
+     output "are different than US GALLONS"
+  end if
 
-output "Big Numbers = one trillion ^ 2 = " , 1000000000000 * 1000000000000
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Add a few more conversion facts -
+// maybe some money values, like  1 BP = 1.3 EUROS
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-output "Easier big numbers = " , 2e12 * 3e12
-
-output "10307 is not prime = " , 10307 / 11 , " * " , 11
-
-output "15% of 12345 = " , 15/100*12345
-
-output "Incorrect calculation = " , 1234567890 * 1234567890
-
-output "Another error = " , 1/2 + 1/3 + 1/6
-
-output "One more problem = " , 0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1
-
-output "And another problem = " , 3.2 - 0.3
+//==========================================
+// INPUT - the input command makes a box pop-up on the screen,
+//         waits for the user to type an answer,
+//         and then stores the answer in a variable (UNIT).
+//
+// IF..THEN.. - checks whether UNIT matches a specific value.
+//         If so, the program executes the command(s) between then..end if
+//         Notice that the user is going to type letters, not numbers,
+//         so you need "quotation marks" around the matching STRING.
+//
+// STRING - a STRING is a value that contains letters and maybe
+//         numbers and punctuation marks -
+//         e.g. any characters on a keyboard.
+//==========================================
 
     "#;
 
