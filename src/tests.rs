@@ -1,4 +1,4 @@
-use crate::ast::Env;
+use crate::ast_nodes::Value;
 use super::*;
 
 #[test]
@@ -15,16 +15,17 @@ fn case_sensitive() {
         end loop
     "#;
 
-    let env = compile_and_run(code).env;
+    let env = compile_and_run(code);
     assert_env(&env, "A", &Value::String("fsdfsdf".to_string()));
     assert_env(&env, "I", &Value::Number(10.0));
     assert_env(&env, "X", &Value::Number(-100.5));
 }
 
-fn compile_and_run(code: &str) -> AST {
+fn compile_and_run(code: &str) -> Env {
     let mut ast = compile(code);
-    run(&mut ast);
-    ast
+    let mut env = Env::new();
+    run(&mut ast, &mut env);
+    env
 }
 
 fn assert_env(env: &Env, var_name: &str, expected: &Value) {

@@ -1,10 +1,10 @@
+use crate::ast::AST;
+use crate::env::Env;
 use pest::Parser;
 use pest_derive::Parser;
-use std::collections::HashMap;
-use crate::ast::AST;
-use crate::ast_nodes::Value;
 
 pub mod utils;
+pub mod env;
 pub mod ast;
 pub mod ast_nodes;
 pub mod ast_builder;
@@ -59,8 +59,10 @@ fn main() {
     println!("{:#?}", ast.method_map);
     println!("{}", ast);
 
-    run(&mut ast);
-    println!("Final env: {:?}", ast.env);
+    let mut env = Env::new();
+
+    run(&mut ast, &mut env);
+    println!("Final env: {:?}", env);
 }
 
 fn compile(code: &str) -> AST {
@@ -75,6 +77,6 @@ fn compile(code: &str) -> AST {
 }
 
 
-fn run(ast: &mut AST) {
-    ast.traverse();
+fn run(ast: &mut AST, env: &mut Env) {
+    ast.traverse(env);
 }
