@@ -10,7 +10,10 @@ pub struct AST {
 
 impl Default for AST {
     fn default() -> Self {
-        AST { statements: Vec::new(), method_map: HashMap::new() }
+        AST {
+            statements: Vec::new(),
+            method_map: HashMap::new(),
+        }
     }
 }
 

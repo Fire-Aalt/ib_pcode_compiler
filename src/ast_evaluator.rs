@@ -1,9 +1,9 @@
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, Value};
-use crate::utils::{to_num_bool, to_num_bool_str, to_string_bool};
+use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
+use crate::env::Env;
+use crate::utils::{num_op, str_op};
 use std::io;
 use std::io::Write;
-use crate::env::Env;
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) {
@@ -20,11 +20,53 @@ impl AST {
         match expr {
             Expr::Ident(name) => env.get(name).unwrap(),
             Expr::Data(n) => n.clone(),
-            Expr::Input(text) => {
-                match self.eval_expr(text, env) {
-                    Value::Number(n) => print!("{}", n),
-                    Value::String(s) => print!("{}", s),
+            Expr::Unary(op, expr) => {
+                let value = self.eval_expr(expr, env);
+                match op {
+                    UnaryOp::Neg => -value,
+                    UnaryOp::Not => !value,
                 }
+            }
+            Expr::BinOp(left, op, right) => {
+                let l = self.eval_expr(left, env);
+                let r = self.eval_expr(right, env);
+
+                match l {
+                    Value::Number(l_num) => match r {
+                        Value::Number(r_num) => num_op(l_num, op, r_num),
+                        Value::String(r_string) => Value::String(match op {
+                            Operator::Add => l_num.to_string() + &*r_string,
+                            _ => String::from("Nan"),
+                        }),
+                        Value::Bool(_r_bool) => {
+                            Value::Bool(num_op(l_num, op, r.as_num()).as_bool())
+                        }
+                    },
+                    Value::String(l_string) => match r {
+                        Value::Number(r_num) => Value::String(match op {
+                            Operator::Add => l_string + &r_num.to_string(),
+                            _ => String::from("Nan"),
+                        }),
+                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
+                        Value::Bool(_r_bool) => {
+                            str_op(l_string.as_str(), op, r.to_string().as_str())
+                        }
+                    },
+                    Value::Bool(l_bool) => match r {
+                        Value::Number(r_num) => num_op(l.as_num(), op, r_num),
+                        Value::String(r_string) => {
+                            str_op(l.to_string().as_str(), op, r_string.as_str())
+                        }
+                        Value::Bool(r_bool) => Value::Bool(match op {
+                            Operator::And => l_bool && r_bool,
+                            Operator::Or => l_bool || r_bool,
+                            _ => num_op(l.as_num(), op, r.as_num()).as_bool(),
+                        }),
+                    },
+                }
+            }
+            Expr::Input(text) => {
+                print!("{}", self.eval_expr(text, env));
                 io::stdout().flush().unwrap();
 
                 let mut input = String::new();
@@ -44,57 +86,10 @@ impl AST {
 
                 let returned = match self.exec_body(&def.body, env) {
                     Some(returned_val) => returned_val,
-                    None => panic!("No return for method call {}", name)
+                    None => panic!("No return for method call {}", name),
                 };
                 env.pop_scope();
                 returned
-            }
-            Expr::BinOp(left, op, right) => {
-                let l_val = self.eval_expr(left, env);
-                let r_val = self.eval_expr(right, env);
-
-                match l_val {
-                    Value::Number(l) => match r_val {
-                        Value::Number(r) => Value::Number(match op {
-                            Operator::Add => l + r,
-                            Operator::Subtract => l - r,
-                            Operator::Multiply => l * r,
-                            Operator::Divide => l / r,
-                            Operator::Power => l.powf(r),
-                            Operator::Modulo => l % r,
-                            Operator::Greater => to_num_bool(l > r),
-                            Operator::Less => to_num_bool(l < r),
-                            Operator::GreaterEqual => to_num_bool(l >= r),
-                            Operator::LessEqual => to_num_bool(l <= r),
-                            Operator::Equal => to_num_bool(l == r),
-                            Operator::NotEqual => to_num_bool(l != r),
-                            Operator::And => to_num_bool(l != 0.0 && r != 0.0),
-                            Operator::Or => to_num_bool(l != 0.0 || r != 0.0),
-                        }),
-                        Value::String(r) => Value::String(match op {
-                            Operator::Add => l.to_string() + &*r,
-                            _ => String::from("Nan"),
-                        }),
-                    },
-                    Value::String(l) => match r_val {
-                        Value::Number(r) => Value::String(match op {
-                            Operator::Add => l + &*r.to_string(),
-                            _ => String::from("Nan"),
-                        }),
-                        Value::String(r) => Value::String(match op {
-                            Operator::Add => l + &r,
-                            Operator::Greater => to_string_bool(l > r),
-                            Operator::Less => to_string_bool(l < r),
-                            Operator::GreaterEqual => to_string_bool(l >= r),
-                            Operator::LessEqual => to_string_bool(l <= r),
-                            Operator::Equal => to_string_bool(l == r),
-                            Operator::NotEqual => to_string_bool(l != r),
-                            Operator::And => to_string_bool(to_num_bool_str(l.as_str()) != 0.0 && to_num_bool_str(r.as_str()) != 0.0),
-                            Operator::Or => to_string_bool(to_num_bool_str(l.as_str()) != 0.0 || to_num_bool_str(r.as_str()) != 0.0),
-                            _ => String::from("Nan"),
-                        }),
-                    },
-                }
             }
         }
     }
@@ -107,9 +102,13 @@ impl AST {
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
                     AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
-                    AssignOperator::AssignSubtract => env.assign(name, env.get(name).unwrap() - val),
-                    AssignOperator::AssignMultiply => env.assign(name, env.get(name).unwrap() * val),
-                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val)
+                    AssignOperator::AssignSubtract => {
+                        env.assign(name, env.get(name).unwrap() - val)
+                    }
+                    AssignOperator::AssignMultiply => {
+                        env.assign(name, env.get(name).unwrap() * val)
+                    }
+                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
                 }
                 None
             }
@@ -123,7 +122,7 @@ impl AST {
             }
             Stmt::If(cond, body) => {
                 if self.is_true(cond, env) {
-                    return self.exec_body(body, env)
+                    return self.exec_body(body, env);
                 }
                 None
             }
@@ -163,6 +162,7 @@ impl AST {
                     match self.eval_expr(expr, env) {
                         Value::Number(n) => output.push_str(&n.to_string()),
                         Value::String(s) => output.push_str(&s.trim()),
+                        Value::Bool(b) => output.push_str(&b.to_string()),
                     }
                 }
                 println!("{}", output);

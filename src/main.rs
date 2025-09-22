@@ -19,29 +19,13 @@ struct DSLParser;
 
 fn main() {
     let code = r#"
-// === Mice ============
-//  JavaScript has loops, including for loops
-//  like Java and Basic and other languages.
-//  This example uses loops for a poem.
 
-loop A from 1 to 2
-   output "Three blind mice"
-end loop
 
-loop B from 3 to 4
-   output "See how they run"
-end loop
+X = 15
 
-output "They all ran up to the farmer's wife"
-output "She cut off their tails with a carving knife"
-output "Did you ever see such a sight in your life, as"
-
-C = 5
-loop while C < 20
-   output "Three blind mice"
-   C = C*2
-end loop
-
+if X >= -99 then
+    X = X - 1.5
+end if
 
     "#;
 

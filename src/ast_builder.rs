@@ -1,15 +1,18 @@
-use std::collections::HashMap;
-use crate::ast::AST;
-use crate::ast_nodes::{Value, Expr, MethodDef, Operator, Stmt, AssignOperator};
 use crate::Rule;
+use crate::ast::AST;
+use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
 use crate::utils::fix_quotes_plain;
+use std::collections::HashMap;
 
 impl AST {
     pub fn build_ast(&mut self, pair: pest::iterators::Pair<Rule>) {
         self.method_map = HashMap::new();
         assert_eq!(pair.as_rule(), Rule::program);
 
-        self.statements = pair.into_inner().map(|inner| self.build_stmt(inner)).collect();
+        self.statements = pair
+            .into_inner()
+            .map(|inner| self.build_stmt(inner))
+            .collect();
     }
 
     fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
@@ -84,36 +87,43 @@ impl AST {
 
                 let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
 
-                self.method_map.insert(method_name.clone(), MethodDef {
-                    args: args.clone(),
-                    body,
-                });
+                self.method_map.insert(
+                    method_name.clone(),
+                    MethodDef {
+                        args: args.clone(),
+                        body,
+                    },
+                );
 
                 Stmt::MethodDeclaration(method_name, args)
-            },
+            }
             Rule::method_call => {
                 let mut inner = pair.into_inner();
 
                 let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Box<Expr>> = inner.map(|inner| Box::new(self.build_expr(inner))).collect();
+                let args: Vec<Box<Expr>> = inner
+                    .map(|inner| Box::new(self.build_expr(inner)))
+                    .collect();
 
                 Stmt::MethodCall(method_name, args)
-            },
+            }
             Rule::method_return => {
                 let mut inner = pair.into_inner();
                 Stmt::MethodReturn(self.build_expr(inner.next().unwrap()))
-            },
+            }
             Rule::EOI => Stmt::EOI,
-            _ => {
-                println!("{:?}", pair);
-                unreachable!()
-            },
+            _ => unreachable!(),
         }
     }
 
     fn build_expr(&mut self, pair: pest::iterators::Pair<Rule>) -> Expr {
         match pair.as_rule() {
-            Rule::expr | Rule::logical_or | Rule::logical_and | Rule::comparison | Rule::add_sub | Rule::mul_div => {
+            Rule::expr
+            | Rule::logical_or
+            | Rule::logical_and
+            | Rule::comparison
+            | Rule::add_sub
+            | Rule::mul_div => {
                 let mut inner = pair.into_inner();
                 let mut left = self.build_expr(inner.next().unwrap());
                 while let Some(op_pair) = inner.next() {
@@ -149,15 +159,31 @@ impl AST {
                     left
                 }
             }
-            Rule::term => self.build_expr(pair.into_inner().next().unwrap()),
+            Rule::unary => {
+                let mut parts: Vec<_> = pair.into_inner().collect();
+                let mut expr = self.build_expr(parts.pop().unwrap());
+
+                while let Some(op_pair) = parts.pop() {
+                    let op = match op_pair.as_rule() {
+                        Rule::subtract => UnaryOp::Neg,
+                        Rule::not => UnaryOp::Not,
+                        _ => unreachable!(),
+                    };
+                    expr = Expr::Unary(op, Box::new(expr));
+                }
+                expr
+            }
             Rule::ident => Expr::Ident(pair.as_str().to_string()),
             Rule::number => Expr::Data(Value::Number(pair.as_str().parse().unwrap())),
             Rule::string => Expr::Data(Value::String(fix_quotes_plain(pair.as_str()))),
+            Rule::bool => Expr::Data(Value::Bool(pair.as_str().parse().unwrap())),
             Rule::method_call => {
                 let mut inner = pair.into_inner();
 
                 let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Box<Expr>> = inner.map(|inner| Box::new(self.build_expr(inner))).collect();
+                let args: Vec<Box<Expr>> = inner
+                    .map(|inner| Box::new(self.build_expr(inner)))
+                    .collect();
 
                 Expr::MethodCall(method_name, args)
             }
@@ -165,7 +191,7 @@ impl AST {
                 let mut inner = pair.into_inner();
                 let text = self.build_expr(inner.next().unwrap());
                 Expr::Input(Box::new(text))
-            },
+            }
             _ => unreachable!(),
         }
     }

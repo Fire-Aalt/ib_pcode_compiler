@@ -23,9 +23,18 @@ assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | 
 // CONTROL
 control_stmts = _{ if_stmt | while_loop_stmt | for_loop_stmt }
 
-if_stmt = { "if" ~ expr ~ "then" ~ stmt* ~ "end if" }
-while_loop_stmt = { "loop" ~ "while" ~ expr ~ stmt* ~ "end loop" }
-for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ stmt* ~ "end loop" }
+if_stmt = { "if" ~ expr ~ "then"
+    ~ stmt*
+    ~ "end if"
+}
+while_loop_stmt = { "loop" ~ "while" ~ expr
+    ~ stmt*
+    ~ "end loop"
+}
+for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr
+    ~ stmt*
+    ~ "end loop"
+}
 
 
 // METHOD
@@ -48,12 +57,13 @@ method_return = { "return" ~ expr }
 expr = { logical_or }
 
 logical_or = { logical_and ~ (or ~ logical_and)* }
-logical_and = { comparison  ~ (and ~ comparison)* }
+logical_and = { comparison ~ (and ~ comparison)* }
 
-comparison = { add_sub ~ ( (equal | not_equal | greater | less | greater_equal | less_equal) ~ add_sub )* }
+comparison = { add_sub ~ ( (greater_equal | less_equal | greater | less | equal | not_equal) ~ add_sub )* }
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
 mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
-pow = { term ~ (power ~ pow)? } // right-association
+pow = { unary ~ (power ~ pow)? } // right-association
+unary = { (not | subtract)* ~ term }
     equal = { "==" | "=" }
     not_equal = { "!=" }
     greater_equal = { ">=" }
@@ -68,6 +78,7 @@ pow = { term ~ (power ~ pow)? } // right-association
     modulo = { "%" }
     and = { "&&" | "AND" }
     or = { "||" | "OR" }
+    not = { "!" | "NOT" }
 
 
 // DEFAULT IMPLEMENTATIONS
@@ -76,10 +87,11 @@ output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 
 
 // FUNDAMENTALS
-term = _{ input | method_call | ident | number | string | "(" ~ expr ~ ")" }
+term = _{ input | method_call | ident | number | string | bool | "(" ~ expr ~ ")" }
 
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
 method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
-int = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
+int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
+bool = { "true" | "false" }

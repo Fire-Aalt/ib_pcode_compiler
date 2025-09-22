@@ -2,7 +2,7 @@ use crate::ast_nodes::Value;
 use super::*;
 
 #[test]
-fn case_sensitive() {
+fn simple() {
     let code = r#"
         X = 4.5
         A = "fsdfsdf"
@@ -17,7 +17,7 @@ fn case_sensitive() {
 
     let env = compile_and_run(code);
     assert_env(&env, "A", &Value::String("fsdfsdf".to_string()));
-    assert_env(&env, "I", &Value::Number(10.0));
+    assert_env(&env, "I", &Value::Number(11.0));
     assert_env(&env, "X", &Value::Number(-100.5));
 }
 
@@ -35,13 +35,19 @@ fn assert_env(env: &Env, var_name: &str, expected: &Value) {
         Value::Number(n) => {
             match expected {
                 Value::Number(e_n) => n == *e_n,
-                Value::String(e_s) => panic!("Expected {} but got {}", e_s, n),
+                _ => panic!("Expected {} but got {}", expected, n),
             }
         }
         Value::String(ref s) => {
             match expected {
-                Value::Number(e_n) => panic!("Expected {} but got {}", e_n, s),
-                Value::String(e_s) => s == e_s
+                Value::String(e_s) => s == e_s,
+                _ => panic!("Expected {} but got {}", expected, s),
+            }
+        }
+        Value::Bool(b) => {
+            match expected {
+                Value::Bool(e_b) => b == *e_b,
+                _ => panic!("Expected {} but got {}", expected, b),
             }
         }
     };
