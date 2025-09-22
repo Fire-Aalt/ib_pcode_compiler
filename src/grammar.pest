@@ -56,12 +56,12 @@ method_return = { "return" ~ expr }
 // EXPRESSION
 expr = { logical_or }
 
-logical_or = { logical_and ~ (or ~ logical_and)* }
-logical_and = { comparison ~ (and ~ comparison)* }
+logical_or = _{ logical_and ~ (or ~ logical_and)* }
+logical_and = _{ comparison ~ (and ~ comparison)* }
 
-comparison = { add_sub ~ ( (greater_equal | less_equal | greater | less | equal | not_equal) ~ add_sub )* }
-add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
-mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
+comparison = _{ add_sub ~ ( (greater_equal | less_equal | greater | less | equal | not_equal) ~ add_sub )* }
+add_sub = _{ mul_div ~ ( (add | subtract) ~ mul_div )* }
+mul_div = _{ pow ~ ( (multiply | divide | modulo) ~ pow )* }
 pow = { unary ~ (power ~ pow)? } // right-association
 unary = { (not | subtract)* ~ term }
     equal = { "==" | "=" }

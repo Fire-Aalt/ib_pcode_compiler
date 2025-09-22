@@ -21,10 +21,10 @@ fn main() {
     let code = r#"
 
 
-X = 15
+X = 150
 
 if X >= -99 then
-    X = X - 1.5
+    X = X - -(48 - 48^4)
 end if
 
     "#;
