@@ -113,13 +113,12 @@ impl AST {
 
     fn build_expr(&mut self, pair: pest::iterators::Pair<Rule>) -> Expr {
         match pair.as_rule() {
-            Rule::expr | Rule::add_sub | Rule::mul_div => {
+            Rule::expr | Rule::logical_or | Rule::logical_and
+            | Rule::comparison | Rule::add_sub | Rule::mul_div => {
                 let mut inner = pair.into_inner();
                 let mut left = self.build_expr(inner.next().unwrap());
-
                 while let Some(op_pair) = inner.next() {
                     let right = self.build_expr(inner.next().unwrap());
-
                     let op = match op_pair.as_rule() {
                         Rule::add => Operator::Add,
                         Rule::subtract => Operator::Subtract,
@@ -133,6 +132,8 @@ impl AST {
                         Rule::less_equal => Operator::LessEqual,
                         Rule::equal => Operator::Equal,
                         Rule::not_equal => Operator::NotEqual,
+                        Rule::and => Operator::And,   // <-- new
+                        Rule::or  => Operator::Or,    // <-- new
                         _ => unreachable!(),
                     };
                     left = Expr::BinOp(Box::new(left), op, Box::new(right));

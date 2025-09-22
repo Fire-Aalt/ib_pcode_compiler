@@ -40,6 +40,8 @@ pub enum Operator {
     LessEqual,
     Equal,
     NotEqual,
+    And,
+    Or
 }
 
 #[derive(Debug, Clone)]

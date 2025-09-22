@@ -1,6 +1,6 @@
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, Value};
-use crate::utils::{to_num_bool, to_string_bool};
+use crate::utils::{to_num_bool, to_num_bool_str, to_string_bool};
 use std::io;
 use std::io::Write;
 use crate::env::Env;
@@ -50,11 +50,11 @@ impl AST {
                 returned
             }
             Expr::BinOp(left, op, right) => {
-                let l = self.eval_expr(left, env);
-                let r = self.eval_expr(right, env);
+                let l_val = self.eval_expr(left, env);
+                let r_val = self.eval_expr(right, env);
 
-                match l {
-                    Value::Number(l) => match r {
+                match l_val {
+                    Value::Number(l) => match r_val {
                         Value::Number(r) => Value::Number(match op {
                             Operator::Add => l + r,
                             Operator::Subtract => l - r,
@@ -68,13 +68,15 @@ impl AST {
                             Operator::LessEqual => to_num_bool(l <= r),
                             Operator::Equal => to_num_bool(l == r),
                             Operator::NotEqual => to_num_bool(l != r),
+                            Operator::And => to_num_bool(l != 0.0 && r != 0.0),
+                            Operator::Or => to_num_bool(l != 0.0 || r != 0.0),
                         }),
                         Value::String(r) => Value::String(match op {
                             Operator::Add => l.to_string() + &*r,
                             _ => String::from("Nan"),
                         }),
                     },
-                    Value::String(l) => match r {
+                    Value::String(l) => match r_val {
                         Value::Number(r) => Value::String(match op {
                             Operator::Add => l + &*r.to_string(),
                             _ => String::from("Nan"),
@@ -87,6 +89,8 @@ impl AST {
                             Operator::LessEqual => to_string_bool(l <= r),
                             Operator::Equal => to_string_bool(l == r),
                             Operator::NotEqual => to_string_bool(l != r),
+                            Operator::And => to_string_bool(to_num_bool_str(l.as_str()) != 0.0 && to_num_bool_str(r.as_str()) != 0.0),
+                            Operator::Or => to_string_bool(to_num_bool_str(l.as_str()) != 0.0 || to_num_bool_str(r.as_str()) != 0.0),
                             _ => String::from("Nan"),
                         }),
                     },

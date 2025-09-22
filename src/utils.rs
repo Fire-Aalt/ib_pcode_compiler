@@ -21,6 +21,13 @@ pub fn fix_quotes_plain(s: &str) -> String {
     out
 }
 
+pub fn to_num_bool_str(string: &str) -> f64 {
+    match string {
+        "true" => 1.0,
+        _ => 0.0
+    }
+}
+
 pub fn to_num_bool(data: bool) -> f64 {
     match data {
         true => 1.0,

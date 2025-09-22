@@ -45,7 +45,12 @@ method_return = { "return" ~ expr }
 
 
 // EXPRESSION
-expr = { add_sub ~ ( (equal | not_equal | greater | less | greater_equal | less_equal) ~ add_sub )* }
+expr = { logical_or }
+
+logical_or = { logical_and ~ (or ~ logical_and)* }
+logical_and = { comparison  ~ (and ~ comparison )* }
+
+comparison = { add_sub ~ ( (equal | not_equal | greater | less | greater_equal | less_equal) ~ add_sub )* }
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
 mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
 pow = { term ~ (power ~ pow)? } // right-association
@@ -61,6 +66,8 @@ pow = { term ~ (power ~ pow)? } // right-association
     divide = { "/" }
     power = { "^" }
     modulo = { "%" }
+    and = { "&&" | "AND" }
+    or = { "||" | "OR" }
 
 
 // DEFAULT IMPLEMENTATIONS
