@@ -51,6 +51,6 @@ operation = _{ equal | not_equal | greater_equal | less_equal | greater | less |
 input = { "input" ~ "(" ~ expr? ~ ")" }
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
 method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-number = @{ int ~ ("." ~ ASCII_DIGIT*)? }
+number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }

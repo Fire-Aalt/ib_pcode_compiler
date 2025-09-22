@@ -20,39 +20,32 @@ struct DSLParser;
 fn main() {
     let code = r#"
 
-        method Sussy(A, B)
-            if A == 0 then
-                return 0
-            end if
+        output "=== Simple Calculations ==="
 
-            output "Recursion:", A, B
-            A = A - 1
-            return Sussy(A, B)
-        end method
+output "Adding 1...10 = " , 1+2+3+4+5+6+7+8+9+10
 
-        method Meth(A)
-            A = A - 1
+output "10 Factorial = " , 1*2*3*4*5*6*7*8*9*10
 
-            output A
-            if A == 0 then
-                return 0
-            end if
+output "Fractions = 1/2 + 1/4 + 1/5 = " , 1/2 + 1/4 + 1/5
 
-            return Meth(A)
-        end method
+output "Pythagoras = 3^2 + 4^2 = 5^2 = " , 3*3 + 4*4 , " and " , 5*5
 
+output "Big Numbers = one trillion ^ 2 = " , 1000000000000 * 1000000000000
 
-        XR = 4.5
-        A = 45
+output "Easier big numbers = " , 2e12 * 3e12
 
-        output A + "Haha"
-        output A + 14
+output "10307 is not prime = " , 10307 / 11 , " * " , 11
 
-        Sussy(A, XR)
-        output Meth(45)
+output "15% of 12345 = " , 15/100*12345
 
-        XR /= "sdad"
-        output XR
+output "Incorrect calculation = " , 1234567890 * 1234567890
+
+output "Another error = " , 1/2 + 1/3 + 1/6
+
+output "One more problem = " , 0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1
+
+output "And another problem = " , 3.2 - 0.3
+
     "#;
 
     let mut ast = compile(code);

@@ -26,12 +26,6 @@ pub enum Expr {
     Input(Box<Expr>),
 }
 
-impl From<Box<Expr>> for Expr {
-    fn from(value: Box<Expr>) -> Self {
-        value.into()
-    }
-}
-
 #[derive(Debug, Clone)]
 pub enum Operator {
     Add,
