@@ -128,9 +128,8 @@ impl AST {
             }
             Stmt::While(cond, body) => {
                 while self.is_true(cond, env) {
-                    match self.exec_body(body, env) {
-                        Some(returned_val) => return Some(returned_val),
-                        None => {}
+                    if let Some(returned_val) = self.exec_body(body, env) {
+                        return Some(returned_val)
                     }
                 }
                 None
@@ -140,9 +139,8 @@ impl AST {
                 env.assign(ident, Value::Number(control));
 
                 while control <= self.eval_expr(end_num, env).as_num() {
-                    match self.exec_body(body, env) {
-                        Some(returned_val) => return Some(returned_val),
-                        None => {}
+                    if let Some(returned_val) = self.exec_body(body, env) {
+                        return Some(returned_val)
                     }
 
                     control = env.get(ident).unwrap().as_num();
@@ -161,7 +159,7 @@ impl AST {
 
                     match self.eval_expr(expr, env) {
                         Value::Number(n) => output.push_str(&n.to_string()),
-                        Value::String(s) => output.push_str(&s.trim()),
+                        Value::String(s) => output.push_str(s.trim()),
                         Value::Bool(b) => output.push_str(&b.to_string()),
                     }
                 }
@@ -173,7 +171,7 @@ impl AST {
                 env.push_scope();
 
                 let def = self.method_map.get(name).unwrap();
-                self.define_method_params(&def, params, env);
+                self.define_method_params(def, params, env);
                 let returned_val = self.exec_body(&def.body, env);
 
                 env.pop_scope();
@@ -184,7 +182,7 @@ impl AST {
         }
     }
 
-    fn define_method_params(&self, method_def: &MethodDef, params: &Vec<Box<Expr>>, env: &mut Env) {
+    fn define_method_params(&self, method_def: &MethodDef, params: &[Box<Expr>], env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
             let value = self.eval_expr(param, env);
             env.define(method_def.args[i].clone(), value);
@@ -193,9 +191,8 @@ impl AST {
 
     fn exec_body(&self, body: &Vec<Stmt>, env: &mut Env) -> Option<Value> {
         for stmt in body {
-            match self.exec_stmt(stmt, env) {
-                Some(returned_val) => return Some(returned_val),
-                None => {}
+            if let Some(returned_val) = self.exec_stmt(stmt, env) {
+                return Some(returned_val)
             }
         }
         None

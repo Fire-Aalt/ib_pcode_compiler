@@ -25,14 +25,6 @@ impl Value {
             Value::Bool(b) => *b,
         }
     }
-
-    pub fn to_string(&self) -> String {
-        match self {
-            Value::Number(n) => n.to_string(),
-            Value::String(n) => n.clone(),
-            Value::Bool(b) => if *b { "true".to_string() } else { "false".to_string() },
-        }
-    }
 }
 
 impl Add for Value {
@@ -51,7 +43,7 @@ impl Add for Value {
                 match rhs {
                     Value::Number(rhs) => Value::Number(self.as_num() + rhs),
                     Value::Bool(_) => Value::Number(self.as_num() + rhs.as_num()),
-                    Value::String(rhs) => Value::String(format!("{}{}", self.to_string(), rhs)),
+                    Value::String(rhs) => Value::String(format!("{}{}", self, rhs)),
                 }
             }
             Value::String(lhs) => Value::String(format!("{}{}", lhs, rhs)),

@@ -73,16 +73,13 @@ impl AST {
                 let mut args = Vec::new();
 
                 let try_inner = inner.clone().next().unwrap();
-                match try_inner.as_rule() {
-                    Rule::method_decl_param_list => {
-                        inner.next(); // consume outer
-                        let mut inner = try_inner.into_inner();
+                if try_inner.as_rule() == Rule::method_decl_param_list {
+                    inner.next(); // consume outer
+                    let inner = try_inner.into_inner();
 
-                        while let Some(arg) = inner.next() {
-                            args.push(arg.as_str().to_string());
-                        }
+                    for arg in inner {
+                        args.push(arg.as_str().to_string());
                     }
-                    _ => {}
                 }
 
                 let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
@@ -116,7 +113,7 @@ impl AST {
         }
     }
 
-    fn build_expr(&mut self, pair: pest::iterators::Pair<Rule>) -> Expr {
+    fn build_expr(&self, pair: pest::iterators::Pair<Rule>) -> Expr {
         match pair.as_rule() {
             Rule::expr
             | Rule::logical_or
