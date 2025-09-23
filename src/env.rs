@@ -4,13 +4,18 @@ use crate::ast_nodes::Value;
 #[derive(Debug)]
 pub struct Env {
     scopes: Vec<HashMap<String, Value>>,
+    pub logs: Vec<String>,
 }
 
 impl Env {
     pub fn new() -> Self {
-        let mut e = Self { scopes: Vec::new() };
+        let mut e = Self { scopes: Vec::new(), logs: Vec::new() };
         e.push_scope(); // global scope
         e
+    }
+
+    pub fn record_log(&mut self, log: String) {
+        self.logs.push(log);
     }
 
     pub fn push_scope(&mut self) {

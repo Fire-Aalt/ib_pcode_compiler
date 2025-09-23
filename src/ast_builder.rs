@@ -121,7 +121,8 @@ impl AST {
 
     fn build_expr(&self, pair: pest::iterators::Pair<Rule>) -> Expr {
         match pair.as_rule() {
-            Rule::expr => {
+            Rule::expr | Rule::logical_or | Rule::logical_and
+            | Rule::comparison | Rule::add_sub | Rule::mul_div => {
                 let mut inner = pair.into_inner();
                 let mut left = self.build_expr(inner.next().unwrap());
                 while let Some(op_pair) = inner.next() {

@@ -158,12 +158,21 @@ impl AST {
                     }
 
                     match self.eval_expr(expr, env) {
-                        Value::Number(n) => output.push_str(&n.to_string()),
+                        Value::Number(n) => {
+                            if n.abs() > 100000000000000000000.0 {
+                                output.push_str(&format!("{:e}", n));
+                            }
+                            else {
+                                output.push_str(&format!("{}", n));
+                            }
+                        },
                         Value::String(s) => output.push_str(s.trim()),
                         Value::Bool(b) => output.push_str(&b.to_string()),
                     }
                 }
-                println!("{}", output);
+
+                println!("{}", &output);
+                env.record_log(output);
                 None
             }
             Stmt::Assert(expr, expected) => {
