@@ -1,21 +1,23 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use crate::ast_nodes::Value;
 
 #[derive(Debug)]
 pub struct Env {
     scopes: Vec<HashMap<String, Value>>,
-    pub logs: Vec<String>,
+    pub test_mode: bool,
+    pub mock_inputs: VecDeque<String>,
+    pub logs: VecDeque<String>,
 }
 
 impl Env {
-    pub fn new() -> Self {
-        let mut e = Self { scopes: Vec::new(), logs: Vec::new() };
+    pub fn new(mock_inputs: VecDeque<String>, test_mode: bool) -> Self {
+        let mut e = Self { scopes: Vec::new(), test_mode, logs: VecDeque::new(), mock_inputs };
         e.push_scope(); // global scope
         e
     }
 
     pub fn record_log(&mut self, log: String) {
-        self.logs.push(log);
+        self.logs.push_back(log);
     }
 
     pub fn push_scope(&mut self) {

@@ -1,5 +1,5 @@
-use crate::ast_nodes::Value;
 use super::*;
+use std::collections::VecDeque;
 
 #[test]
 fn intro() {
@@ -10,8 +10,7 @@ loop COUNT from 1 to 5
 end loop
     "#;
 
-    let env = compile_and_run(code);
-    assert_logs(&env, r#"
+    compile_run_check_logs(code, "", r#"
 Welcome
 1
 2
@@ -51,8 +50,7 @@ output "One more problem = " , 0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1
 output "And another problem = " , 3.2 - 0.3
     "#;
 
-    let env = compile_and_run(code);
-    assert_logs(&env, r#"
+    compile_run_check_logs(code, "", r#"
 === Simple Calculations ===
 Adding 1...10 = 55
 10 Factorial = 3628800
@@ -69,42 +67,131 @@ And another problem = 2.9000000000000004
 "#);
 }
 
+#[test]
+fn solve_equations() {
+    let code = r#"
+X = 4
+Y = X*X - 9*X + 14
+output "x = " , X , " .... y = " , Y
+   "#;
 
-fn compile_and_run(code: &str) -> Env {
-    let mut ast = compile(code);
-    let mut env = Env::new();
-    run(&mut ast, &mut env);
+    compile_run_check_logs(code, "", r#"
+x = 4 .... y = -6
+"#);
+}
+
+#[test]
+fn solving2() {
+    let code = r#"
+A = 10
+B = 100
+output "Sum = " , A + B
+output "Product = " , A * B
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+Sum = 110
+Product = 1000
+"#);
+}
+
+#[test]
+fn ski_trip() {
+    let code = r#"
+ CARS = 8
+ BUSSES = 8
+ HOTEL = 10
+ LODGE = 12
+ SEATS = CARS*4 + BUSSES*20
+ BEDS = HOTEL*4 + LODGE*12
+ COST = CARS*250 + BUSSES*1000 + HOTEL*300 + LODGE*800
+
+ output CARS , " cars and " , BUSSES , " busses = " , SEATS , " seats"
+ output HOTEL , " rooms and " , LODGE , " lodges = " , BEDS , " beds"
+ output "Total cost = " , COST
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+8 cars and 8 busses = 192 seats
+10 rooms and 12 lodges = 184 beds
+Total cost = 22600
+"#);
+}
+
+#[test]
+fn if_then() {
+    let code = r#"
+  UNIT = input("Type a unit")
+
+  if  UNIT = "km"  then
+     output "1 km = 1000 m = 0.6 miles"
+  end if
+
+  if  UNIT = "mi"  then
+     output "1 mi = 5280 ft = 1.6 km"
+  end if
+
+  if  UNIT = "ft"  then
+     output "1 ft = 12 in = 30.5 cm"
+  end if
+
+  if  UNIT = "liter"  then
+     output "1 liter = 1000 ml = 1/3 gallon"
+     output "Don't forget that IMPERIAL GALLONS"
+     output "are different than US GALLONS"
+  end if
+   "#;
+
+    let ast = compile(code);
+
+    run_check_logs(&ast, "km", r#"
+1 km = 1000 m = 0.6 miles
+"#);
+    run_check_logs(&ast, "mi", r#"
+1 mi = 5280 ft = 1.6 km
+"#);
+    run_check_logs(&ast, "ft", r#"
+1 ft = 12 in = 30.5 cm
+"#);
+    run_check_logs(&ast, "liter", r#"
+1 liter = 1000 ml = 1/3 gallon
+Don't forget that IMPERIAL GALLONS
+are different than US GALLONS
+"#);
+    run_check_logs(&ast, "WRONG", "");
+}
+
+fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
+    let ast = compile(code);
+    run_check_logs(&ast, mock_inputs, logs)
+}
+
+fn run_check_logs(ast: &AST, mock_inputs: &str, logs: &str) -> Env {
+    let mut mock_inputs_queue = VecDeque::new();
+
+    for line in mock_inputs.trim().lines() {
+        mock_inputs_queue.push_back(line.to_string());
+    }
+
+    let mut env = Env::new(mock_inputs_queue, true);
+    run(ast, &mut env);
+
+    assert_logs(&mut env, logs);
     env
 }
 
-fn assert_logs(env: &Env, expected_logs: &str) {
+fn assert_logs(env: &mut Env, expected_logs: &str) {
     for (i, line) in expected_logs.trim().lines().enumerate() {
-        assert_eq!(line, &env.logs[i]);
+
+        let log = match env.logs.pop_front() {
+            Some(log) => log,
+            None => panic!("Expected log at line {}", i)
+        };
+
+        assert_eq!(line, log);
     }
-}
 
-fn assert_env(env: &Env, var_name: &str, expected: &Value) {
-    let var = env.get(var_name).unwrap();
-
-    let correct = match var {
-        Value::Number(n) => {
-            match expected {
-                Value::Number(e_n) => n == *e_n,
-                _ => panic!("Expected {} but got {}", expected, n),
-            }
-        }
-        Value::String(ref s) => {
-            match expected {
-                Value::String(e_s) => s == e_s,
-                _ => panic!("Expected {} but got {}", expected, s),
-            }
-        }
-        Value::Bool(b) => {
-            match expected {
-                Value::Bool(e_b) => b == *e_b,
-                _ => panic!("Expected {} but got {}", expected, b),
-            }
-        }
-    };
-    assert!(correct, "Environment variable wasn't as expected. Expected {} but got {}", expected, var);
+    if env.logs.len() > 0 {
+        panic!("Not all logs were checked, remaining: {}", env.logs.len());
+    }
 }

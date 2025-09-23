@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::env::Env;
 use pest::Parser;
@@ -30,13 +31,13 @@ output X, 427493
 
     "#;
 
-    let mut ast = compile(code);
+    let ast = compile(code);
     println!("{:#?}", ast.method_map);
     println!("{}", ast);
 
-    let mut env = Env::new();
+    let mut env = Env::new(VecDeque::new(), false);
 
-    run(&mut ast, &mut env);
+    run(&ast, &mut env);
     println!("Final env: {:?}", env);
 }
 
@@ -52,6 +53,6 @@ fn compile(code: &str) -> AST {
 }
 
 
-fn run(ast: &mut AST, env: &mut Env) {
+fn run(ast: &AST, env: &mut Env) {
     ast.traverse(env);
 }

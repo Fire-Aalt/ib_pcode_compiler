@@ -13,7 +13,7 @@ impl AST {
     }
 
     fn is_true(&self, cond: &Expr, env: &mut Env) -> bool {
-        self.eval_expr(cond, env).as_num() != 0.0
+        self.eval_expr(cond, env).as_bool()
     }
 
     fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
@@ -66,13 +66,19 @@ impl AST {
                 }
             }
             Expr::Input(text) => {
-                print!("{}", self.eval_expr(text, env));
-                io::stdout().flush().unwrap();
+                let mut input;
+                if !env.test_mode {
+                    print!("{}", self.eval_expr(text, env));
+                    io::stdout().flush().unwrap();
 
-                let mut input = String::new();
-                io::stdin().read_line(&mut input).unwrap();
+                    input = String::new();
+                    io::stdin().read_line(&mut input).unwrap();
+                }
+                else {
+                    input = env.mock_inputs.pop_front().unwrap();
+                }
+
                 let input = input.trim();
-
                 match input.parse::<f64>() {
                     Ok(number) => Value::Number(number),
                     Err(_) => Value::String(input.to_string()),

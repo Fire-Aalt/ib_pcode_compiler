@@ -44,18 +44,18 @@ pub fn num_op(l: f64, op: &Operator, r: f64) -> Value {
 }
 
 pub fn str_op(l: &str, op: &Operator, r: &str) -> Value {
-    Value::String(match op {
-        Operator::Add => String::from(l) + r,
-        Operator::Greater => to_str_bool(l > r),
-        Operator::Less => to_str_bool(l < r),
-        Operator::GreaterEqual => to_str_bool(l >= r),
-        Operator::LessEqual => to_str_bool(l <= r),
-        Operator::Equal => to_str_bool(l == r),
-        Operator::NotEqual => to_str_bool(l != r),
-        Operator::And => to_str_bool(to_bool_str(l) && to_bool_str(r)),
-        Operator::Or => to_str_bool(to_bool_str(l) || to_bool_str(r)),
-        _ => String::from("Nan"),
-    })
+    match op {
+        Operator::Add => Value::String(String::from(l) + r),
+        Operator::Greater => Value::Bool(l > r),
+        Operator::Less => Value::Bool(l < r),
+        Operator::GreaterEqual => Value::Bool(l >= r),
+        Operator::LessEqual => Value::Bool(l <= r),
+        Operator::Equal => Value::Bool(l == r),
+        Operator::NotEqual => Value::Bool(l != r),
+        Operator::And => Value::Bool(to_bool_str(l) && to_bool_str(r)),
+        Operator::Or => Value::Bool(to_bool_str(l) || to_bool_str(r)),
+        _ => Value::String(String::from("Nan")),
+    }
 }
 
 pub fn to_bool_str(string: &str) -> bool {
