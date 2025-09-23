@@ -161,6 +161,101 @@ are different than US GALLONS
     run_check_logs(&ast, "WRONG", "");
 }
 
+#[test]
+fn password_logic() {
+    let code = r#"
+ NAME = input("Type your user name")
+ PASSWORD = input("Type your password")
+
+ if  NAME = "bozo"  AND  PASSWORD = "clown"  then
+    output "Correct!"
+ end if
+
+ if  NAME = "einstein"  AND  PASSWORD = "e=mc2"  then
+    output "Correct!"
+ end if
+
+ if  NAME = "guest"  OR  NAME = "trial"  then
+    output "You will be logged in as a GUEST"
+ end if
+   "#;
+
+    let ast = compile(code);
+
+    run_check_logs(&ast, r#"
+bozo
+clown
+"#, r#"
+Correct!
+"#);
+
+    run_check_logs(&ast, r#"
+einstein
+e=mc2
+"#, r#"
+Correct!
+"#);
+
+    run_check_logs(&ast, r#"
+guest
+WRONG
+"#, r#"
+You will be logged in as a GUEST
+"#);
+
+    run_check_logs(&ast, r#"
+trial
+WRONG
+"#, r#"
+You will be logged in as a GUEST
+"#);
+
+    run_check_logs(&ast, r#"
+WRONG
+WRONG
+"#, r#"
+"#);
+}
+
+/*#[test]
+fn discount_logic() {
+    let code = r#"
+QUANTITY = input("How many hamburgers do you want?")
+
+if  QUANTITY >= 10  then
+PRICE = 2.59
+else if  QUANTITY <= 9  AND  QUANTITY >= 5  then
+PRICE = 2.89
+else if  QUANTITY < 5  then
+PRICE = 3.25
+end if
+
+output "That costs " , PRICE , " per burger"
+output "Total cost = " , PRICE * QUANTITY , " for " , QUANTITY , " burgers"
+   "#;
+
+    let ast = compile(code);
+
+    run_check_logs(&ast, "12", r#"
+1 km = 1000 m = 0.6 miles
+"#);
+    run_check_logs(&ast, "mi", r#"
+1 mi = 5280 ft = 1.6 km
+"#);
+    run_check_logs(&ast, "ft", r#"
+1 ft = 12 in = 30.5 cm
+"#);
+    run_check_logs(&ast, "liter", r#"
+1 liter = 1000 ml = 1/3 gallon
+Don't forget that IMPERIAL GALLONS
+are different than US GALLONS
+"#);
+    run_check_logs(&ast, "WRONG", "");
+}*/
+
+
+
+
 fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
     let ast = compile(code);
     run_check_logs(&ast, mock_inputs, logs)
@@ -191,7 +286,7 @@ fn assert_logs(env: &mut Env, expected_logs: &str) {
         assert_eq!(line, log);
     }
 
-    if env.logs.len() > 0 {
+    if !env.logs.is_empty() {
         panic!("Not all logs were checked, remaining: {}", env.logs.len());
     }
 }
