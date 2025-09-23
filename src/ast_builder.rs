@@ -66,6 +66,12 @@ impl AST {
                 let body: Vec<Expr> = inner.map(|inner| self.build_expr(inner)).collect();
                 Stmt::Output(body)
             }
+            Rule::assert_stmt => {
+                let mut inner = pair.into_inner();
+                let expr = self.build_expr(inner.next().unwrap());
+                let expected = self.build_expr(inner.next().unwrap());
+                Stmt::Assert(expr, expected)
+            }
             Rule::method_decl => {
                 let mut inner = pair.into_inner();
 

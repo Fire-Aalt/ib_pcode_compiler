@@ -11,6 +11,7 @@ pub enum Stmt {
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
     Output(Vec<Expr>),
+    Assert(Expr, Expr),
     MethodDeclaration(String, Vec<String>),
     MethodCall(String, Vec<Box<Expr>>),
     MethodReturn(Expr),

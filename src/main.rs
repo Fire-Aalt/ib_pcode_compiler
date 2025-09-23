@@ -20,12 +20,13 @@ struct DSLParser;
 fn main() {
     let code = r#"
 
-
 X = 150
 
 if X >= -99 then
-    X = X - -(48 - 48^4)
+    X = X - -(48 - 48^4) / 45 + 545454
 end if
+
+assert(X, 427493)
 
     "#;
 

@@ -166,6 +166,10 @@ impl AST {
                 println!("{}", output);
                 None
             }
+            Stmt::Assert(expr, expected) => {
+                assert_eq!(self.eval_expr(expr, env), self.eval_expr(expected, env));
+                None
+            }
             Stmt::MethodDeclaration(_name, _arg_names) => None,
             Stmt::MethodCall(name, params) => {
                 env.push_scope();
