@@ -217,7 +217,7 @@ WRONG
 "#);
 }
 
-/*#[test]
+#[test]
 fn discount_logic() {
     let code = r#"
 QUANTITY = input("How many hamburgers do you want?")
@@ -237,21 +237,18 @@ output "Total cost = " , PRICE * QUANTITY , " for " , QUANTITY , " burgers"
     let ast = compile(code);
 
     run_check_logs(&ast, "12", r#"
-1 km = 1000 m = 0.6 miles
+That costs 2.59 per burger
+Total cost = 31.08 for 12 burgers
 "#);
-    run_check_logs(&ast, "mi", r#"
-1 mi = 5280 ft = 1.6 km
+    run_check_logs(&ast, "7", r#"
+That costs 2.89 per burger
+Total cost = 20.23 for 7 burgers
 "#);
-    run_check_logs(&ast, "ft", r#"
-1 ft = 12 in = 30.5 cm
+    run_check_logs(&ast, "3", r#"
+That costs 3.25 per burger
+Total cost = 9.75 for 3 burgers
 "#);
-    run_check_logs(&ast, "liter", r#"
-1 liter = 1000 ml = 1/3 gallon
-Don't forget that IMPERIAL GALLONS
-are different than US GALLONS
-"#);
-    run_check_logs(&ast, "WRONG", "");
-}*/
+}
 
 
 

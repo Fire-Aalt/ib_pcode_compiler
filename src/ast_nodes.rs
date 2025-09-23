@@ -7,7 +7,12 @@ pub enum Stmt {
     Assign(String, AssignOperator, Expr),
     Increment(String),
     Decrement(String),
-    If(Expr, Vec<Stmt>),
+    If {
+        cond: Expr,
+        then_branch: Vec<Stmt>,
+        elifs: Vec<(Expr, Vec<Stmt>)>,
+        else_branch: Option<Vec<Stmt>>,
+    },
     While(Expr, Vec<Stmt>),
     For(String, Expr, Expr, Vec<Stmt>),
     Output(Vec<Expr>),

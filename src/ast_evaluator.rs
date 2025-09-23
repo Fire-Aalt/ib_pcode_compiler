@@ -126,8 +126,18 @@ impl AST {
                 env.assign(name, env.get(name).unwrap() - Value::Number(1.0));
                 None
             }
-            Stmt::If(cond, body) => {
+            Stmt::If { cond, then_branch, elifs, else_branch } => {
                 if self.is_true(cond, env) {
+                    return self.exec_body(then_branch, env);
+                }
+                
+                for (elif_cond, elif_body) in elifs {
+                    if self.is_true(elif_cond, env) {
+                        return self.exec_body(elif_body, env);
+                    }
+                }
+
+                if let Some(body) = else_branch {
                     return self.exec_body(body, env);
                 }
                 None

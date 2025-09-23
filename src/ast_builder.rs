@@ -17,6 +17,10 @@ impl AST {
 
     fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
         match pair.as_rule() {
+            Rule::stmt => {
+                let mut inner = pair.into_inner();
+                self.build_stmt(inner.next().unwrap())
+            }
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
                 let ident = inner.next().unwrap().as_str().to_string();
@@ -44,8 +48,37 @@ impl AST {
             Rule::if_stmt => {
                 let mut inner = pair.into_inner();
                 let cond = self.build_expr(inner.next().unwrap());
-                let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
-                Stmt::If(cond, body)
+
+                let mut then_branch: Vec<Stmt> = Vec::new();
+                let mut elifs: Vec<(Expr, Vec<Stmt>)> = Vec::new();
+                let mut else_branch: Option<Vec<Stmt>> = None;
+
+                for p in inner {
+                    match p.as_rule() {
+                        Rule::stmt => {
+                            then_branch.push(self.build_stmt(p));
+                        }
+                        Rule::elif_clause => {
+                            let mut elif_inner = p.into_inner();
+                            let elif_cond = self.build_expr(elif_inner.next().unwrap());
+
+                            let mut elif_body = Vec::new();
+                            for sp in elif_inner {
+                                elif_body.push(self.build_stmt(sp));
+                            }
+                            elifs.push((elif_cond, elif_body));
+                        }
+                        Rule::else_clause => {
+                            let mut else_body = Vec::new();
+                            for sp in p.into_inner() {
+                                else_body.push(self.build_stmt(sp));
+                            }
+                            else_branch = Some(else_body);
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                Stmt::If { cond, then_branch, elifs, else_branch }
             }
             Rule::while_loop_stmt => {
                 let mut inner = pair.into_inner();

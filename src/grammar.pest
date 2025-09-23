@@ -2,7 +2,7 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign_stmts | control_stmts | output_stmt | assert_stmt | method_stmts }
+stmt = { assign_stmts | control_stmts | output_stmt | assert_stmt | method_stmts }
 
 
 // ASSIGN
@@ -25,8 +25,13 @@ control_stmts = _{ if_stmt | while_loop_stmt | for_loop_stmt }
 
 if_stmt = { "if" ~ expr ~ "then"
     ~ stmt*
+    ~ elif_clause*
+    ~ else_clause?
     ~ "end if"
 }
+elif_clause = { "else" ~ "if" ~ expr ~ "then" ~ stmt* }
+else_clause = { "else" ~ stmt* }
+
 while_loop_stmt = { "loop" ~ "while" ~ expr
     ~ stmt*
     ~ "end loop"
