@@ -425,45 +425,41 @@ output NUM
 }
 
 #[test]
-fn collatz_sequence() {
+fn translate_strings() {
     let code = r#"
-NUM = 29
+input ENGLISH
 
-loop until NUM = 1
-
-output NUM
-
-if NUM mod 2 = 0 then
-NUM = NUM / 2
+if ENGLISH = "hello" then
+ GERMAN = "guten Tag"
+else if ENGLISH = "goodbye" then
+ GERMAN = "auf Wiedersehen"
+else if ENGLISH = "stop" then
+ GERMAN = "halt"
 else
-NUM = NUM * 3 + 1
+ GERMAN = "???"
 end if
 
-end loop
-
-output NUM
+output "English = " , ENGLISH
+output "German = " , GERMAN
    "#;
 
-    compile_run_check_logs(code, "", r#"
-29
-88
-44
-22
-11
-34
-17
-52
-26
-13
-40
-20
-10
-5
-16
-8
-4
-2
-1
+    let ast = compile(code);
+
+    run_check_logs(&ast, "hello", r#"
+English = hello
+German = guten Tag
+"#);
+    run_check_logs(&ast, "goodbye", r#"
+English = goodbye
+German = auf Wiedersehen
+"#);
+    run_check_logs(&ast, "stop", r#"
+English = stop
+German = halt
+"#);
+    run_check_logs(&ast, "WRONG", r#"
+English = WRONG
+German = ???
 "#);
 }
 

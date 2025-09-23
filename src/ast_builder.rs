@@ -93,6 +93,11 @@ impl AST {
                 let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
                 Stmt::Until(expr, body)
             }
+            Rule::input_stmt => {
+                let mut inner = pair.into_inner();
+                let ident = inner.next().unwrap().as_str().to_string();
+                Stmt::Input(ident)
+            }
             Rule::output_stmt => {
                 let inner = pair.into_inner();
                 let body: Vec<Expr> = inner.map(|inner| self.build_expr(inner)).collect();

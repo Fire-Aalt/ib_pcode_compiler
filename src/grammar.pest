@@ -2,7 +2,7 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign_stmts | control_stmts | output_stmt | assert_stmt | method_stmts }
+stmt = _{ assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts }
 
 
 // ASSIGN
@@ -92,6 +92,7 @@ unary = { (not | subtract)* ~ term }
 
 // NATIVE METHODS
 input = { "input" ~ "(" ~ expr? ~ ")" }
+input_stmt = { "input" ~ ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 

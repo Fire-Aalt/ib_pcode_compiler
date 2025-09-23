@@ -62,28 +62,7 @@ impl AST {
                     },
                 }
             }
-            Expr::Input(text) => {
-                let mut input;
-                if !env.test_mode {
-                    print!("{}", self.eval_expr(text, env));
-                    io::stdout().flush().unwrap();
-
-                    input = String::new();
-                    io::stdin().read_line(&mut input).unwrap();
-                }
-                else {
-                    input = env.mock_inputs.pop_front().unwrap();
-                }
-
-                let input = input.trim();
-
-                if let Ok(f) = input.parse::<f64>() {
-                    Value::Number(f)
-                }
-                else {
-                    Value::String(input.to_string())
-                }
-            }
+            Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
             Expr::MethodCall(name, params) => {
                 env.push_scope();
 
@@ -97,6 +76,29 @@ impl AST {
                 env.pop_scope();
                 returned
             }
+        }
+    }
+
+    fn exec_input(&self, ask_string: &String, env: &mut Env) -> Value {
+        let mut input;
+        if !env.test_mode {
+            print!("{}", ask_string);
+            io::stdout().flush().unwrap();
+
+            input = String::new();
+            io::stdin().read_line(&mut input).unwrap();
+        }
+        else {
+            input = env.mock_inputs.pop_front().unwrap();
+        }
+
+        let input = input.trim();
+
+        if let Ok(f) = input.parse::<f64>() {
+            Value::Number(f)
+        }
+        else {
+            Value::String(input.to_string())
         }
     }
 
@@ -171,6 +173,11 @@ impl AST {
                         return Some(returned_val)
                     }
                 }
+                None
+            }
+            Stmt::Input(ident) => {
+                let input = self.exec_input(ident, env);
+                env.assign(ident.as_str(), input);
                 None
             }
             Stmt::Output(body) => {
