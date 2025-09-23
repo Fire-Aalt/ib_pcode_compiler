@@ -5,6 +5,7 @@ use crate::utils::{num_op, str_op};
 use std::io;
 use std::io::Write;
 
+
 impl AST {
     pub fn traverse(&self, env: &mut Env) {
         for stmt in &self.statements {
@@ -32,36 +33,47 @@ impl AST {
                 let r = self.eval_expr(right, env);
 
                 match l {
-                    Value::Number(l_num) => match r {
-                        Value::Number(r_num) => num_op(l_num, op, r_num),
+                    Value::Float(l_num) => match r {
+                        Value::Float(_) => num_op(l, op, r),
+                        Value::Int(_) => num_op(l, op, r),
+                        Value::Bool(_) => num_op(l, op, r),
                         Value::String(r_string) => Value::String(match op {
                             Operator::Add => l_num.to_string() + &*r_string,
                             _ => String::from("Nan"),
                         }),
-                        Value::Bool(_r_bool) => {
-                            Value::Bool(num_op(l_num, op, r.as_num()).as_bool())
-                        }
                     },
-                    Value::String(l_string) => match r {
-                        Value::Number(r_num) => Value::String(match op {
-                            Operator::Add => l_string + &r_num.to_string(),
+                    Value::Int(l_num) => match r {
+                        Value::Float(_) => num_op(l, op, r),
+                        Value::Int(_) => num_op(l, op, r),
+                        Value::Bool(_) => num_op(l, op, r),
+                        Value::String(r_string) => Value::String(match op {
+                            Operator::Add => l_num.to_string() + &*r_string,
                             _ => String::from("Nan"),
                         }),
-                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
-                        Value::Bool(_r_bool) => {
-                            str_op(l_string.as_str(), op, r.to_string().as_str())
-                        }
                     },
                     Value::Bool(l_bool) => match r {
-                        Value::Number(r_num) => num_op(l.as_num(), op, r_num),
-                        Value::String(r_string) => {
-                            str_op(l.to_string().as_str(), op, r_string.as_str())
-                        }
+                        Value::Float(_) => num_op(l, op, r),
+                        Value::Int(_) => num_op(l, op, r),
                         Value::Bool(r_bool) => Value::Bool(match op {
                             Operator::And => l_bool && r_bool,
                             Operator::Or => l_bool || r_bool,
-                            _ => num_op(l.as_num(), op, r.as_num()).as_bool(),
+                            _ => num_op(l, op, r).as_bool(),
                         }),
+                        Value::String(r_string) => {
+                            str_op(l.to_string().as_str(), op, r_string.as_str())
+                        }
+                    },
+                    Value::String(l_string) => match r {
+                        Value::Float(r_num) => Value::String(match op {
+                            Operator::Add => l_string + &r_num.to_string(),
+                            _ => String::from("Nan"),
+                        }),
+                        Value::Int(r_num) => Value::String(match op {
+                            Operator::Add => l_string + &r_num.to_string(),
+                            _ => String::from("Nan"),
+                        }),
+                        Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
+                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
                     },
                 }
             }
@@ -79,9 +91,14 @@ impl AST {
                 }
 
                 let input = input.trim();
-                match input.parse::<f64>() {
-                    Ok(number) => Value::Number(number),
-                    Err(_) => Value::String(input.to_string()),
+
+                if let Ok(i) = input.parse::<i64>() {
+                    Value::Int(i)
+                } else if let Ok(f) = input.parse::<f64>() {
+                    Value::Float(f)
+                }
+                else {
+                    Value::String(input.to_string())
                 }
             }
             Expr::MethodCall(name, params) => {
@@ -119,18 +136,18 @@ impl AST {
                 None
             }
             Stmt::Increment(name) => {
-                env.assign(name, env.get(name).unwrap() + Value::Number(1.0));
+                env.assign(name, env.get(name).unwrap() + Value::Int(1));
                 None
             }
             Stmt::Decrement(name) => {
-                env.assign(name, env.get(name).unwrap() - Value::Number(1.0));
+                env.assign(name, env.get(name).unwrap() - Value::Int(1));
                 None
             }
             Stmt::If { cond, then_branch, elifs, else_branch } => {
                 if self.is_true(cond, env) {
                     return self.exec_body(then_branch, env);
                 }
-                
+
                 for (elif_cond, elif_body) in elifs {
                     if self.is_true(elif_cond, env) {
                         return self.exec_body(elif_body, env);
@@ -151,17 +168,17 @@ impl AST {
                 None
             }
             Stmt::For(ident, start_num, end_num, body) => {
-                let mut control = self.eval_expr(start_num, env).as_num();
-                env.assign(ident, Value::Number(control));
+                let mut control = self.eval_expr(start_num, env);
+                env.assign(ident, control.clone());
 
-                while control <= self.eval_expr(end_num, env).as_num() {
+                while &control <= &self.eval_expr(end_num, env) {
                     if let Some(returned_val) = self.exec_body(body, env) {
                         return Some(returned_val)
                     }
 
-                    control = env.get(ident).unwrap().as_num();
-                    control += 1.0;
-                    env.assign(ident, Value::Number(control));
+                    control = env.get(ident).unwrap();
+                    control = control + Value::Int(1);
+                    env.assign(ident, control.clone());
                 }
                 None
             }
@@ -174,8 +191,16 @@ impl AST {
                     }
 
                     match self.eval_expr(expr, env) {
-                        Value::Number(n) => {
+                        Value::Float(n) => {
                             if n.abs() > 100000000000000000000.0 {
+                                output.push_str(&format!("{:e}", n));
+                            }
+                            else {
+                                output.push_str(&format!("{}", n));
+                            }
+                        },
+                        Value::Int(n) => {
+                            if n.abs() as f64 > 100000000000000000000.0 {
                                 output.push_str(&format!("{:e}", n));
                             }
                             else {

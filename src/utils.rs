@@ -24,14 +24,17 @@ pub fn fix_quotes_plain(s: &str) -> String {
     out
 }
 
-pub fn num_op(l: f64, op: &Operator, r: f64) -> Value {
+pub fn num_op(l_val: Value, op: &Operator, r_val: Value) -> Value {
+    let l= l_val.as_num();
+    let r = r_val.as_num();
+
     match op {
-        Operator::Add => Value::Number(l + r),
-        Operator::Subtract => Value::Number(l - r),
-        Operator::Multiply => Value::Number(l * r),
-        Operator::Divide => Value::Number(l / r),
-        Operator::Power => Value::Number(l.powf(r)),
-        Operator::Modulo => Value::Number(l % r),
+        Operator::Add => l_val + r_val,
+        Operator::Subtract => l_val - r_val,
+        Operator::Multiply => l_val * r_val,
+        Operator::Divide => l_val / r_val,
+        Operator::Power => Value::Float(l.powf(r)),
+        Operator::Modulo => Value::Int((l % r) as i64),
         Operator::Greater => Value::Bool(l > r),
         Operator::Less => Value::Bool(l < r),
         Operator::GreaterEqual => Value::Bool(l >= r),

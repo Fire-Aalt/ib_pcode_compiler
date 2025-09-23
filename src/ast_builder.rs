@@ -199,7 +199,18 @@ impl AST {
                 expr
             }
             Rule::ident => Expr::Ident(pair.as_str().to_string()),
-            Rule::number => Expr::Data(Value::Number(pair.as_str().parse().unwrap())),
+            Rule::number => {
+                let data = pair.as_str();
+
+                if data.contains('e') {
+                    Expr::Data(Value::Float(data.parse::<f64>().unwrap()))
+                } else if let Ok(i) = data.parse::<i64>() {
+                    Expr::Data(Value::Int(i))
+                } else {
+                    Expr::Data(Value::Float(data.parse::<f64>().unwrap()))
+                }
+            },
+            //Rule::int => Expr::Data(Value::Int(pair.as_str().parse().unwrap())),
             Rule::string => Expr::Data(Value::String(fix_quotes_plain(pair.as_str()))),
             Rule::bool => Expr::Data(Value::Bool(pair.as_str().parse().unwrap())),
             Rule::method_call => {
