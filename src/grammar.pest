@@ -21,7 +21,7 @@ assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | 
 
 
 // CONTROL
-control_stmts = _{ if_stmt | while_loop_stmt | for_loop_stmt }
+control_stmts = _{ if_stmt | while_loop_stmt | for_loop_stmt | loop_until_stmt }
 
 if_stmt = { "if" ~ expr ~ "then"
     ~ stmt*
@@ -37,6 +37,10 @@ while_loop_stmt = { "loop" ~ "while" ~ expr
     ~ "end loop"
 }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr
+    ~ stmt*
+    ~ "end loop"
+}
+loop_until_stmt = { "loop" ~ "until" ~ expr
     ~ stmt*
     ~ "end loop"
 }

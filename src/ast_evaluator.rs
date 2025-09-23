@@ -76,7 +76,7 @@ impl AST {
                 }
 
                 let input = input.trim();
-                
+
                 if let Ok(f) = input.parse::<f64>() {
                     Value::Number(f)
                 }
@@ -162,6 +162,14 @@ impl AST {
                     control = env.get(ident).unwrap();
                     control = control + Value::Number(1.0);
                     env.assign(ident, control.clone());
+                }
+                None
+            }
+            Stmt::Until(expr, body) => {
+                while !self.is_true(expr, env) {
+                    if let Some(returned_val) = self.exec_body(body, env) {
+                        return Some(returned_val)
+                    }
                 }
                 None
             }

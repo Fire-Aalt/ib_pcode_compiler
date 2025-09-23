@@ -381,6 +381,94 @@ X , Y
 "#);
 }
 
+#[test]
+fn collatz_sequence() {
+    let code = r#"
+NUM = 29
+
+loop until NUM = 1
+
+output NUM
+
+if NUM mod 2 = 0 then
+NUM = NUM / 2
+else
+NUM = NUM * 3 + 1
+end if
+
+end loop
+
+output NUM
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+29
+88
+44
+22
+11
+34
+17
+52
+26
+13
+40
+20
+10
+5
+16
+8
+4
+2
+1
+"#);
+}
+
+#[test]
+fn collatz_sequence() {
+    let code = r#"
+NUM = 29
+
+loop until NUM = 1
+
+output NUM
+
+if NUM mod 2 = 0 then
+NUM = NUM / 2
+else
+NUM = NUM * 3 + 1
+end if
+
+end loop
+
+output NUM
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+29
+88
+44
+22
+11
+34
+17
+52
+26
+13
+40
+20
+10
+5
+16
+8
+4
+2
+1
+"#);
+}
+
+
+
 fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
     let ast = compile(code);
     run_check_logs(&ast, mock_inputs, logs)
