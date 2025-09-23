@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::env::Env;
 use pest::Parser;
@@ -31,7 +30,7 @@ output X / 427493
     println!("{:#?}", ast.method_map);
     println!("{}", ast);
 
-    let mut env = Env::new(VecDeque::new(), false);
+    let mut env = Env::release();
 
     run(&ast, &mut env);
     println!("Final env: {:?}", env);

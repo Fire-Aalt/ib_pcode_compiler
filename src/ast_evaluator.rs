@@ -1,10 +1,9 @@
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
-use crate::env::Env;
+use crate::env::{Env, EnvMode};
 use crate::utils::{num_op, str_op};
 use std::io;
 use std::io::Write;
-
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) {
@@ -81,24 +80,24 @@ impl AST {
 
     fn exec_input(&self, ask_string: &String, env: &mut Env) -> Value {
         let mut input;
-        if !env.test_mode {
-            print!("{}", ask_string);
-            io::stdout().flush().unwrap();
 
-            input = String::new();
-            io::stdin().read_line(&mut input).unwrap();
-        }
-        else {
-            input = env.mock_inputs.pop_front().unwrap();
-        }
+        match &mut env.mode {
+            EnvMode::Release => {
+                print!("{}", ask_string);
+                io::stdout().flush().unwrap();
 
+                input = String::new();
+                io::stdin().read_line(&mut input).unwrap();
+            }
+            EnvMode::Test { mock_inputs, logs: _ } => {
+                input = mock_inputs.pop_front().unwrap();
+            }
+        }
         let input = input.trim();
 
-        if let Ok(f) = input.parse::<f64>() {
-            Value::Number(f)
-        }
-        else {
-            Value::String(input.to_string())
+        match input.parse::<f64>() {
+            Ok(f) => Value::Number(f),
+            Err(_) => Value::String(input.to_string()),
         }
     }
 
@@ -202,8 +201,10 @@ impl AST {
                     }
                 }
 
-                println!("{}", &output);
-                env.record_log(output);
+                match &mut env.mode {
+                    EnvMode::Release => println!("{}", &output),
+                    EnvMode::Test { mock_inputs: _, logs } => Env::record_log(logs, output),
+                }
                 None
             }
             Stmt::Assert(expr, expected) => {

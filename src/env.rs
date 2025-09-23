@@ -4,20 +4,40 @@ use crate::ast_nodes::Value;
 #[derive(Debug)]
 pub struct Env {
     scopes: Vec<HashMap<String, Value>>,
-    pub test_mode: bool,
-    pub mock_inputs: VecDeque<String>,
-    pub logs: VecDeque<String>,
+    pub mode: EnvMode,
+}
+
+#[derive(Debug)]
+pub enum EnvMode {
+    Release,
+    Test {
+        mock_inputs: VecDeque<String>,
+        logs: VecDeque<String>,
+    }
 }
 
 impl Env {
-    pub fn new(mock_inputs: VecDeque<String>, test_mode: bool) -> Self {
-        let mut e = Self { scopes: Vec::new(), test_mode, logs: VecDeque::new(), mock_inputs };
+    pub fn release() -> Self {
+        let mode = EnvMode::Release;
+        Env::new(mode)
+    }
+
+    pub fn test(mock_inputs: VecDeque<String>) -> Self {
+        let mode = EnvMode::Test {
+            mock_inputs,
+            logs: VecDeque::new()
+        };
+        Env::new(mode)
+    }
+
+    pub fn new(mode: EnvMode) -> Self {
+        let mut e = Self { scopes: Vec::new(), mode };
         e.push_scope(); // global scope
         e
     }
 
-    pub fn record_log(&mut self, log: String) {
-        self.logs.push_back(log);
+    pub fn record_log(logs: &mut VecDeque<String>, log: String) {
+        logs.push_back(log);
     }
 
     pub fn push_scope(&mut self) {

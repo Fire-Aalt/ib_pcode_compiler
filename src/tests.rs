@@ -1,5 +1,6 @@
 use super::*;
 use std::collections::VecDeque;
+use crate::env::EnvMode;
 
 #[test]
 fn intro() {
@@ -578,7 +579,7 @@ output "Total = " , SUM
 8
 9
 10
-Total = 55 
+Total = 55
 "#);
 }
 
@@ -594,7 +595,7 @@ fn run_check_logs(ast: &AST, mock_inputs: &str, logs: &str) -> Env {
         mock_inputs_queue.push_back(line.to_string());
     }
 
-    let mut env = Env::new(mock_inputs_queue, true);
+    let mut env = Env::test(mock_inputs_queue);
     run(ast, &mut env);
 
     assert_logs(&mut env, logs);
@@ -602,17 +603,21 @@ fn run_check_logs(ast: &AST, mock_inputs: &str, logs: &str) -> Env {
 }
 
 fn assert_logs(env: &mut Env, expected_logs: &str) {
-    for (i, line) in expected_logs.trim().lines().enumerate() {
+    match &mut env.mode {
+        EnvMode::Release => panic!("Expected mode to be Test mode"),
+        EnvMode::Test { mock_inputs: _, logs } => {
+            for (i, line) in expected_logs.trim().lines().enumerate() {
+                let log = match logs.pop_front() {
+                    Some(log) => log,
+                    None => panic!("Expected log at line {}", i)
+                };
 
-        let log = match env.logs.pop_front() {
-            Some(log) => log,
-            None => panic!("Expected log at line {}", i)
-        };
+                assert_eq!(line, log);
+            }
 
-        assert_eq!(line, log);
-    }
-
-    if !env.logs.is_empty() {
-        panic!("Not all logs were checked, remaining: {}", env.logs.len());
+            if !logs.is_empty() {
+                panic!("Not all logs were checked, remaining: {}", logs.len());
+            }
+        }
     }
 }
