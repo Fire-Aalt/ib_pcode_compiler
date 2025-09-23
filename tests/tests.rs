@@ -1,6 +1,7 @@
-use super::*;
-use std::collections::VecDeque;
-use crate::env::EnvMode;
+use crate::common::{compile_run_check_logs, run_check_logs};
+use ib_pseudocompiler::compiler::compile;
+
+pub mod common;
 
 #[test]
 fn intro() {
@@ -11,14 +12,18 @@ loop COUNT from 1 to 5
 end loop
     "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 Welcome
 1
 2
 3
 4
 5
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -51,7 +56,10 @@ output "One more problem = " , 0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1
 output "And another problem = " , 3.2 - 0.3
     "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 === Simple Calculations ===
 Adding 1...10 = 55
 10 Factorial = 3628800
@@ -65,7 +73,8 @@ Incorrect calculation = 1524157875019052000
 Another error = 0.9999999999999999
 One more problem = 0.7999999999999999
 And another problem = 2.9000000000000004
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -76,9 +85,13 @@ Y = X*X - 9*X + 14
 output "x = " , X , " .... y = " , Y
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 x = 4 .... y = -6
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -90,10 +103,14 @@ output "Sum = " , A + B
 output "Product = " , A * B
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 Sum = 110
 Product = 1000
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -112,11 +129,15 @@ fn ski_trip() {
  output "Total cost = " , COST
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 8 cars and 8 busses = 192 seats
 10 rooms and 12 lodges = 184 beds
 Total cost = 22600
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -145,20 +166,36 @@ fn if_then() {
 
     let ast = compile(code);
 
-    run_check_logs(&ast, "km", r#"
+    run_check_logs(
+        &ast,
+        "km",
+        r#"
 1 km = 1000 m = 0.6 miles
-"#);
-    run_check_logs(&ast, "mi", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "mi",
+        r#"
 1 mi = 5280 ft = 1.6 km
-"#);
-    run_check_logs(&ast, "ft", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "ft",
+        r#"
 1 ft = 12 in = 30.5 cm
-"#);
-    run_check_logs(&ast, "liter", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "liter",
+        r#"
 1 liter = 1000 ml = 1/3 gallon
 Don't forget that IMPERIAL GALLONS
 are different than US GALLONS
-"#);
+"#,
+    );
     run_check_logs(&ast, "WRONG", "");
 }
 
@@ -183,39 +220,59 @@ fn password_logic() {
 
     let ast = compile(code);
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 bozo
 clown
-"#, r#"
+"#,
+        r#"
 Correct!
-"#);
+"#,
+    );
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 einstein
 e=mc2
-"#, r#"
+"#,
+        r#"
 Correct!
-"#);
+"#,
+    );
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 guest
 WRONG
-"#, r#"
+"#,
+        r#"
 You will be logged in as a GUEST
-"#);
+"#,
+    );
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 trial
 WRONG
-"#, r#"
+"#,
+        r#"
 You will be logged in as a GUEST
-"#);
+"#,
+    );
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 WRONG
 WRONG
-"#, r#"
-"#);
+"#,
+        r#"
+"#,
+    );
 }
 
 #[test]
@@ -237,18 +294,30 @@ output "Total cost = " , PRICE * QUANTITY , " for " , QUANTITY , " burgers"
 
     let ast = compile(code);
 
-    run_check_logs(&ast, "12", r#"
+    run_check_logs(
+        &ast,
+        "12",
+        r#"
 That costs 2.59 per burger
 Total cost = 31.08 for 12 burgers
-"#);
-    run_check_logs(&ast, "7", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "7",
+        r#"
 That costs 2.89 per burger
 Total cost = 20.23 for 7 burgers
-"#);
-    run_check_logs(&ast, "3", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "3",
+        r#"
 That costs 3.25 per burger
 Total cost = 9.75 for 3 burgers
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -273,7 +342,10 @@ loop while C < 20
 end loop
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 Three blind mice
 Three blind mice
 See how they run
@@ -283,9 +355,9 @@ She cut off their tails with a carving knife
 Did you ever see such a sight in your life, as
 Three blind mice
 Three blind mice
-"#);
+"#,
+    );
 }
-
 
 #[test]
 fn money_decisions() {
@@ -319,16 +391,19 @@ output "BINGO"
 end if
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 50 EUR
 4500 Yen
 That is a lot of Yen
 40 BP
 That is a small number of Pounds
 $ 66.66666666666667
-"#);
+"#,
+    );
 }
-
 
 #[test]
 fn common_factors() {
@@ -345,13 +420,17 @@ loop C from 1 to B
 end loop
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 Common factors of 28 and 42
 1
 2
 7
 14
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -366,7 +445,10 @@ loop C from 0 to 10
 end loop
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 X , Y
 0 , 2
 0.5 , -0.75
@@ -379,7 +461,8 @@ X , Y
 4 , 22
 4.5 , 31.25
 5 , 42
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -402,7 +485,10 @@ end loop
 output NUM
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 29
 88
 44
@@ -422,7 +508,8 @@ output NUM
 4
 2
 1
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -446,22 +533,38 @@ output "German = " , GERMAN
 
     let ast = compile(code);
 
-    run_check_logs(&ast, "hello", r#"
+    run_check_logs(
+        &ast,
+        "hello",
+        r#"
 English = hello
 German = guten Tag
-"#);
-    run_check_logs(&ast, "goodbye", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "goodbye",
+        r#"
 English = goodbye
 German = auf Wiedersehen
-"#);
-    run_check_logs(&ast, "stop", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "stop",
+        r#"
 English = stop
 German = halt
-"#);
-    run_check_logs(&ast, "WRONG", r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        "WRONG",
+        r#"
 English = WRONG
 German = ???
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -485,20 +588,28 @@ end if
 
     let ast = compile(code);
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 4
 8
 8
-2"#, r#"
+2"#,
+        r#"
 Elapsed time = 234 minutes
-"#);
-    run_check_logs(&ast, r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        r#"
 8
 8
 28
-8"#, r#"
+8"#,
+        r#"
 Times are not valid
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -534,22 +645,30 @@ end if
 
     let ast = compile(code);
 
-    run_check_logs(&ast, r#"
+    run_check_logs(
+        &ast,
+        r#"
 8
 84
 2
-"#, r#"
+"#,
+        r#"
 8 / 84 / 2
 Day is not valid
-"#);
-    run_check_logs(&ast, r#"
+"#,
+    );
+    run_check_logs(
+        &ast,
+        r#"
 8
 20
 2004
-"#, r#"
+"#,
+        r#"
 8 / 20 / 2004
 Date is valid
-"#);
+"#,
+    );
 }
 
 #[test]
@@ -567,7 +686,10 @@ end loop
 output "Total = " , SUM
    "#;
 
-    compile_run_check_logs(code, "", r#"
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
 0
 1
 2
@@ -580,44 +702,6 @@ output "Total = " , SUM
 9
 10
 Total = 55
-"#);
-}
-
-fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
-    let ast = compile(code);
-    run_check_logs(&ast, mock_inputs, logs)
-}
-
-fn run_check_logs(ast: &AST, mock_inputs: &str, logs: &str) -> Env {
-    let mut mock_inputs_queue = VecDeque::new();
-
-    for line in mock_inputs.trim().lines() {
-        mock_inputs_queue.push_back(line.to_string());
-    }
-
-    let mut env = Env::test(mock_inputs_queue);
-    run(ast, &mut env);
-
-    assert_logs(&mut env, logs);
-    env
-}
-
-fn assert_logs(env: &mut Env, expected_logs: &str) {
-    match &mut env.mode {
-        EnvMode::Release => panic!("Expected mode to be Test mode"),
-        EnvMode::Test { mock_inputs: _, logs } => {
-            for (i, line) in expected_logs.trim().lines().enumerate() {
-                let log = match logs.pop_front() {
-                    Some(log) => log,
-                    None => panic!("Expected log at line {}", i)
-                };
-
-                assert_eq!(line, log);
-            }
-
-            if !logs.is_empty() {
-                panic!("Not all logs were checked, remaining: {}", logs.len());
-            }
-        }
-    }
+"#,
+    );
 }

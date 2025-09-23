@@ -1,5 +1,5 @@
-use std::collections::{HashMap, VecDeque};
 use crate::ast_nodes::Value;
+use std::collections::{HashMap, VecDeque};
 
 #[derive(Debug)]
 pub struct Env {
@@ -13,7 +13,7 @@ pub enum EnvMode {
     Test {
         mock_inputs: VecDeque<String>,
         logs: VecDeque<String>,
-    }
+    },
 }
 
 impl Env {
@@ -25,13 +25,16 @@ impl Env {
     pub fn test(mock_inputs: VecDeque<String>) -> Self {
         let mode = EnvMode::Test {
             mock_inputs,
-            logs: VecDeque::new()
+            logs: VecDeque::new(),
         };
         Env::new(mode)
     }
 
     pub fn new(mode: EnvMode) -> Self {
-        let mut e = Self { scopes: Vec::new(), mode };
+        let mut e = Self {
+            scopes: Vec::new(),
+            mode,
+        };
         e.push_scope(); // global scope
         e
     }
@@ -83,4 +86,3 @@ impl Env {
         None
     }
 }
-    

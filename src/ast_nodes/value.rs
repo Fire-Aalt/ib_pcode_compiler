@@ -15,7 +15,13 @@ impl Value {
         match self {
             Value::Number(n) => *n,
             Value::String(_) => 0.0,
-            Value::Bool(b) => if *b { 1.0 } else { 0.0 },
+            Value::Bool(b) => {
+                if *b {
+                    1.0
+                } else {
+                    0.0
+                }
+            }
         }
     }
 
@@ -27,73 +33,6 @@ impl Value {
         }
     }
 }
-
-
-
-impl Add for Value {
-    type Output = Value;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        match self {
-            Value::String(lhs) => Value::String(format!("{}{}", lhs, rhs)),
-            _ => {
-                match rhs {
-                    Value::String(rhs) => Value::String(format!("{}{}", self, rhs)),
-                    _ => Value::Number(self.as_num() + rhs.as_num())
-                }
-            }
-        }
-    }
-}
-
-impl Sub for Value {
-    type Output = Value;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs - rhs)
-    }
-}
-
-impl Mul for Value {
-    type Output = Value;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs * rhs)
-    }
-}
-
-impl Neg for Value {
-    type Output = Value;
-
-    fn neg(self) -> Self::Output {
-        match self {
-            Value::Number(f) => Value::Number(-f),
-            Value::Bool(b) => Value::Number(if b { -1.0 } else { 0.0 }),
-            Value::String(_) => Value::String(String::from("Nan")),
-        }
-    }
-}
-
-impl Not for Value {
-    type Output = Value;
-
-    fn not(self) -> Self::Output {
-        match self {
-            Value::Number(f) => if f != 0.0 { Value::Bool(false) } else { Value::Bool(true) },
-            Value::Bool(b) => Value::Bool(!b),
-            Value::String(_) => Value::String(String::from("Nan")),
-        }
-    }
-}
-
-impl Div for Value {
-    type Output = Value;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs / rhs)
-    }
-}
-
 
 impl PartialEq for Value {
     fn eq(&self, other: &Self) -> bool {
@@ -117,6 +56,74 @@ impl PartialOrd for Value {
     }
 }
 
+impl Neg for Value {
+    type Output = Value;
+
+    fn neg(self) -> Self::Output {
+        match self {
+            Value::Number(f) => Value::Number(-f),
+            Value::Bool(b) => Value::Number(if b { -1.0 } else { 0.0 }),
+            Value::String(_) => Value::String(String::from("Nan")),
+        }
+    }
+}
+
+impl Not for Value {
+    type Output = Value;
+
+    fn not(self) -> Self::Output {
+        match self {
+            Value::Number(f) => {
+                if f != 0.0 {
+                    Value::Bool(false)
+                } else {
+                    Value::Bool(true)
+                }
+            }
+            Value::Bool(b) => Value::Bool(!b),
+            Value::String(_) => Value::String(String::from("Nan")),
+        }
+    }
+}
+
+impl Add for Value {
+    type Output = Value;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        match self {
+            Value::String(lhs) => Value::String(format!("{}{}", lhs, rhs)),
+            _ => match rhs {
+                Value::String(rhs) => Value::String(format!("{}{}", self, rhs)),
+                _ => Value::Number(self.as_num() + rhs.as_num()),
+            },
+        }
+    }
+}
+
+impl Sub for Value {
+    type Output = Value;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs - rhs)
+    }
+}
+
+impl Mul for Value {
+    type Output = Value;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs * rhs)
+    }
+}
+
+impl Div for Value {
+    type Output = Value;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        only_number_with_number_op(self, rhs, |lhs, rhs| lhs / rhs)
+    }
+}
+
 fn only_number_with_number_op(lhs: Value, rhs: Value, op: fn(f64, f64) -> f64) -> Value {
     if let Value::String(_) = rhs {
         return Value::String(String::from("Nan"));
@@ -125,7 +132,7 @@ fn only_number_with_number_op(lhs: Value, rhs: Value, op: fn(f64, f64) -> f64) -
     match lhs {
         Value::Number(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
         Value::Bool(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
-        Value::String(_) => Value::String(String::from("Nan"))
+        Value::String(_) => Value::String(String::from("Nan")),
     }
 }
 

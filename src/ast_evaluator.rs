@@ -1,7 +1,7 @@
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
 use crate::env::{Env, EnvMode};
-use crate::utils::{num_op, str_op};
+use crate::common::{num_op, str_op};
 use std::io;
 use std::io::Write;
 
@@ -9,95 +9,6 @@ impl AST {
     pub fn traverse(&self, env: &mut Env) {
         for stmt in &self.statements {
             self.exec_stmt(stmt, env);
-        }
-    }
-
-    fn is_true(&self, cond: &Expr, env: &mut Env) -> bool {
-        self.eval_expr(cond, env).as_bool()
-    }
-
-    fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
-        match expr {
-            Expr::Ident(name) => env.get(name).unwrap(),
-            Expr::Data(n) => n.clone(),
-            Expr::Unary(op, expr) => {
-                let value = self.eval_expr(expr, env);
-                match op {
-                    UnaryOp::Neg => -value,
-                    UnaryOp::Not => !value,
-                }
-            }
-            Expr::BinOp(left, op, right) => {
-                let l = self.eval_expr(left, env);
-                let r = self.eval_expr(right, env);
-
-                match l {
-                    Value::Number(l_num) => match r {
-                        Value::Number(_) => num_op(l, op, r),
-                        Value::Bool(_) => num_op(l, op, r),
-                        Value::String(r_string) => Value::String(match op {
-                            Operator::Add => l_num.to_string() + &*r_string,
-                            _ => String::from("Nan"),
-                        }),
-                    },
-                    Value::Bool(l_bool) => match r {
-                        Value::Number(_) => num_op(l, op, r),
-                        Value::Bool(r_bool) => Value::Bool(match op {
-                            Operator::And => l_bool && r_bool,
-                            Operator::Or => l_bool || r_bool,
-                            _ => num_op(l, op, r).as_bool(),
-                        }),
-                        Value::String(r_string) => {
-                            str_op(l.to_string().as_str(), op, r_string.as_str())
-                        }
-                    },
-                    Value::String(l_string) => match r {
-                        Value::Number(r_num) => Value::String(match op {
-                            Operator::Add => l_string + &r_num.to_string(),
-                            _ => String::from("Nan"),
-                        }),
-                        Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
-                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
-                    },
-                }
-            }
-            Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
-            Expr::MethodCall(name, params) => {
-                env.push_scope();
-
-                let def = self.method_map.get(name).unwrap();
-                self.define_method_params(def, params, env);
-
-                let returned = match self.exec_body(&def.body, env) {
-                    Some(returned_val) => returned_val,
-                    None => panic!("No return for method call {}", name),
-                };
-                env.pop_scope();
-                returned
-            }
-        }
-    }
-
-    fn exec_input(&self, ask_string: &String, env: &mut Env) -> Value {
-        let mut input;
-
-        match &mut env.mode {
-            EnvMode::Release => {
-                print!("{}", ask_string);
-                io::stdout().flush().unwrap();
-
-                input = String::new();
-                io::stdin().read_line(&mut input).unwrap();
-            }
-            EnvMode::Test { mock_inputs, logs: _ } => {
-                input = mock_inputs.pop_front().unwrap();
-            }
-        }
-        let input = input.trim();
-
-        match input.parse::<f64>() {
-            Ok(f) => Value::Number(f),
-            Err(_) => Value::String(input.to_string()),
         }
     }
 
@@ -226,7 +137,73 @@ impl AST {
             Stmt::EOI => None,
         }
     }
+    
+    fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
+        match expr {
+            Expr::Ident(name) => env.get(name).unwrap(),
+            Expr::Data(n) => n.clone(),
+            Expr::Unary(op, expr) => {
+                let value = self.eval_expr(expr, env);
+                match op {
+                    UnaryOp::Neg => -value,
+                    UnaryOp::Not => !value,
+                }
+            }
+            Expr::BinOp(left, op, right) => {
+                let l = self.eval_expr(left, env);
+                let r = self.eval_expr(right, env);
 
+                match l {
+                    Value::Number(l_num) => match r {
+                        Value::Number(_) => num_op(l, op, r),
+                        Value::Bool(_) => num_op(l, op, r),
+                        Value::String(r_string) => Value::String(match op {
+                            Operator::Add => l_num.to_string() + &*r_string,
+                            _ => String::from("Nan"),
+                        }),
+                    },
+                    Value::Bool(l_bool) => match r {
+                        Value::Number(_) => num_op(l, op, r),
+                        Value::Bool(r_bool) => Value::Bool(match op {
+                            Operator::And => l_bool && r_bool,
+                            Operator::Or => l_bool || r_bool,
+                            _ => num_op(l, op, r).as_bool(),
+                        }),
+                        Value::String(r_string) => {
+                            str_op(l.to_string().as_str(), op, r_string.as_str())
+                        }
+                    },
+                    Value::String(l_string) => match r {
+                        Value::Number(r_num) => Value::String(match op {
+                            Operator::Add => l_string + &r_num.to_string(),
+                            _ => String::from("Nan"),
+                        }),
+                        Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
+                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
+                    },
+                }
+            }
+            Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
+            Expr::MethodCall(name, params) => {
+                env.push_scope();
+
+                let def = self.method_map.get(name).unwrap();
+                self.define_method_params(def, params, env);
+
+                let returned = match self.exec_body(&def.body, env) {
+                    Some(returned_val) => returned_val,
+                    None => panic!("No return for method call {}", name),
+                };
+                env.pop_scope();
+                returned
+            }
+        }
+    }
+
+    fn is_true(&self, cond: &Expr, env: &mut Env) -> bool {
+        self.eval_expr(cond, env).as_bool()
+    }
+    
     fn define_method_params(&self, method_def: &MethodDef, params: &[Box<Expr>], env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
             let value = self.eval_expr(param, env);
@@ -241,5 +218,28 @@ impl AST {
             }
         }
         None
+    }
+
+    fn exec_input(&self, ask_string: &String, env: &mut Env) -> Value {
+        let mut input;
+
+        match &mut env.mode {
+            EnvMode::Release => {
+                print!("{}", ask_string);
+                io::stdout().flush().unwrap();
+
+                input = String::new();
+                io::stdin().read_line(&mut input).unwrap();
+            }
+            EnvMode::Test { mock_inputs, logs: _ } => {
+                input = mock_inputs.pop_front().unwrap();
+            }
+        }
+        let input = input.trim();
+
+        match input.parse::<f64>() {
+            Ok(f) => Value::Number(f),
+            Err(_) => Value::String(input.to_string()),
+        }
     }
 }

@@ -1,7 +1,7 @@
-use crate::Rule;
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
-use crate::utils::fix_quotes_plain;
+use crate::common::fix_quotes_plain;
+use crate::compiler::Rule;
 use std::collections::HashMap;
 
 impl AST {
@@ -71,7 +71,12 @@ impl AST {
                         _ => then_branch.push(self.build_stmt(p)),
                     }
                 }
-                Stmt::If { cond, then_branch, elifs, else_branch }
+                Stmt::If {
+                    cond,
+                    then_branch,
+                    elifs,
+                    else_branch,
+                }
             }
             Rule::while_loop_stmt => {
                 let mut inner = pair.into_inner();
@@ -158,8 +163,12 @@ impl AST {
 
     fn build_expr(&self, pair: pest::iterators::Pair<Rule>) -> Expr {
         match pair.as_rule() {
-            Rule::expr | Rule::logical_or | Rule::logical_and
-            | Rule::comparison | Rule::add_sub | Rule::mul_div => {
+            Rule::expr
+            | Rule::logical_or
+            | Rule::logical_and
+            | Rule::comparison
+            | Rule::add_sub
+            | Rule::mul_div => {
                 let mut inner = pair.into_inner();
                 let mut left = self.build_expr(inner.next().unwrap());
                 while let Some(op_pair) = inner.next() {
