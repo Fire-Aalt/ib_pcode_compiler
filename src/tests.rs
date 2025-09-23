@@ -250,8 +250,136 @@ Total cost = 9.75 for 3 burgers
 "#);
 }
 
+#[test]
+fn mice_loops() {
+    let code = r#"
+loop A from 1 to 2
+   output "Three blind mice"
+end loop
+
+loop B from 3 to 4
+   output "See how they run"
+end loop
+
+output "They all ran up to the farmer's wife"
+output "She cut off their tails with a carving knife"
+output "Did you ever see such a sight in your life, as"
+
+C = 5
+loop while C < 20
+   output "Three blind mice"
+   C = C*2
+end loop
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+Three blind mice
+Three blind mice
+See how they run
+See how they run
+They all ran up to the farmer's wife
+She cut off their tails with a carving knife
+Did you ever see such a sight in your life, as
+Three blind mice
+Three blind mice
+"#);
+}
 
 
+#[test]
+fn money_decisions() {
+    let code = r#"
+EUROS = 50.00
+
+POUNDS = 0.8*EUROS
+
+DOLLARS = EUROS / 0.75
+
+YEN = EUROS * 90
+
+output EUROS , " EUR"
+
+output YEN , " Yen"
+
+if YEN > 1000 then
+output "That is a lot of Yen"
+end if
+
+output POUNDS , " BP"
+
+if POUNDS < 100 then
+output "That is a small number of Pounds"
+end if
+
+output "$" , DOLLARS
+
+if DOLLARS = 100 then
+output "BINGO"
+end if
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+50 EUR
+4500 Yen
+That is a lot of Yen
+40 BP
+That is a small number of Pounds
+$ 66.66666666666667
+"#);
+}
+
+
+#[test]
+fn common_factors() {
+    let code = r#"
+A = 28
+B = 42
+
+output "Common factors of " , A , " and " , B
+
+loop C from 1 to B
+    if (A mod C = 0) AND (B mod C = 0) then
+       output C
+    end if
+end loop
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+Common factors of 28 and 42
+1
+2
+7
+14
+"#);
+}
+
+#[test]
+fn math_values() {
+    let code = r#"
+output "X , Y"
+
+loop C from 0 to 10
+   X = C / 2.0
+   Y = 3*X*X - 7*X + 2
+   output X , " , " , Y
+end loop
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+X , Y
+0 , 2
+0.5 , -0.75
+1 , -2
+1.5 , -1.75
+2 , 0
+2.5 , 3.25
+3 , 8
+3.5 , 14.25
+4 , 22
+4.5 , 31.25
+5 , 42
+"#);
+}
 
 fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
     let ast = compile(code);

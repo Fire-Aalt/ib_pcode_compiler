@@ -25,22 +25,22 @@ pub fn fix_quotes_plain(s: &str) -> String {
 }
 
 pub fn num_op(l: f64, op: &Operator, r: f64) -> Value {
-    Value::Number(match op {
-        Operator::Add => l + r,
-        Operator::Subtract => l - r,
-        Operator::Multiply => l * r,
-        Operator::Divide => l / r,
-        Operator::Power => l.powf(r),
-        Operator::Modulo => l % r,
-        Operator::Greater => to_num_bool(l > r),
-        Operator::Less => to_num_bool(l < r),
-        Operator::GreaterEqual => to_num_bool(l >= r),
-        Operator::LessEqual => to_num_bool(l <= r),
-        Operator::Equal => to_num_bool(l == r),
-        Operator::NotEqual => to_num_bool(l != r),
-        Operator::And => to_num_bool(l != 0.0 && r != 0.0),
-        Operator::Or => to_num_bool(l != 0.0 || r != 0.0),
-    })
+    match op {
+        Operator::Add => Value::Number(l + r),
+        Operator::Subtract => Value::Number(l - r),
+        Operator::Multiply => Value::Number(l * r),
+        Operator::Divide => Value::Number(l / r),
+        Operator::Power => Value::Number(l.powf(r)),
+        Operator::Modulo => Value::Number(l % r),
+        Operator::Greater => Value::Bool(l > r),
+        Operator::Less => Value::Bool(l < r),
+        Operator::GreaterEqual => Value::Bool(l >= r),
+        Operator::LessEqual => Value::Bool(l <= r),
+        Operator::Equal => Value::Bool(l == r),
+        Operator::NotEqual => Value::Bool(l != r),
+        Operator::And => Value::Bool(to_bool_num(l) && to_bool_num(r)),
+        Operator::Or => Value::Bool(to_bool_num(l) || to_bool_num(r)),
+    }
 }
 
 pub fn str_op(l: &str, op: &Operator, r: &str) -> Value {
@@ -60,6 +60,9 @@ pub fn str_op(l: &str, op: &Operator, r: &str) -> Value {
 
 pub fn to_bool_str(string: &str) -> bool {
     !string.is_empty()
+}
+pub fn to_bool_num(num: f64) -> bool {
+    num != 0.0
 }
 
 pub fn to_num_bool(data: bool) -> f64 {
