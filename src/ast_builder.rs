@@ -17,10 +17,6 @@ impl AST {
 
     fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
         match pair.as_rule() {
-            Rule::stmt => {
-                let mut inner = pair.into_inner();
-                self.build_stmt(inner.next().unwrap())
-            }
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
                 let ident = inner.next().unwrap().as_str().to_string();
@@ -55,9 +51,6 @@ impl AST {
 
                 for p in inner {
                     match p.as_rule() {
-                        Rule::stmt => {
-                            then_branch.push(self.build_stmt(p));
-                        }
                         Rule::elif_clause => {
                             let mut elif_inner = p.into_inner();
                             let elif_cond = self.build_expr(elif_inner.next().unwrap());
@@ -75,7 +68,7 @@ impl AST {
                             }
                             else_branch = Some(else_body);
                         }
-                        _ => unreachable!(),
+                        _ => then_branch.push(self.build_stmt(p)),
                     }
                 }
                 Stmt::If { cond, then_branch, elifs, else_branch }

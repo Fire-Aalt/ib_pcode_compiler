@@ -2,7 +2,7 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = { assign_stmts | control_stmts | output_stmt | assert_stmt | method_stmts }
+stmt = _{ assign_stmts | control_stmts | output_stmt | assert_stmt | method_stmts }
 
 
 // ASSIGN
