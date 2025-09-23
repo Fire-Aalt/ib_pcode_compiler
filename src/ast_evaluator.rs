@@ -33,18 +33,8 @@ impl AST {
                 let r = self.eval_expr(right, env);
 
                 match l {
-                    Value::Float(l_num) => match r {
-                        Value::Float(_) => num_op(l, op, r),
-                        Value::Int(_) => num_op(l, op, r),
-                        Value::Bool(_) => num_op(l, op, r),
-                        Value::String(r_string) => Value::String(match op {
-                            Operator::Add => l_num.to_string() + &*r_string,
-                            _ => String::from("Nan"),
-                        }),
-                    },
-                    Value::Int(l_num) => match r {
-                        Value::Float(_) => num_op(l, op, r),
-                        Value::Int(_) => num_op(l, op, r),
+                    Value::Number(l_num) => match r {
+                        Value::Number(_) => num_op(l, op, r),
                         Value::Bool(_) => num_op(l, op, r),
                         Value::String(r_string) => Value::String(match op {
                             Operator::Add => l_num.to_string() + &*r_string,
@@ -52,8 +42,7 @@ impl AST {
                         }),
                     },
                     Value::Bool(l_bool) => match r {
-                        Value::Float(_) => num_op(l, op, r),
-                        Value::Int(_) => num_op(l, op, r),
+                        Value::Number(_) => num_op(l, op, r),
                         Value::Bool(r_bool) => Value::Bool(match op {
                             Operator::And => l_bool && r_bool,
                             Operator::Or => l_bool || r_bool,
@@ -64,11 +53,7 @@ impl AST {
                         }
                     },
                     Value::String(l_string) => match r {
-                        Value::Float(r_num) => Value::String(match op {
-                            Operator::Add => l_string + &r_num.to_string(),
-                            _ => String::from("Nan"),
-                        }),
-                        Value::Int(r_num) => Value::String(match op {
+                        Value::Number(r_num) => Value::String(match op {
                             Operator::Add => l_string + &r_num.to_string(),
                             _ => String::from("Nan"),
                         }),
@@ -91,11 +76,9 @@ impl AST {
                 }
 
                 let input = input.trim();
-
-                if let Ok(i) = input.parse::<i64>() {
-                    Value::Int(i)
-                } else if let Ok(f) = input.parse::<f64>() {
-                    Value::Float(f)
+                
+                if let Ok(f) = input.parse::<f64>() {
+                    Value::Number(f)
                 }
                 else {
                     Value::String(input.to_string())
@@ -136,11 +119,11 @@ impl AST {
                 None
             }
             Stmt::Increment(name) => {
-                env.assign(name, env.get(name).unwrap() + Value::Int(1));
+                env.assign(name, env.get(name).unwrap() + Value::Number(1.0));
                 None
             }
             Stmt::Decrement(name) => {
-                env.assign(name, env.get(name).unwrap() - Value::Int(1));
+                env.assign(name, env.get(name).unwrap() - Value::Number(1.0));
                 None
             }
             Stmt::If { cond, then_branch, elifs, else_branch } => {
@@ -177,7 +160,7 @@ impl AST {
                     }
 
                     control = env.get(ident).unwrap();
-                    control = control + Value::Int(1);
+                    control = control + Value::Number(1.0);
                     env.assign(ident, control.clone());
                 }
                 None
@@ -191,16 +174,8 @@ impl AST {
                     }
 
                     match self.eval_expr(expr, env) {
-                        Value::Float(n) => {
+                        Value::Number(n) => {
                             if n.abs() > 100000000000000000000.0 {
-                                output.push_str(&format!("{:e}", n));
-                            }
-                            else {
-                                output.push_str(&format!("{}", n));
-                            }
-                        },
-                        Value::Int(n) => {
-                            if n.abs() as f64 > 100000000000000000000.0 {
                                 output.push_str(&format!("{:e}", n));
                             }
                             else {
