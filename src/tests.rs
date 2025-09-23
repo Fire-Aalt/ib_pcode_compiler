@@ -463,7 +463,124 @@ German = ???
 "#);
 }
 
+#[test]
+fn elapsed_minutes() {
+    let code = r#"
+input START_HOURS
+input START_MINUTES
 
+input END_HOURS
+input END_MINUTES
+
+if START_HOURS > 23 OR START_MINUTES > 59 then
+ output "Start time is not valid"
+else if END_HOURS > 23 OR END_MINUTES > 59 then
+ output "Times are not valid"
+else
+ MINUTES = (END_HOURS - START_HOURS)*60 + (END_MINUTES-START_MINUTES)
+ output "Elapsed time = " , MINUTES , " minutes"
+end if
+   "#;
+
+    let ast = compile(code);
+
+    run_check_logs(&ast, r#"
+4
+8
+8
+2"#, r#"
+Elapsed time = 234 minutes
+"#);
+    run_check_logs(&ast, r#"
+8
+8
+28
+8"#, r#"
+Times are not valid
+"#);
+}
+
+#[test]
+fn date_validation() {
+    let code = r#"
+input MONTH
+input DAY
+input YEAR
+
+output MONTH , "/" , DAY , "/" , YEAR
+
+if YEAR mod 4 = 0 then
+   FEBMAX = 29
+else
+   FEBMAX = 28
+end if
+
+M = MONTH
+D = DAY
+
+if M < 1 OR M > 12 then
+    output "Month is not valid"
+else if D < 1 OR D > 31 then
+    output "Day is not valid"
+else if D = 31 AND (M = 4 OR M = 6 OR M = 9 OR M = 11) then
+    output "That month does not have 31 days"
+else if M = 2 AND D > FEBMAX then
+    output "February only has " , FEBMAX , " days"
+else
+    output "Date is valid"
+end if
+   "#;
+
+    let ast = compile(code);
+
+    run_check_logs(&ast, r#"
+8
+84
+2
+"#, r#"
+8 / 84 / 2
+Day is not valid
+"#);
+    run_check_logs(&ast, r#"
+8
+20
+2004
+"#, r#"
+8 / 20 / 2004
+Date is valid
+"#);
+}
+
+#[test]
+fn add_up_number() {
+    let code = r#"
+MAX = 10
+
+SUM = 0
+
+loop COUNT from 0 to MAX
+    output COUNT
+    SUM = SUM + COUNT
+end loop
+
+output "Total = " , SUM
+   "#;
+
+    compile_run_check_logs(code, "", r#"
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Total = 55 
+"#);
+}
 
 fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
     let ast = compile(code);
