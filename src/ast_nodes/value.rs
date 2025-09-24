@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::collections::VecDeque;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Div, Mul, Neg, Not, Sub};
@@ -8,6 +9,7 @@ pub enum Value {
     Number(f64),
     Bool(bool),
     String(String),
+    Array(VecDeque<Value>),
 }
 
 impl Value {
@@ -22,6 +24,7 @@ impl Value {
                     0.0
                 }
             }
+            Value::Array(_) => panic!("Cannot convert array to num"),
         }
     }
 
@@ -30,6 +33,7 @@ impl Value {
             Value::Number(n) => *n != 0.0,
             Value::String(s) => !s.is_empty(),
             Value::Bool(b) => *b,
+            Value::Array(_) => true,
         }
     }
 }
@@ -63,7 +67,7 @@ impl Neg for Value {
         match self {
             Value::Number(f) => Value::Number(-f),
             Value::Bool(b) => Value::Number(if b { -1.0 } else { 0.0 }),
-            Value::String(_) => Value::String(String::from("Nan")),
+            _ => Value::String(String::from("Nan")),
         }
     }
 }
@@ -81,7 +85,7 @@ impl Not for Value {
                 }
             }
             Value::Bool(b) => Value::Bool(!b),
-            Value::String(_) => Value::String(String::from("Nan")),
+            _ => Value::String(String::from("Nan")),
         }
     }
 }
@@ -132,7 +136,7 @@ fn only_number_with_number_op(lhs: Value, rhs: Value, op: fn(f64, f64) -> f64) -
     match lhs {
         Value::Number(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
         Value::Bool(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
-        Value::String(_) => Value::String(String::from("Nan")),
+        _ => Value::String(String::from("Nan")),
     }
 }
 
@@ -142,6 +146,7 @@ impl Display for Value {
             Value::Number(f) => write!(formatter, "Number({})", f),
             Value::String(s) => write!(formatter, "String(\"{}\")", s),
             Value::Bool(b) => write!(formatter, "Bool({})", b),
+            Value::Array(v) => write!(formatter, "Array({:?})", v),
         }
     }
 }

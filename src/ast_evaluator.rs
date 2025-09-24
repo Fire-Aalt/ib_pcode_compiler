@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
 use crate::env::{Env, EnvMode};
@@ -98,18 +99,8 @@ impl AST {
                         output.push(' ');
                     }
 
-                    match self.eval_expr(expr, env) {
-                        Value::Number(n) => {
-                            if n.abs() > 100000000000000000000.0 {
-                                output.push_str(&format!("{:e}", n));
-                            }
-                            else {
-                                output.push_str(&format!("{}", n));
-                            }
-                        },
-                        Value::String(s) => output.push_str(s.trim()),
-                        Value::Bool(b) => output.push_str(&b.to_string()),
-                    }
+                    let val = self.eval_expr(expr, env);
+                    format_val(&val, &mut output);
                 }
 
                 match &mut env.mode {
@@ -137,11 +128,21 @@ impl AST {
             Stmt::EOI => None,
         }
     }
-    
+
+
+
     fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
         match expr {
             Expr::Ident(name) => env.get(name).unwrap(),
             Expr::Data(n) => n.clone(),
+            Expr::Array(data) => {
+                let mut array = VecDeque::new();
+
+                for expr in data {
+                    array.push_back(self.eval_expr(expr, env))
+                }
+                Value::Array(array)
+            }
             Expr::Unary(op, expr) => {
                 let value = self.eval_expr(expr, env);
                 match op {
@@ -161,6 +162,7 @@ impl AST {
                             Operator::Add => l_num.to_string() + &*r_string,
                             _ => String::from("Nan"),
                         }),
+                        Value::Array(_) => Value::String(String::from("Nan"))
                     },
                     Value::Bool(l_bool) => match r {
                         Value::Number(_) => num_op(l, op, r),
@@ -172,6 +174,7 @@ impl AST {
                         Value::String(r_string) => {
                             str_op(l.to_string().as_str(), op, r_string.as_str())
                         }
+                        Value::Array(_) => Value::String(String::from("Nan"))
                     },
                     Value::String(l_string) => match r {
                         Value::Number(r_num) => Value::String(match op {
@@ -180,7 +183,9 @@ impl AST {
                         }),
                         Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
                         Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
+                        Value::Array(_) => Value::String(String::from("Nan"))
                     },
+                    Value::Array(_) => Value::String(String::from("Nan"))
                 }
             }
             Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
@@ -241,5 +246,30 @@ impl AST {
             Ok(f) => Value::Number(f),
             Err(_) => Value::String(input.to_string()),
         }
+    }
+}
+
+
+fn format_val(val: &Value, output: &mut String) {
+    match val {
+        Value::Number(n) => {
+            if n.abs() > 100000000000000000000.0 {
+                output.push_str(&format!("{:e}", n));
+            }
+            else {
+                output.push_str(&format!("{}", n));
+            }
+        },
+        Value::String(s) => output.push_str(s.trim()),
+        Value::Bool(b) => output.push_str(&b.to_string()),
+        Value::Array(v) => {
+            for (i, array_val) in v.iter().enumerate() {
+                if i > 0 {
+                    output.push(',');
+                }
+
+                format_val(array_val, output);
+            }
+        },
     }
 }

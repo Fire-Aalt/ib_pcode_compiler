@@ -222,6 +222,13 @@ impl AST {
             Rule::number => Expr::Data(Value::Number(pair.as_str().parse().unwrap())),
             Rule::string => Expr::Data(Value::String(fix_quotes_plain(pair.as_str()))),
             Rule::bool => Expr::Data(Value::Bool(pair.as_str().parse().unwrap())),
+            Rule::array => {
+                let inner = pair.into_inner();
+                let data: Vec<Expr> = inner
+                    .map(|inner| self.build_expr(inner))
+                    .collect();
+                Expr::Array(data)
+            }
             Rule::method_call => {
                 let mut inner = pair.into_inner();
 

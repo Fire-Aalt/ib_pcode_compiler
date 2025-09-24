@@ -68,13 +68,13 @@ expr = { logical_or }
 logical_or = { logical_and ~ (or ~ logical_and)* }
 logical_and = { comparison ~ (and ~ comparison)* }
 
-comparison = { add_sub ~ ( (greater_equal | less_equal | greater | less | equal | not_equal) ~ add_sub )* }
+comparison = { add_sub ~ ( (not_equal | greater_equal | less_equal | greater | less | equal) ~ add_sub )* }
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
 mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
 pow = { unary ~ (power ~ pow)? } // right-association
 unary = { (not | subtract)* ~ term }
     equal = { "==" | "=" }
-    not_equal = { "!=" }
+    not_equal = { "!=" | "<>" }
     greater_equal = { ">=" }
     less_equal = { "<=" }
     greater = { ">" }
@@ -97,7 +97,9 @@ output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
-term = _{ input | method_call | ident | number | string | bool | "(" ~ expr ~ ")" }
+term = _{ input | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
+
+array = { "[" ~ expr ~ ("," ~ expr)* ~ "]" }
 
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
 method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }

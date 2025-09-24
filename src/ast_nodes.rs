@@ -29,6 +29,7 @@ pub enum Stmt {
 pub enum Expr {
     Ident(String),
     Data(Value),
+    Array(Vec<Expr>),
     Unary(UnaryOp, Box<Expr>),
     BinOp(Box<Expr>, Operator, Box<Expr>),
     MethodCall(String, Vec<Box<Expr>>),
