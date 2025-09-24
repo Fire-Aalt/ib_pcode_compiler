@@ -162,6 +162,7 @@ impl AST {
     }
 
     fn build_expr(&self, pair: pest::iterators::Pair<Rule>) -> Expr {
+        println!("{:?}", pair.as_rule());
         match pair.as_rule() {
             Rule::expr
             | Rule::logical_or
@@ -218,31 +219,58 @@ impl AST {
                 }
                 expr
             }
-            Rule::ident => Expr::Ident(pair.as_str().to_string()),
-            Rule::number => Expr::Data(Value::Number(pair.as_str().parse().unwrap())),
-            Rule::string => Expr::Data(Value::String(fix_quotes_plain(pair.as_str()))),
-            Rule::bool => Expr::Data(Value::Bool(pair.as_str().parse().unwrap())),
-            Rule::array => {
-                let inner = pair.into_inner();
-                let data: Vec<Expr> = inner
-                    .map(|inner| self.build_expr(inner))
-                    .collect();
-                Expr::Array(data)
-            }
-            Rule::method_call => {
+            Rule::term => {
                 let mut inner = pair.into_inner();
+                let first = inner.next().unwrap().into_inner().next().unwrap();
 
-                let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Box<Expr>> = inner
-                    .map(|inner| Box::new(self.build_expr(inner)))
-                    .collect();
+                let mut node = match first.as_rule() {
+                    Rule::ident => Expr::Ident(first.as_str().to_string()),
+                    Rule::number => Expr::Data(Value::Number(first.as_str().parse().unwrap())),
+                    Rule::string => Expr::Data(Value::String(fix_quotes_plain(first.as_str()))),
+                    Rule::bool => Expr::Data(Value::Bool(first.as_str().parse().unwrap())),
+                    Rule::array => {
+                        let inner = first.into_inner();
+                        let data: Vec<Expr> = inner
+                            .map(|inner| self.build_expr(inner))
+                            .collect();
+                        Expr::Array(data)
+                    }
+                    Rule::method_call => {
+                        let mut inner = first.into_inner();
 
-                Expr::MethodCall(method_name, args)
-            }
-            Rule::input => {
-                let mut inner = pair.into_inner();
-                let text = self.build_expr(inner.next().unwrap());
-                Expr::Input(Box::new(text))
+                        let method_name = inner.next().unwrap().as_str().to_string();
+                        let args: Vec<Box<Expr>> = inner
+                            .map(|inner| Box::new(self.build_expr(inner)))
+                            .collect();
+                        Expr::MethodCall(method_name, args)
+                    }
+                    Rule::input => {
+                        let mut inner = first.into_inner();
+                        let text = self.build_expr(inner.next().unwrap());
+                        Expr::Input(Box::new(text))
+                    }
+                    _ => self.build_expr(first),
+                };
+
+                for post in inner {
+                    let post = post.into_inner().next().unwrap();
+
+                    match post.as_rule() {
+                        Rule::call => {
+                            let args: Vec<Expr> = post.into_inner()
+                                .map(|p| self.build_expr(p))
+                                .collect();
+                            node = Expr::Call(Box::new(node), args);
+                        }
+                        Rule::index => {
+                            let idx_pair = post.into_inner().next().unwrap();
+                            let idx_expr = self.build_expr(idx_pair);
+                            node = Expr::Index(Box::new(node), Box::new(idx_expr));
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                node
             }
             _ => unreachable!(),
         }

@@ -202,6 +202,19 @@ impl AST {
                 env.pop_scope();
                 returned
             }
+            Expr::Index(left, index) => {
+                if let Value::Array(a) = self.eval_expr(left, env) {
+                    let index = self.eval_expr(index, env).as_num() as i64;
+                    if index < 0 || index >= a.len() as i64 {
+                        return Value::String("undefined".to_string())
+                    }
+                    return a[index as usize].clone()
+                }
+                panic!("Invalid index expression");
+            }
+            Expr::Call(name, args) => {
+                panic!("Call")
+            }
         }
     }
 

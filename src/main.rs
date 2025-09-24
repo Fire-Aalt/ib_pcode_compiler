@@ -7,8 +7,9 @@ method Get()
   return "ggg"
 end method
 
-A = [5, Get(), 485, "HI", true]
-output A
+output Get()
+A = [5, [485, Get()], "HI", Get()]
+output A[1][0]
     "#;
 
     compile_and_run(code);

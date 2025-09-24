@@ -97,9 +97,13 @@ output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
-term = _{ input | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
+term = { primary ~ postfix* }
+primary = { input | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
+postfix = { call | index }
+call = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+index = { "[" ~ expr ~ "]" }
 
-array = { "[" ~ expr ~ ("," ~ expr)* ~ "]" }
+array = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
 
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
 method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }

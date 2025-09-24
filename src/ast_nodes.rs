@@ -33,6 +33,8 @@ pub enum Expr {
     Unary(UnaryOp, Box<Expr>),
     BinOp(Box<Expr>, Operator, Box<Expr>),
     MethodCall(String, Vec<Box<Expr>>),
+    Call(Box<Expr>, Vec<Expr>),
+    Index(Box<Expr>, Box<Expr>),
     Input(Box<Expr>),
 }
 
