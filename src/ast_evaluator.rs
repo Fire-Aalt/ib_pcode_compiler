@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
 use crate::env::{Env, EnvMode};
-use crate::common::{num_op, str_op};
+use crate::common::{format_val, num_op, str_op};
 use std::io;
 use std::io::Write;
 
@@ -96,7 +96,7 @@ impl AST {
                 let mut control = self.eval_expr(start_num, env);
                 env.assign(ident, control.clone());
 
-                while &control <= &self.eval_expr(end_num, env) {
+                while control <= self.eval_expr(end_num, env) {
                     if let Some(returned_val) = self.exec_body(body, env) {
                         return Some(returned_val)
                     }
@@ -142,7 +142,7 @@ impl AST {
                 assert_eq!(self.eval_expr(expr, env), self.eval_expr(expected, env));
                 None
             }
-            Stmt::MethodDeclaration(_name, _arg_names) => None,
+            Stmt::MethodReturn(expr) => Some(self.eval_expr(expr, env)),
             Stmt::MethodCall(name, params) => {
                 env.push_scope();
 
@@ -153,12 +153,10 @@ impl AST {
                 env.pop_scope();
                 returned_val
             }
-            Stmt::MethodReturn(expr) => Some(self.eval_expr(expr, env)),
+            Stmt::MethodDeclaration(_, _) => None,
             Stmt::EOI => None,
         }
     }
-
-
 
     fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
         match expr {
@@ -304,30 +302,5 @@ impl AST {
             Ok(f) => Value::Number(f),
             Err(_) => Value::String(input.to_string()),
         }
-    }
-}
-
-
-fn format_val(val: &Value, output: &mut String) {
-    match val {
-        Value::Number(n) => {
-            if n.abs() > 100000000000000000000.0 {
-                output.push_str(&format!("{:e}", n));
-            }
-            else {
-                output.push_str(&format!("{}", n));
-            }
-        },
-        Value::String(s) => output.push_str(s.trim()),
-        Value::Bool(b) => output.push_str(&b.to_string()),
-        Value::Array(v) => {
-            for (i, array_val) in v.iter().enumerate() {
-                if i > 0 {
-                    output.push(',');
-                }
-
-                format_val(array_val, output);
-            }
-        },
     }
 }

@@ -82,3 +82,27 @@ pub fn to_str_bool(data: bool) -> String {
         false => String::from("false"),
     }
 }
+
+pub fn format_val(val: &Value, output: &mut String) {
+    match val {
+        Value::Number(n) => {
+            if n.abs() > 100000000000000000000.0 {
+                output.push_str(&format!("{:e}", n));
+            }
+            else {
+                output.push_str(&format!("{}", n));
+            }
+        },
+        Value::String(s) => output.push_str(s.trim()),
+        Value::Bool(b) => output.push_str(&b.to_string()),
+        Value::Array(v) => {
+            for (i, array_val) in v.iter().enumerate() {
+                if i > 0 {
+                    output.push(',');
+                }
+
+                format_val(array_val, output);
+            }
+        },
+    }
+}
