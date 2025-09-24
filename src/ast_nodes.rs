@@ -4,7 +4,7 @@ pub mod value;
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Assign(String, AssignOperator, Expr),
+    Assign(String, Option<Expr>, AssignOperator, Expr),
     Increment(String),
     Decrement(String),
     If {
@@ -36,6 +36,7 @@ pub enum Expr {
     Call(Box<Expr>, Vec<Expr>),
     Index(Box<Expr>, Box<Expr>),
     Input(Box<Expr>),
+    Div(Box<Expr>, Box<Expr>)
 }
 
 #[derive(Debug, Clone)]

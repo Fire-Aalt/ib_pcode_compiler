@@ -20,6 +20,14 @@ impl AST {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
                 let ident = inner.next().unwrap().as_str().to_string();
+
+                let mut index_expr = None;
+                if inner.len() == 3 {
+                    let idx_pair = inner.next().unwrap().into_inner().next().unwrap();
+                    let idx_expr = self.build_expr(idx_pair);
+                    index_expr = Some(idx_expr);
+                }
+
                 let op = match inner.next().unwrap().as_rule() {
                     Rule::assign => AssignOperator::Assign,
                     Rule::assign_add => AssignOperator::AssignAdd,
@@ -29,7 +37,7 @@ impl AST {
                     _ => unreachable!(),
                 };
                 let expr = self.build_expr(inner.next().unwrap());
-                Stmt::Assign(ident, op, expr)
+                Stmt::Assign(ident, index_expr, op, expr)
             }
             Rule::increment_stmt => {
                 let mut inner = pair.into_inner();
@@ -162,7 +170,6 @@ impl AST {
     }
 
     fn build_expr(&self, pair: pest::iterators::Pair<Rule>) -> Expr {
-        println!("{:?}", pair.as_rule());
         match pair.as_rule() {
             Rule::expr
             | Rule::logical_or
@@ -244,10 +251,16 @@ impl AST {
                             .collect();
                         Expr::MethodCall(method_name, args)
                     }
-                    Rule::input => {
+                    Rule::input_call => {
                         let mut inner = first.into_inner();
                         let text = self.build_expr(inner.next().unwrap());
                         Expr::Input(Box::new(text))
+                    }
+                    Rule::div_call => {
+                        let mut inner = first.into_inner();
+                        let left = self.build_expr(inner.next().unwrap());
+                        let right = self.build_expr(inner.next().unwrap());
+                        Expr::Div(Box::new(left), Box::new(right))
                     }
                     _ => self.build_expr(first),
                 };

@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
@@ -15,8 +16,36 @@ impl AST {
 
     fn exec_stmt(&self, stmt: &Stmt, env: &mut Env) -> Option<Value> {
         match stmt {
-            Stmt::Assign(name, op, expr) => {
+            Stmt::Assign(name, index_expr, op, expr) => {
                 let val = self.eval_expr(expr, env);
+
+                if let Some(index_expr) = index_expr {
+                    let array = env.get(name).unwrap();
+                    let index = self.eval_expr(index_expr, env).as_num() as i64;
+                    if let Value::Array(a) = array {
+                        if index < 0 {
+                            panic!("Negative index");
+                        }
+                        let index = index as usize;
+                        let mut array = a;
+                        if index >= array.len() {
+                            array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
+                        }
+
+                        let res = match op {
+                            AssignOperator::Assign => val,
+                            AssignOperator::AssignAdd => array[index].clone() + val,
+                            AssignOperator::AssignSubtract => array[index].clone() + val,
+                            AssignOperator::AssignMultiply => array[index].clone() + val,
+                            AssignOperator::AssignDivide => array[index].clone() + val,
+                        };
+                        array[index] = res;
+                        env.assign(name, Value::Array(array));
+                        return None
+                    } else {
+                        panic!("Invalid index expression");
+                    }
+                }
 
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
@@ -189,6 +218,12 @@ impl AST {
                 }
             }
             Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
+            Expr::Div(left, right) => {
+                let left = self.eval_expr(left, env).as_num();
+                let right = self.eval_expr(right, env).as_num();
+                
+                Value::Number((left as i64 / right as i64) as f64)
+            }
             Expr::MethodCall(name, params) => {
                 env.push_scope();
 

@@ -8,7 +8,7 @@ stmt = _{ assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
 
-assign_stmt = { ident ~ assign_operation ~ expr }
+assign_stmt = { ident ~ index? ~ assign_operation ~ expr }
 increment_stmt = { ident ~ "++" }
 decrement_stmt = { ident ~ "--" }
 
@@ -34,7 +34,7 @@ else_clause = { "else" ~ stmt* }
 
 while_loop_stmt = { "loop" ~ "while" ~ expr
     ~ stmt*
-    ~ "end loop"
+    ~ ("end loop" | "end while")
 }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr
     ~ stmt*
@@ -91,19 +91,20 @@ unary = { (not | subtract)* ~ term }
 
 
 // NATIVE METHODS
-input = { "input" ~ "(" ~ expr? ~ ")" }
+input_call = { "input" ~ "(" ~ expr? ~ ")" }
+div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 input_stmt = { "input" ~ ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
 term = { primary ~ postfix* }
-primary = { input | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
+primary = { input_call | div_call | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
 postfix = { call | index }
 call = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 index = { "[" ~ expr ~ "]" }
 
-array = { "[" ~ (expr ~ ("," ~ expr)*)? ~ "]" }
+array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack
 
 ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
 method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
