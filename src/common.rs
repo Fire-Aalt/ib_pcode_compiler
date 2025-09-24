@@ -33,6 +33,7 @@ pub fn num_op(l_val: Value, op: &Operator, r_val: Value) -> Value {
         Operator::Subtract => l_val - r_val,
         Operator::Multiply => l_val * r_val,
         Operator::Divide => l_val / r_val,
+        Operator::IntDivide => Value::Number((l_val.as_num() as i64 / r_val.as_num() as i64) as f64),
         Operator::Power => Value::Number(l.powf(r)),
         Operator::Modulo => Value::Number(l % r),
         Operator::Greater => Value::Bool(l > r),

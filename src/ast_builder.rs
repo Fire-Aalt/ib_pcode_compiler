@@ -186,6 +186,7 @@ impl AST {
                         Rule::subtract => Operator::Subtract,
                         Rule::multiply => Operator::Multiply,
                         Rule::divide => Operator::Divide,
+                        Rule::int_divide => Operator::IntDivide,
                         Rule::power => Operator::Power,
                         Rule::modulo => Operator::Modulo,
                         Rule::greater => Operator::Greater,
@@ -269,6 +270,12 @@ impl AST {
                     let post = post.into_inner().next().unwrap();
 
                     match post.as_rule() {
+                        Rule::substring_call => {
+                            let mut inner = post.into_inner();
+                            let start = self.build_expr(inner.next().unwrap());
+                            let end = self.build_expr(inner.next().unwrap());
+                            node = Expr::SubstringCall { expr: Box::new(node), start: Box::new(start), end: Box::new(end) };
+                        }
                         Rule::call => {
                             let args: Vec<Expr> = post.into_inner()
                                 .map(|p| self.build_expr(p))

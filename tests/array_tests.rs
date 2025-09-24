@@ -63,7 +63,6 @@ These are the PRIME numbers under 100
     );
 }
 
-
 #[test]
 fn binary_search() {
     let code = r#"
@@ -106,3 +105,332 @@ Type the ID number that you wish to find
 "#,
     );
 }
+
+#[test]
+fn selection_sort() {
+    let code = r#"
+NUMS = [15,30,85,25,40,90,50,65,20,60]
+
+output "Before sorting"
+printNums()
+
+loop FIRST from 0 to 9
+    LEAST = FIRST
+    loop CURRENT from FIRST+1 to 9
+        if NUMS[CURRENT] > NUMS[LEAST] then
+           LEAST = CURRENT
+        end if
+    end loop
+    TEMP = NUMS[LEAST]
+    NUMS[LEAST] = NUMS[FIRST]
+    NUMS[FIRST] = TEMP
+end loop
+
+output "After sorting"
+printNums()
+
+method printNums()
+   loop C from 0 to 9
+      output NUMS[C]
+   end loop
+   output "========"
+end method
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+Before sorting
+15
+30
+85
+25
+40
+90
+50
+65
+20
+60
+========
+After sorting
+90
+85
+65
+60
+50
+40
+30
+25
+20
+15
+========
+"#,
+    );
+}
+
+#[test]
+fn bubble_sort() {
+    let code = r#"
+NUMS = [15,30,85,25,40,90,50,65,20,60]
+
+output "Before sorting"
+loop C from 0 to 9
+   output NUMS[C]
+end loop
+
+output "========"
+
+loop PASS from 0 to 8
+    loop CURRENT from 0 to 8
+        if NUMS[CURRENT] < NUMS[CURRENT + 1] then
+          TEMP = NUMS[CURRENT]
+          NUMS[CURRENT] = NUMS[CURRENT+1]
+          NUMS[CURRENT+1] = TEMP
+        end if
+    end loop
+end loop
+
+output "After sorting"
+
+loop C from 0 to 9
+   output NUMS[C]
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+Before sorting
+15
+30
+85
+25
+40
+90
+50
+65
+20
+60
+========
+After sorting
+90
+85
+65
+60
+50
+40
+30
+25
+20
+15
+"#,
+    );
+}
+
+#[test]
+fn reverse_array() {
+    let code = r#"
+NAMES = ["Robert","Boris","Brad","George","David"]
+
+N = 5     // the number of elements in the array
+K = 0     // this is the first index in the array
+
+loop while K < N - 1
+TEMP = NAMES[K]
+NAMES[K] = NAMES[N - K - 1]
+NAMES[N - K - 1] = TEMP
+K = K + 1
+end loop
+
+loop C from 0 to N-1
+output NAMES[C]
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+David
+Boris
+Brad
+George
+Robert
+"#,
+    );
+}
+
+#[test]
+fn frequency_distribution() {
+    let code = r#"
+DATA = [17,20,23,29,33,42,60,61,75,75,90,99]
+FREQS = [0,0,0,0,0,0,0,0,0,0]
+
+loop C from 0 to 11
+VALUE = DATA[C]
+loop F from 0 to 9
+if VALUE >= 10*F AND VALUE < 10*(F+1) then
+FREQS[F] = FREQS[F] + 1
+end if
+end loop
+end loop
+
+output "Data"
+
+loop D from 0 to 11
+output DATA[D]
+end loop
+
+output "Range : Frequency"
+
+loop F from 0 to 9
+output F*10 , " - " , (F+1)*10 , " : " , FREQS[F]
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+Data
+17
+20
+23
+29
+33
+42
+60
+61
+75
+75
+90
+99
+Range : Frequency
+0 - 10 : 0
+10 - 20 : 1
+20 - 30 : 3
+30 - 40 : 1
+40 - 50 : 1
+50 - 60 : 0
+60 - 70 : 2
+70 - 80 : 2
+80 - 90 : 0
+90 - 100 : 2
+"#,
+    );
+}
+
+#[test]
+fn appointments_list() {
+    let code = r#"
+APPS = new Array()
+NAME = ""
+
+loop T from 0 to 2400
+APPS[T] = ""
+end loop
+
+loop while NAME <> "quit"
+input NAME
+input TIME
+if TIME >= 0 AND TIME <= 2359 then
+APPS[TIME] = NAME
+end if
+
+loop T from 0 to 2400
+if APPS[T] <> "" then
+output T , " : " , APPS[T]
+end if
+end loop
+output "=================="
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        r#"
+Me
+1230
+Brown
+2350
+quit
+0
+        "#,
+        r#"
+1230 : Me
+==================
+1230 : Me
+2350 : Brown
+==================
+0 : quit
+1230 : Me
+2350 : Brown
+==================
+"#,
+    );
+}
+
+
+#[test]
+fn find_duplicates() {
+    let code = r#"
+TENNIS = ["Al","Bobby","Carla","Dave","Ellen"]
+BBALL = ["Lou","Dave","Hellen","Alan","Al"]
+
+output "The following appear in both lists"
+
+loop T from 0 to 4
+loop B from 0 to 4
+if TENNIS[T] = BBALL[B] then
+output TENNIS[T]
+end if
+end loop
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        r#""#,
+        r#"
+The following appear in both lists
+Al
+Dave
+"#,
+    );
+}
+
+#[test]
+fn cities_array() {
+    let code = r#"
+CITIES = ["Athens","Berlin","Dallas","Denver","London","New York","Rome"]
+
+COUNT = 0
+
+loop C from 0 to 6
+if firstLetter( CITIES[C] ) = "D" then
+COUNT = COUNT + 1
+output CITIES[C]
+end if
+end loop
+
+output "That was " , COUNT , " D-cities"
+
+method firstLetter(s)
+return s.substring(0,1)
+end method
+    "#;
+
+    compile_run_check_logs(
+        code,
+        r#""#,
+        r#"
+Dallas
+Denver
+That was 2 D-cities
+"#,
+    );
+}
+
+

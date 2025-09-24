@@ -27,22 +27,22 @@ if_stmt = { "if" ~ expr ~ "then"
     ~ stmt*
     ~ elif_clause*
     ~ else_clause?
-    ~ "end if"
+    ~ "end" ~ "if"
 }
 elif_clause = { "else" ~ "if" ~ expr ~ "then" ~ stmt* }
 else_clause = { "else" ~ stmt* }
 
 while_loop_stmt = { "loop" ~ "while" ~ expr
     ~ stmt*
-    ~ ("end loop" | "end while")
+    ~ (("end" ~ "loop") | ("end" ~ "while"))
 }
 for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr
     ~ stmt*
-    ~ "end loop"
+    ~ "end" ~ "loop"
 }
 loop_until_stmt = { "loop" ~ "until" ~ expr
     ~ stmt*
-    ~ "end loop"
+    ~ "end" ~ "loop"
 }
 
 
@@ -50,13 +50,13 @@ loop_until_stmt = { "loop" ~ "until" ~ expr
 method_stmts = _{ method_decl | method_call | method_return }
 
 method_decl = {
-    "method" ~ method_ident ~  "(" ~ method_decl_param_list? ~ ")"
+    "method" ~ ident ~  "(" ~ method_decl_param_list? ~ ")"
     ~ stmt*
     ~ "end" ~ "method"
 }
 method_decl_param_list = { ident ~ ("," ~ ident)* }
 
-method_call = { method_ident ~ "(" ~ method_call_param_list? ~ ")" }
+method_call = { ident ~ "(" ~ method_call_param_list? ~ ")" }
 method_call_param_list = _{ expr ~ ("," ~ expr)* }
 
 method_return = { "return" ~ expr }
@@ -70,7 +70,7 @@ logical_and = { comparison ~ (and ~ comparison)* }
 
 comparison = { add_sub ~ ( (not_equal | greater_equal | less_equal | greater | less | equal) ~ add_sub )* }
 add_sub = { mul_div ~ ( (add | subtract) ~ mul_div )* }
-mul_div = { pow ~ ( (multiply | divide | modulo) ~ pow )* }
+mul_div = { pow ~ ( (multiply | divide | int_divide | modulo) ~ pow )* }
 pow = { unary ~ (power ~ pow)? } // right-association
 unary = { (not | subtract)* ~ term }
     equal = { "==" | "=" }
@@ -83,6 +83,7 @@ unary = { (not | subtract)* ~ term }
     subtract = { "-" }
     multiply = { "*" }
     divide = { "/" }
+    int_divide = { "div" }
     power = { "^" }
     modulo = { "%" | "mod" }
     and = { "&&" | "AND" }
@@ -93,21 +94,21 @@ unary = { (not | subtract)* ~ term }
 // NATIVE METHODS
 input_call = { "input" ~ "(" ~ expr? ~ ")" }
 div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
+substring_call = { "." ~ "substring" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 input_stmt = { "input" ~ ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
 term = { primary ~ postfix* }
-primary = { input_call | div_call | method_call | ident | number | string | bool | array | "(" ~ expr ~ ")" }
-postfix = { call | index }
+primary = { input_call | div_call | method_call | bool | array | ident | number | string | "(" ~ expr ~ ")" }
+postfix = { substring_call | call | index }
 call = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 index = { "[" ~ expr ~ "]" }
 
 array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack
 
-ident = @{ ASCII_ALPHA_UPPER ~ (ASCII_DIGIT | ASCII_ALPHA_UPPER | "_")* }
-method_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }

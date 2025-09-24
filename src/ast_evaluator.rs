@@ -221,7 +221,7 @@ impl AST {
             Expr::Div(left, right) => {
                 let left = self.eval_expr(left, env).as_num();
                 let right = self.eval_expr(right, env).as_num();
-                
+
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
@@ -236,6 +236,16 @@ impl AST {
                 };
                 env.pop_scope();
                 returned
+            }
+            Expr::SubstringCall { expr, start, end } => {
+                if let Value::String(s) = self.eval_expr(expr, env) {
+                    let start = self.eval_expr(start, env).as_num() as usize;
+                    let end = self.eval_expr(end, env).as_num() as usize;
+                    
+                    Value::String(s[start..end].to_string())
+                } else {
+                    panic!("Substring call expression is not string");
+                }
             }
             Expr::Index(left, index) => {
                 if let Value::Array(a) = self.eval_expr(left, env) {
