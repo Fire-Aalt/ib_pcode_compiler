@@ -1,5 +1,4 @@
-use crate::common::{compile_run_check_logs, run_check_logs};
-use ib_pseudocompiler::compiler::compile;
+use crate::common::compile_run_check_logs;
 
 pub mod common;
 

@@ -3,12 +3,12 @@ COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 end_line = _{ "\n"+ }
 
 program = { SOI ~ (stmt | end_line)* ~ EOI }
-stmt = _{ (class_decl |  assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts | class_function_call_stmt) ~ end_line }
+stmt = _{ (class_decl | assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts | expr_stmt) ~ end_line }
 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
 
-assign_stmt = { ident ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
+assign_stmt = { (class_ident | ident) ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
 increment_stmt = { ident ~ "++" }
 decrement_stmt = { ident ~ "--" }
 
@@ -73,7 +73,26 @@ class_decl = {
     ~ "end" ~ "Class"
 }
 class_new = { "new" ~ ident ~ "(" ~ call_param_list? ~ ")" }
-class_function_call_stmt = { expr }
+expr_stmt = { expr }
+
+
+bw = _{ !(ASCII_ALPHANUMERIC | "_") }
+reserved_keyword = { "Class" ~ bw
+         | "method" ~ bw
+         | "if" ~ bw
+         | "else" ~ bw
+         | "loop" ~ bw
+         | "while" ~ bw
+         | "for" ~ bw
+         | "until" ~ bw
+         | "end" ~ bw
+         | "return" ~ bw
+         | "input" ~ bw
+         | "output" ~ bw
+         | "assert" ~ bw
+         | "new" ~ bw
+         | "this" ~ bw
+         }
 
 
 class_function = {
@@ -131,7 +150,7 @@ index = { "[" ~ expr ~ "]" }
 
 array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack
 
-ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }

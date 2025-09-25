@@ -3,18 +3,19 @@ use ib_pseudocompiler::compile_and_run;
 fn main() {
     let code = r#"
 
+
 Class Account(name,amount)
     this.id = name
     this.balance = amount
 
     this.addInterest = function(percent)
     {
-       this.balance = this.balance + this.balance * percent / 100
+       this.balance = this.balance + this.balance*percent/100
     }
 
     this.addMoney = function(money)
     {
-       A = money + money
+       this.balance = this.balance + money
     }
 
     this.show = function()
@@ -35,7 +36,6 @@ loop YEARS from 0 to 10
     PAYMENTS.addMoney(100)
     INTEREST.addInterest(10)
 end loop
-
     "#;
 
     compile_and_run(code);

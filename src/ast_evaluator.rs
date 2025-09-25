@@ -1,9 +1,9 @@
-use std::cmp::max;
-use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::ast_nodes::{AssignOperator, Expr, Function, Operator, Stmt, UnaryOp, Value};
-use crate::env::{LocalEnv, EnvMode, Env};
 use crate::common::{format_val, num_op, str_op};
+use crate::env::{Env, EnvMode};
+use std::cmp::max;
+use std::collections::VecDeque;
 use std::io;
 use std::io::Write;
 
@@ -147,7 +147,7 @@ impl AST {
                 let def = self.function_map.get(name).unwrap();
                 self.exec_fn(def, params, env)
             }
-            Stmt::Call { expr } => {
+            Stmt::Expr(expr) => {
                 self.eval_expr(expr, env);
                 None
             }
@@ -275,7 +275,7 @@ impl AST {
         }
     }
 
-    fn exec_fn(&self, def: &Function, params: &Vec<Expr>, env: &mut Env) -> Option<Value> {
+    fn exec_fn(&self, def: &Function, params: &[Expr], env: &mut Env) -> Option<Value> {
         env.push_scope();
         self.define_method_params(def, params, env);
 

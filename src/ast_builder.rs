@@ -177,12 +177,10 @@ impl AST {
 
                 Stmt::MethodCall(method_name, args)
             }
-            Rule::class_function_call_stmt => {
+            Rule::expr_stmt => {
                 let mut inner = pair.into_inner();
-
-                let class_instance = build_expr(inner.next().unwrap());
-
-                Stmt::Call {expr: class_instance }
+                let expr = build_expr(inner.next().unwrap());
+                Stmt::Expr(expr)
             }
             Rule::method_return => {
                 let mut inner = pair.into_inner();
