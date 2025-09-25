@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
+use crate::ast_nodes::{AssignOperator, Expr, Function, Operator, Stmt, UnaryOp, Value};
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
 use std::collections::HashMap;
@@ -142,7 +142,7 @@ impl AST {
 
                 self.method_map.insert(
                     method_name.clone(),
-                    MethodDef {
+                    Function {
                         args: args.clone(),
                         body,
                     },

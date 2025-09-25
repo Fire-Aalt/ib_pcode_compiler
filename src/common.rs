@@ -104,5 +104,6 @@ pub fn format_val(val: &Value, output: &mut String) {
                 format_val(array_val, output);
             }
         },
+        Value::Instance(_) => todo!(),
     }
 }

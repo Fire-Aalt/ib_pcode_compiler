@@ -3,8 +3,14 @@ use std::collections::{HashMap, VecDeque};
 
 #[derive(Debug)]
 pub struct Env {
-    scopes: Vec<HashMap<String, Value>>,
+    pub locals: HashMap<usize, LocalEnv>,
+    pub local_ids_stack: Vec<usize>,
     pub mode: EnvMode,
+}
+
+#[derive(Debug)]
+pub struct LocalEnv {
+    scopes: Vec<HashMap<String, Value>>,
 }
 
 #[derive(Debug)]
@@ -31,16 +37,63 @@ impl Env {
     }
 
     pub fn new(mode: EnvMode) -> Self {
-        let mut e = Self {
-            scopes: Vec::new(),
-            mode,
-        };
-        e.push_scope(); // global scope
+        let mut e = Self { locals: HashMap::new(), mode, local_ids_stack: Vec::new() };
+        e.create_local(0); // global env
+        e.push_local(0);
         e
     }
 
     pub fn record_log(logs: &mut VecDeque<String>, log: String) {
         logs.push_back(log);
+    }
+
+    pub fn create_local(&mut self, id: usize) {
+        self.locals.insert(id, LocalEnv::new());
+    }
+
+    pub fn push_local(&mut self, id: usize) {
+        self.local_ids_stack.push(id);
+    }
+
+    pub fn pop_local(&mut self) {
+        self.local_ids_stack.pop();
+    }
+
+    pub fn push_scope(&mut self) {
+        self.get_local_mut().push_scope();
+    }
+
+    pub fn pop_scope(&mut self) {
+        self.get_local_mut().pop_scope();
+    }
+
+    pub fn assign(&mut self, name: &str, val: Value) {
+        self.get_local_mut().assign(name, val);
+    }
+
+    pub fn define(&mut self, name: String, val: Value) {
+        self.get_local_mut().define(name, val);
+    }
+
+    pub fn get(&self, name: &str) -> Option<Value> {
+        self.get_local().get(name)
+    }
+
+    fn get_local(&self) -> &LocalEnv {
+        self.locals.get(self.local_ids_stack.last().unwrap()).unwrap()
+    }
+
+    fn get_local_mut(&mut self) -> &mut LocalEnv {
+        self.locals.get_mut(self.local_ids_stack.last().unwrap()).unwrap()
+    }
+}
+
+
+impl LocalEnv {
+    pub fn new() -> Self {
+        let mut e = Self { scopes: Vec::new() };
+        e.push_scope(); // top scope
+        e
     }
 
     pub fn push_scope(&mut self) {

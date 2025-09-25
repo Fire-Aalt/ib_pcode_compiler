@@ -10,6 +10,7 @@ pub enum Value {
     Bool(bool),
     String(String),
     Array(VecDeque<Value>),
+    Instance(usize)
 }
 
 impl Value {
@@ -24,7 +25,7 @@ impl Value {
                     0.0
                 }
             }
-            Value::Array(_) => panic!("Cannot convert array to num"),
+            _ => panic!("Cannot convert {} to num", self),
         }
     }
 
@@ -33,7 +34,7 @@ impl Value {
             Value::Number(n) => *n != 0.0,
             Value::String(s) => !s.is_empty(),
             Value::Bool(b) => *b,
-            Value::Array(_) => true,
+            _ => panic!("Cannot convert {} to bool", self),
         }
     }
 }
@@ -147,6 +148,7 @@ impl Display for Value {
             Value::String(s) => write!(formatter, "String(\"{}\")", s),
             Value::Bool(b) => write!(formatter, "Bool({})", b),
             Value::Array(v) => write!(formatter, "Array({:?})", v),
+            Value::Instance(i) => write!(formatter, "Instance(Id: {:?})", i),
         }
     }
 }

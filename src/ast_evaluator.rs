@@ -1,8 +1,8 @@
 use std::cmp::max;
 use std::collections::VecDeque;
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, Expr, MethodDef, Operator, Stmt, UnaryOp, Value};
-use crate::env::{Env, EnvMode};
+use crate::ast_nodes::{AssignOperator, Expr, Function, Operator, Stmt, UnaryOp, Value};
+use crate::env::{LocalEnv, EnvMode, Env};
 use crate::common::{format_val, num_op, str_op};
 use std::io;
 use std::io::Write;
@@ -154,6 +154,7 @@ impl AST {
                 returned_val
             }
             Stmt::MethodDeclaration(_, _) => None,
+            Stmt::ClassDeclaration(_) => None,
             Stmt::EOI => None,
         }
     }
@@ -189,7 +190,7 @@ impl AST {
                             Operator::Add => l_num.to_string() + &*r_string,
                             _ => String::from("Nan"),
                         }),
-                        Value::Array(_) => Value::String(String::from("Nan"))
+                        _ => Value::String(String::from("Nan"))
                     },
                     Value::Bool(l_bool) => match r {
                         Value::Number(_) => num_op(l, op, r),
@@ -201,7 +202,7 @@ impl AST {
                         Value::String(r_string) => {
                             str_op(l.to_string().as_str(), op, r_string.as_str())
                         }
-                        Value::Array(_) => Value::String(String::from("Nan"))
+                        _ => Value::String(String::from("Nan"))
                     },
                     Value::String(l_string) => match r {
                         Value::Number(r_num) => Value::String(match op {
@@ -210,9 +211,9 @@ impl AST {
                         }),
                         Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
                         Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
-                        Value::Array(_) => Value::String(String::from("Nan"))
+                        _ => Value::String(String::from("Nan"))
                     },
-                    Value::Array(_) => Value::String(String::from("Nan"))
+                    _ => Value::String(String::from("Nan"))
                 }
             }
             Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
@@ -265,7 +266,7 @@ impl AST {
         self.eval_expr(cond, env).as_bool()
     }
     
-    fn define_method_params(&self, method_def: &MethodDef, params: &[Box<Expr>], env: &mut Env) {
+    fn define_method_params(&self, method_def: &Function, params: &[Box<Expr>], env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
             let value = self.eval_expr(param, env);
             env.define(method_def.args[i].clone(), value);

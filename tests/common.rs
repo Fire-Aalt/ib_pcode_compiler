@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use ib_pseudocompiler::ast::AST;
 use ib_pseudocompiler::compiler::compile;
-use ib_pseudocompiler::env::{Env, EnvMode};
+use ib_pseudocompiler::env::{EnvMode, Env};
 use ib_pseudocompiler::run;
 
 pub fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub(crate) use crate::ast_nodes::value::Value;
 
 pub mod value;
@@ -20,6 +21,7 @@ pub enum Stmt {
     Output(Vec<Expr>),
     Assert(Expr, Expr),
     MethodDeclaration(String, Vec<String>),
+    ClassDeclaration(String),
     MethodCall(String, Vec<Box<Expr>>),
     MethodReturn(Expr),
     EOI,
@@ -74,8 +76,20 @@ pub enum AssignOperator {
     AssignDivide,
 }
 
-#[derive(Clone, Debug)]
-pub struct MethodDef {
+#[derive(Debug)]
+pub struct Function {
     pub args: Vec<String>,
     pub body: Vec<Stmt>,
+}
+
+#[derive(Debug)]
+pub struct Class {
+    pub functions: HashMap<String, Function>,
+    pub constructor: Constructor,
+}
+
+#[derive(Debug)]
+pub struct Constructor {
+    pub args: Vec<String>,
+    pub vars: Vec<Expr>,
 }
