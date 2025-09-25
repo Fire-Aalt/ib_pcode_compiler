@@ -1,14 +1,14 @@
-WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+WHITESPACE = _{ " " | "\t" | "\r" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
+end_line = _{ "\n"+ }
 
-program = { SOI ~ stmt* ~ EOI }
-stmt = _{ class_decl | assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts }
-
+program = { SOI ~ (stmt | end_line)* ~ EOI }
+stmt = _{ (class_decl |  assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts | class_function_call_stmt) ~ end_line }
 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
 
-assign_stmt = { ident ~ index? ~ assign_operation ~ expr }
+assign_stmt = { ident ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
 increment_stmt = { ident ~ "++" }
 decrement_stmt = { ident ~ "--" }
 
@@ -23,24 +23,28 @@ assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | 
 // CONTROL
 control_stmts = _{ if_stmt | while_loop_stmt | for_loop_stmt | loop_until_stmt }
 
-if_stmt = { "if" ~ expr ~ "then"
+if_stmt = { "if" ~ expr ~ "then" ~ end_line
     ~ stmt*
     ~ elif_clause*
     ~ else_clause?
     ~ "end" ~ "if"
 }
-elif_clause = { "else" ~ "if" ~ expr ~ "then" ~ stmt* }
-else_clause = { "else" ~ stmt* }
+elif_clause = { "else" ~ "if" ~ expr ~ "then" ~ end_line
+    ~ stmt*
+}
+else_clause = { "else" ~ end_line
+    ~ stmt*
+}
 
-while_loop_stmt = { "loop" ~ "while" ~ expr
+while_loop_stmt = { "loop" ~ "while" ~ expr ~ end_line
     ~ stmt*
     ~ (("end" ~ "loop") | ("end" ~ "while"))
 }
-for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr
+for_loop_stmt = { "loop" ~ ident ~ "from" ~ expr ~ "to" ~ expr ~ end_line
     ~ stmt*
     ~ "end" ~ "loop"
 }
-loop_until_stmt = { "loop" ~ "until" ~ expr
+loop_until_stmt = { "loop" ~ "until" ~ expr ~ end_line
     ~ stmt*
     ~ "end" ~ "loop"
 }
@@ -50,7 +54,7 @@ loop_until_stmt = { "loop" ~ "until" ~ expr
 method_stmts = _{ method_decl | method_call | method_return }
 
 method_decl = {
-    "method" ~ ident ~  "(" ~ decl_param_list? ~ ")"
+    "method" ~ ident ~  "(" ~ decl_param_list? ~ ")" ~ end_line
     ~ stmt*
     ~ "end" ~ "method"
 }
@@ -64,21 +68,22 @@ method_return = { "return" ~ expr }
 
 // CLASS
 class_decl = {
-    "Class" ~ ident ~  "(" ~ decl_param_list? ~ ")"
+    "Class" ~ ident ~  "(" ~ decl_param_list? ~ ")" ~ end_line
     ~ (class_function | class_constructor_stmt)*
-    ~ "end" ~ "class"
+    ~ "end" ~ "Class"
 }
 class_new = { "new" ~ ident ~ "(" ~ call_param_list? ~ ")" }
+class_function_call_stmt = { expr }
 
 
 class_function = {
-    class_ident ~ "=" ~ "function" ~ "(" ~ decl_param_list? ~ ")"
-    ~ "{"
+    class_ident ~ "=" ~ "function" ~ "(" ~ decl_param_list? ~ ")" ~ end_line
+    ~ "{" ~ end_line
     ~ stmt*
-    ~ "}"
+    ~ "}" ~ end_line
 }
 class_ident = { "this" ~ "." ~ ident }
-class_constructor_stmt = { class_ident ~ "=" ~ expr }
+class_constructor_stmt = { class_ident ~ "=" ~ expr ~ end_line }
 
 // EXPRESSION
 expr = { logical_or }
@@ -119,7 +124,7 @@ assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
 term = { primary ~ postfix* }
-primary = { input_call | div_call | method_call | class_new | bool | array | ident | number | string | "(" ~ expr ~ ")" }
+primary = { input_call | div_call | method_call | bool | array | class_new | class_ident | ident | number | string | "(" ~ expr ~ ")" }
 postfix = { substring_call | call | index }
 call = { "." ~ ident ~ "(" ~ call_param_list? ~ ")" }
 index = { "[" ~ expr ~ "]" }

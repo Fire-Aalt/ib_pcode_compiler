@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use pest::iterators::{Pair, Pairs};
 
 impl AST {
-    pub fn build_ast(&mut self, pair: pest::iterators::Pair<Rule>) {
+    pub fn build_ast(&mut self, pair: Pair<Rule>) {
         self.function_map = HashMap::new();
         assert_eq!(pair.as_rule(), Rule::program);
 
@@ -16,7 +16,7 @@ impl AST {
             .collect();
     }
 
-    fn build_stmt(&mut self, pair: pest::iterators::Pair<Rule>) -> Stmt {
+    fn build_stmt(&mut self, pair: Pair<Rule>) -> Stmt {
         match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
@@ -177,6 +177,13 @@ impl AST {
 
                 Stmt::MethodCall(method_name, args)
             }
+            Rule::class_function_call_stmt => {
+                let mut inner = pair.into_inner();
+
+                let class_instance = build_expr(inner.next().unwrap());
+
+                Stmt::Call {expr: class_instance }
+            }
             Rule::method_return => {
                 let mut inner = pair.into_inner();
                 Stmt::MethodReturn(build_expr(inner.next().unwrap()))
@@ -213,7 +220,7 @@ fn build_args(inner: &mut Pairs<Rule>) -> Vec<String> {
     args
 }
 
-fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
+fn build_expr(pair: Pair<Rule>) -> Expr {
     match pair.as_rule() {
         Rule::expr
         | Rule::logical_or
@@ -316,6 +323,7 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
                         .collect();
                     Expr::ClassNew(name, args)
                 }
+                Rule::class_ident => Expr::Ident(first.as_str().to_string()),
                 _ => build_expr(first),
             };
 

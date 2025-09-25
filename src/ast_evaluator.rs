@@ -147,6 +147,10 @@ impl AST {
                 let def = self.function_map.get(name).unwrap();
                 self.exec_fn(def, params, env)
             }
+            Stmt::Call { expr } => {
+                self.eval_expr(expr, env);
+                None
+            }
             Stmt::FunctionDeclaration(_) => None,
             Stmt::ClassDeclaration(_) => None,
             Stmt::EOI => None,
@@ -261,10 +265,10 @@ impl AST {
                     let fn_def = self.class_map.get(&class_name).unwrap().functions.get(fn_name.as_str()).unwrap();
 
                     env.push_local(id);
-                    let returned = self.exec_fn(fn_def, params, env).expect("No return");
+                    let returned = self.exec_fn(fn_def, params, env);
                     env.pop_local();
-                    
-                    return returned;
+
+                    return returned.unwrap_or(Value::Number(0.0));
                 }
                 panic!("Invalid call expression");
             }

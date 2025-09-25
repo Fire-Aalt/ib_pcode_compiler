@@ -23,6 +23,7 @@ pub enum Stmt {
     FunctionDeclaration(String),
     ClassDeclaration(String),
     MethodCall(String, Vec<Expr>),
+    Call { expr: Expr },
     MethodReturn(Expr),
     EOI,
 }
