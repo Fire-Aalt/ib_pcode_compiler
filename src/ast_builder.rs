@@ -135,6 +135,7 @@ impl AST {
                 let class_name = inner.next().unwrap().as_str().to_string();
                 let constructor_args = build_args(&mut inner);
 
+                let mut constructor_vars = Vec::new();
                 let mut functions = HashMap::new();
 
                 for stmt in inner {
@@ -142,7 +143,10 @@ impl AST {
                         Rule::class_constructor_stmt => {
                             let mut inner = stmt.into_inner();
 
-                            todo!()
+                            let var_name = inner.next().unwrap().as_str().to_string();
+                            let expr = build_expr(inner.next().unwrap());
+
+                            constructor_vars.push((var_name, expr));
                         }
                         Rule::class_function => {
                             let (fn_name, function) = self.build_fn(stmt);
@@ -152,9 +156,13 @@ impl AST {
                     }
                 }
 
+                if constructor_vars.len() != constructor_args.len() {
+                    panic!("Incorrect number of arguments")
+                }
+
                 self.class_map.insert(class_name.clone(), Class {
                     functions,
-                    constructor: Constructor { args: constructor_args, vars: Vec::new() },
+                    constructor: Constructor { args: constructor_args, vars: constructor_vars },
                 });
 
                 Stmt::ClassDeclaration(class_name)
@@ -298,6 +306,15 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
                     let left = build_expr(inner.next().unwrap());
                     let right = build_expr(inner.next().unwrap());
                     Expr::Div(Box::new(left), Box::new(right))
+                }
+                Rule::class_new => {
+                    let mut inner = first.into_inner();
+
+                    let name = inner.next().unwrap().as_str().to_string();
+                    let args: Vec<Expr> = inner
+                        .map(|inner| build_expr(inner))
+                        .collect();
+                    Expr::ClassNew(name, args)
                 }
                 _ => build_expr(first),
             };

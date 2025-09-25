@@ -1,6 +1,5 @@
 use crate::ast_nodes::value::Value;
 use crate::ast_nodes::Operator;
-use crate::env::Env;
 
 pub fn fix_quotes_plain(s: &str) -> String {
     let mut out = String::with_capacity(s.len());

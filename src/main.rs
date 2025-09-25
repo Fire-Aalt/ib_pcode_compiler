@@ -5,7 +5,7 @@ fn main() {
 
 
 Class Bank(A)
-
+  this.grann = A
 
 this.create = function(A)
 {
@@ -14,6 +14,8 @@ this.create = function(A)
 
 end class
 
+
+vk = new Bank(1)
 
 
     "#;

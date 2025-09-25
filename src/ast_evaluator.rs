@@ -256,6 +256,20 @@ impl AST {
                 }
                 panic!("Invalid index expression");
             }
+            Expr::ClassNew(name, params) => {
+                let class_def = self.class_map.get(name).unwrap();
+
+                let id = env.create_local();
+                env.push_local(id);
+
+                for (i, param) in params.iter().enumerate() {
+                    let val = self.eval_expr(param, env);
+                    env.define(class_def.constructor.vars.get(i).unwrap().0.clone(), val);
+                }
+                
+                env.pop_local();
+                Value::Instance(id)
+            }
             Expr::Call(name, args) => {
                 panic!("Call")
             }

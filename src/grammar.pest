@@ -56,8 +56,8 @@ method_decl = {
 }
 decl_param_list = { ident ~ ("," ~ ident)* }
 
-method_call = { ident ~ "(" ~ method_call_param_list? ~ ")" }
-method_call_param_list = _{ expr ~ ("," ~ expr)* }
+method_call = { ident ~ "(" ~ call_param_list? ~ ")" }
+call_param_list = _{ expr ~ ("," ~ expr)* }
 
 method_return = { "return" ~ expr }
 
@@ -68,6 +68,7 @@ class_decl = {
     ~ (class_function | class_constructor_stmt)*
     ~ "end" ~ "class"
 }
+class_new = { "new" ~ ident ~ "(" ~ call_param_list? ~ ")" }
 
 
 class_function = {
@@ -119,7 +120,7 @@ assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
 term = { primary ~ postfix* }
-primary = { input_call | div_call | method_call | bool | array | ident | number | string | "(" ~ expr ~ ")" }
+primary = { input_call | div_call | method_call | class_new | bool | array | ident | number | string | "(" ~ expr ~ ")" }
 postfix = { substring_call | call | index }
 call = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 index = { "[" ~ expr ~ "]" }

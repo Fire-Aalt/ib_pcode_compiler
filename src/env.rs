@@ -5,6 +5,7 @@ use std::collections::{HashMap, VecDeque};
 pub struct Env {
     pub locals: HashMap<usize, LocalEnv>,
     pub local_ids_stack: Vec<usize>,
+    next_local_id: usize,
     pub mode: EnvMode,
 }
 
@@ -37,8 +38,8 @@ impl Env {
     }
 
     pub fn new(mode: EnvMode) -> Self {
-        let mut e = Self { locals: HashMap::new(), mode, local_ids_stack: Vec::new() };
-        e.create_local(0); // global env
+        let mut e = Self { locals: HashMap::new(), mode, local_ids_stack: Vec::new(), next_local_id: 0 };
+        e.create_local(); // global env
         e.push_local(0);
         e
     }
@@ -47,8 +48,11 @@ impl Env {
         logs.push_back(log);
     }
 
-    pub fn create_local(&mut self, id: usize) {
+    pub fn create_local(&mut self) -> usize {
+        let id = self.next_local_id;
         self.locals.insert(id, LocalEnv::new());
+        self.next_local_id += 1;
+        id
     }
 
     pub fn push_local(&mut self, id: usize) {

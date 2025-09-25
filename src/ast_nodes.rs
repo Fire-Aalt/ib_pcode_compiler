@@ -36,6 +36,7 @@ pub enum Expr {
     BinOp(Box<Expr>, Operator, Box<Expr>),
     MethodCall(String, Vec<Box<Expr>>),
     SubstringCall { expr: Box<Expr>, start: Box<Expr>, end: Box<Expr> },
+    ClassNew(String, Vec<Expr>),
     Call(Box<Expr>, Vec<Expr>),
     Index(Box<Expr>, Box<Expr>),
     Input(Box<Expr>),
@@ -91,5 +92,5 @@ pub struct Class {
 #[derive(Debug)]
 pub struct Constructor {
     pub args: Vec<String>,
-    pub vars: Vec<Expr>,
+    pub vars: Vec<(String, Expr)>,
 }
