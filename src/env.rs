@@ -10,7 +10,7 @@ pub struct Env {
 
 #[derive(Debug)]
 pub struct LocalEnv {
-    scopes: Vec<HashMap<String, Value>>,
+    pub scopes: Vec<HashMap<String, Value>>,
 }
 
 #[derive(Debug)]
@@ -79,7 +79,7 @@ impl Env {
         self.get_local().get(name)
     }
 
-    fn get_local(&self) -> &LocalEnv {
+    pub fn get_local(&self) -> &LocalEnv {
         self.locals.get(self.local_ids_stack.last().unwrap()).unwrap()
     }
 

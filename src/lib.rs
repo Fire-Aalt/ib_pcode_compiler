@@ -12,7 +12,8 @@ pub mod compiler;
 
 pub fn compile_and_run(code: &str) {
     let ast = compile(code);
-    println!("{:#?}", ast.method_map);
+    println!("{:#?}", ast.function_map);
+    println!("{:#?}", ast.class_map);
     println!("{}", ast);
 
     let mut env = Env::release();

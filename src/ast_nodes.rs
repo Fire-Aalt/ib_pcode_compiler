@@ -20,7 +20,7 @@ pub enum Stmt {
     Input(String),
     Output(Vec<Expr>),
     Assert(Expr, Expr),
-    MethodDeclaration(String, Vec<String>),
+    FunctionDeclaration(String),
     ClassDeclaration(String),
     MethodCall(String, Vec<Box<Expr>>),
     MethodReturn(Expr),

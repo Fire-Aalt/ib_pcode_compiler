@@ -146,14 +146,14 @@ impl AST {
             Stmt::MethodCall(name, params) => {
                 env.push_scope();
 
-                let def = self.method_map.get(name).unwrap();
+                let def = self.function_map.get(name).unwrap();
                 self.define_method_params(def, params, env);
                 let returned_val = self.exec_body(&def.body, env);
 
                 env.pop_scope();
                 returned_val
             }
-            Stmt::MethodDeclaration(_, _) => None,
+            Stmt::FunctionDeclaration(_) => None,
             Stmt::ClassDeclaration(_) => None,
             Stmt::EOI => None,
         }
@@ -226,7 +226,7 @@ impl AST {
             Expr::MethodCall(name, params) => {
                 env.push_scope();
 
-                let def = self.method_map.get(name).unwrap();
+                let def = self.function_map.get(name).unwrap();
                 self.define_method_params(def, params, env);
 
                 let returned = match self.exec_body(&def.body, env) {

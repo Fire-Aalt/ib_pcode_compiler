@@ -1,5 +1,6 @@
 use crate::ast_nodes::value::Value;
 use crate::ast_nodes::Operator;
+use crate::env::Env;
 
 pub fn fix_quotes_plain(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
@@ -104,6 +105,15 @@ pub fn format_val(val: &Value, output: &mut String) {
                 format_val(array_val, output);
             }
         },
-        Value::Instance(_) => todo!(),
+        Value::Instance(id) => {
+/*            for pair in env.get_local().scopes.first().unwrap().iter(). {
+                if i > 0 {
+                    output.push(',');
+                }
+
+                format_val(array_val, output);
+            }*/
+            todo!()
+        },
     }
 }

@@ -2,7 +2,7 @@ WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 
 program = { SOI ~ stmt* ~ EOI }
-stmt = _{ assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts }
+stmt = _{ class_decl | assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts }
 
 
 // ASSIGN
@@ -50,16 +50,34 @@ loop_until_stmt = { "loop" ~ "until" ~ expr
 method_stmts = _{ method_decl | method_call | method_return }
 
 method_decl = {
-    "method" ~ ident ~  "(" ~ method_decl_param_list? ~ ")"
+    "method" ~ ident ~  "(" ~ decl_param_list? ~ ")"
     ~ stmt*
     ~ "end" ~ "method"
 }
-method_decl_param_list = { ident ~ ("," ~ ident)* }
+decl_param_list = { ident ~ ("," ~ ident)* }
 
 method_call = { ident ~ "(" ~ method_call_param_list? ~ ")" }
 method_call_param_list = _{ expr ~ ("," ~ expr)* }
 
 method_return = { "return" ~ expr }
+
+
+// CLASS
+class_decl = {
+    "Class" ~ ident ~  "(" ~ decl_param_list? ~ ")"
+    ~ (class_function | class_constructor_stmt)*
+    ~ "end" ~ "class"
+}
+
+
+class_function = {
+    class_ident ~ "=" ~ "function" ~ "(" ~ decl_param_list? ~ ")"
+    ~ "{"
+    ~ stmt*
+    ~ "}"
+}
+class_ident = { "this" ~ "." ~ ident }
+class_constructor_stmt = { class_ident ~ "=" ~ expr }
 
 
 // EXPRESSION
