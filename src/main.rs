@@ -10,6 +10,7 @@ Class Bank(A)
 this.create = function(A)
 {
   output "Hi"
+  return 8
 }
 
 end class
@@ -17,6 +18,8 @@ end class
 
 vk = new Bank(1)
 
+TR = vk.create(44)
+output TR
 
     "#;
 

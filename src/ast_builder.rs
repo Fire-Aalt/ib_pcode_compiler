@@ -171,8 +171,8 @@ impl AST {
                 let mut inner = pair.into_inner();
 
                 let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Box<Expr>> = inner
-                    .map(|inner| Box::new(build_expr(inner)))
+                let args: Vec<Expr> = inner
+                    .map(|inner| build_expr(inner))
                     .collect();
 
                 Stmt::MethodCall(method_name, args)
@@ -291,8 +291,8 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
                     let mut inner = first.into_inner();
 
                     let method_name = inner.next().unwrap().as_str().to_string();
-                    let args: Vec<Box<Expr>> = inner
-                        .map(|inner| Box::new(build_expr(inner)))
+                    let args: Vec<Expr> = inner
+                        .map(|inner| build_expr(inner))
                         .collect();
                     Expr::MethodCall(method_name, args)
                 }
@@ -330,10 +330,14 @@ fn build_expr(pair: pest::iterators::Pair<Rule>) -> Expr {
                         node = Expr::SubstringCall { expr: Box::new(node), start: Box::new(start), end: Box::new(end) };
                     }
                     Rule::call => {
-                        let args: Vec<Expr> = post.into_inner()
+                        let mut inner = post.into_inner();
+
+                        let fn_name = inner.next().unwrap().as_str().to_string();
+                        let params: Vec<Expr> = inner
                             .map(|p| build_expr(p))
                             .collect();
-                        node = Expr::Call(Box::new(node), args);
+
+                        node = Expr::Call {expr: Box::new(node), fn_name, params };
                     }
                     Rule::index => {
                         let idx_pair = post.into_inner().next().unwrap();

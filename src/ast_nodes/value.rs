@@ -10,7 +10,7 @@ pub enum Value {
     Bool(bool),
     String(String),
     Array(VecDeque<Value>),
-    Instance(usize)
+    Instance(String, usize)
 }
 
 impl Value {
@@ -148,7 +148,7 @@ impl Display for Value {
             Value::String(s) => write!(formatter, "String(\"{}\")", s),
             Value::Bool(b) => write!(formatter, "Bool({})", b),
             Value::Array(v) => write!(formatter, "Array({:?})", v),
-            Value::Instance(i) => write!(formatter, "Instance(Id: {:?})", i),
+            Value::Instance(name, id) => write!(formatter, "Instance(Name: {}, Id: {})", name, id),
         }
     }
 }

@@ -22,7 +22,7 @@ pub enum Stmt {
     Assert(Expr, Expr),
     FunctionDeclaration(String),
     ClassDeclaration(String),
-    MethodCall(String, Vec<Box<Expr>>),
+    MethodCall(String, Vec<Expr>),
     MethodReturn(Expr),
     EOI,
 }
@@ -34,10 +34,10 @@ pub enum Expr {
     Array(Vec<Expr>),
     Unary(UnaryOp, Box<Expr>),
     BinOp(Box<Expr>, Operator, Box<Expr>),
-    MethodCall(String, Vec<Box<Expr>>),
+    MethodCall(String, Vec<Expr>),
     SubstringCall { expr: Box<Expr>, start: Box<Expr>, end: Box<Expr> },
     ClassNew(String, Vec<Expr>),
-    Call(Box<Expr>, Vec<Expr>),
+    Call { expr: Box<Expr>, fn_name: String, params: Vec<Expr> },
     Index(Box<Expr>, Box<Expr>),
     Input(Box<Expr>),
     Div(Box<Expr>, Box<Expr>)

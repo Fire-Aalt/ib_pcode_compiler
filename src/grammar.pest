@@ -80,7 +80,6 @@ class_function = {
 class_ident = { "this" ~ "." ~ ident }
 class_constructor_stmt = { class_ident ~ "=" ~ expr }
 
-
 // EXPRESSION
 expr = { logical_or }
 
@@ -122,7 +121,7 @@ assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 term = { primary ~ postfix* }
 primary = { input_call | div_call | method_call | class_new | bool | array | ident | number | string | "(" ~ expr ~ ")" }
 postfix = { substring_call | call | index }
-call = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+call = { "." ~ ident ~ "(" ~ call_param_list? ~ ")" }
 index = { "[" ~ expr ~ "]" }
 
 array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack

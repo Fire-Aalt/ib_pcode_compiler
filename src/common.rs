@@ -104,7 +104,7 @@ pub fn format_val(val: &Value, output: &mut String) {
                 format_val(array_val, output);
             }
         },
-        Value::Instance(id) => {
+        Value::Instance(name, id) => {
 /*            for pair in env.get_local().scopes.first().unwrap().iter(). {
                 if i > 0 {
                     output.push(',');

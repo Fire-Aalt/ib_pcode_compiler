@@ -144,14 +144,8 @@ impl AST {
             }
             Stmt::MethodReturn(expr) => Some(self.eval_expr(expr, env)),
             Stmt::MethodCall(name, params) => {
-                env.push_scope();
-
                 let def = self.function_map.get(name).unwrap();
-                self.define_method_params(def, params, env);
-                let returned_val = self.exec_body(&def.body, env);
-
-                env.pop_scope();
-                returned_val
+                self.exec_fn(def, params, env)
             }
             Stmt::FunctionDeclaration(_) => None,
             Stmt::ClassDeclaration(_) => None,
@@ -224,17 +218,8 @@ impl AST {
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
-                env.push_scope();
-
                 let def = self.function_map.get(name).unwrap();
-                self.define_method_params(def, params, env);
-
-                let returned = match self.exec_body(&def.body, env) {
-                    Some(returned_val) => returned_val,
-                    None => panic!("No return for method call {}", name),
-                };
-                env.pop_scope();
-                returned
+                self.exec_fn(def, params, env).expect("No return")
             }
             Expr::SubstringCall { expr, start, end } => {
                 if let Value::String(s) = self.eval_expr(expr, env) {
@@ -256,8 +241,8 @@ impl AST {
                 }
                 panic!("Invalid index expression");
             }
-            Expr::ClassNew(name, params) => {
-                let class_def = self.class_map.get(name).unwrap();
+            Expr::ClassNew(class_name, params) => {
+                let class_def = self.class_map.get(class_name).unwrap();
 
                 let id = env.create_local();
                 env.push_local(id);
@@ -266,21 +251,44 @@ impl AST {
                     let val = self.eval_expr(param, env);
                     env.define(class_def.constructor.vars.get(i).unwrap().0.clone(), val);
                 }
-                
+
                 env.pop_local();
-                Value::Instance(id)
+                Value::Instance(class_name.clone(), id)
             }
-            Expr::Call(name, args) => {
-                panic!("Call")
+            Expr::Call { expr, fn_name, params } => {
+                if let Value::Instance(class_name, id) = self.eval_expr(expr, env) {
+                    let fn_name = "this.".to_string() + fn_name;
+                    let fn_def = self.class_map.get(&class_name).unwrap().functions.get(fn_name.as_str()).unwrap();
+
+                    env.push_local(id);
+                    let returned = self.exec_fn(fn_def, params, env).expect("No return");
+                    env.pop_local();
+                    
+                    return returned;
+                }
+                panic!("Invalid call expression");
             }
         }
+    }
+
+    fn exec_fn(&self, def: &Function, params: &Vec<Expr>, env: &mut Env) -> Option<Value> {
+        env.push_scope();
+        self.define_method_params(def, params, env);
+
+        let returned;
+        match self.exec_body(&def.body, env) {
+            Some(returned_val) => returned = Some(returned_val),
+            None => returned = None,
+        };
+        env.pop_scope();
+        returned
     }
 
     fn is_true(&self, cond: &Expr, env: &mut Env) -> bool {
         self.eval_expr(cond, env).as_bool()
     }
-    
-    fn define_method_params(&self, method_def: &Function, params: &[Box<Expr>], env: &mut Env) {
+
+    fn define_method_params(&self, method_def: &Function, params: &[Expr], env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
             let value = self.eval_expr(param, env);
             env.define(method_def.args[i].clone(), value);
