@@ -54,49 +54,25 @@ loop_until_stmt = { "loop" ~ "until" ~ expr ~ end_line
 method_stmts = _{ method_decl | method_return }
 
 method_decl = {
-    "method" ~ ident ~  "(" ~ decl_param_list? ~ ")" ~ end_line
+    "method" ~ ident ~ decl_param_list ~ end_line
     ~ stmt*
     ~ "end" ~ "method"
 }
-decl_param_list = { ident ~ ("," ~ ident)* }
 
-method_call = { any_ident ~ "(" ~ call_param_list? ~ ")" }
-call_param_list = _{ expr ~ ("," ~ expr)* }
-
+method_call = { any_ident ~ call_param_list }
 method_return = { "return" ~ expr }
 
 
 // CLASS
 class_decl = {
-    "Class" ~ ident ~  "(" ~ decl_param_list? ~ ")" ~ end_line
+    "Class" ~ ident ~ decl_param_list ~ end_line
     ~ (class_function | class_constructor_stmt)*
     ~ "end" ~ "Class"
 }
-class_new = { "new" ~ ident ~ "(" ~ call_param_list? ~ ")" }
-expr_stmt = { expr }
-
-
-bw = _{ !(ASCII_ALPHANUMERIC | "_") }
-reserved_keyword = { "Class" ~ bw
-         | "method" ~ bw
-         | "if" ~ bw
-         | "else" ~ bw
-         | "loop" ~ bw
-         | "while" ~ bw
-         | "for" ~ bw
-         | "until" ~ bw
-         | "end" ~ bw
-         | "return" ~ bw
-         | "input" ~ bw
-         | "output" ~ bw
-         | "assert" ~ bw
-         | "new" ~ bw
-         | "this" ~ bw
-         }
-
+class_new = { "new" ~ ident ~ call_param_list }
 
 class_function = {
-    class_ident ~ "=" ~ "function" ~ "(" ~ decl_param_list? ~ ")" ~ end_line
+    class_ident ~ "=" ~ "function" ~ decl_param_list ~ end_line
     ~ "{" ~ end_line
     ~ stmt*
     ~ "}" ~ end_line
@@ -104,6 +80,7 @@ class_function = {
 class_constructor_stmt = { class_ident ~ "=" ~ expr ~ end_line }
 
 // EXPRESSION
+expr_stmt = { expr }
 expr = { logical_or }
 
 logical_or = { logical_and ~ (or ~ logical_and)* }
@@ -136,24 +113,46 @@ unary = { (not | subtract)* ~ term }
 input_call = { "input" ~ "(" ~ expr? ~ ")" }
 div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 substring_call = { "." ~ "substring" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
-input_stmt = { "input" ~ ident }
+input_stmt = { "input" ~ any_ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 
 // FUNDAMENTALS
+decl_param_list = { "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" }
+call_param_list = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
+
 term = { primary ~ postfix* }
-primary = { input_call | div_call | method_call | bool | array | class_new | class_ident | ident | number | string | "(" ~ expr ~ ")" }
+primary = { number | string | bool | array | class_new | input_call | div_call | method_call | any_ident |  "(" ~ expr ~ ")" }
 postfix = { substring_call | call | index }
-call = { "." ~ ident ~ "(" ~ call_param_list? ~ ")" }
+call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
 
-array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack
+array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") }
 
 ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 class_ident = { "this" ~ "." ~ ident }
-any_ident = { class_ident | ident }
+any_ident = _{ class_ident | ident }
 
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
 bool = { "true" | "false" }
+
+
+bw = _{ !(ASCII_ALPHANUMERIC | "_") }
+reserved_keyword = { "Class" ~ bw
+         | "method" ~ bw
+         | "if" ~ bw
+         | "else" ~ bw
+         | "loop" ~ bw
+         | "while" ~ bw
+         | "for" ~ bw
+         | "until" ~ bw
+         | "end" ~ bw
+         | "return" ~ bw
+         | "input" ~ bw
+         | "output" ~ bw
+         | "assert" ~ bw
+         | "new" ~ bw
+         | "this" ~ bw
+}

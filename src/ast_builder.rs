@@ -286,7 +286,7 @@ fn build_expr(pair: Pair<Rule>) -> Expr {
                     let mut inner = first.into_inner();
 
                     let method_name = inner.next().unwrap().as_str().to_string();
-                    let args: Vec<Expr> = inner
+                    let args: Vec<Expr> = inner.next().unwrap().into_inner()
                         .map(|inner| build_expr(inner))
                         .collect();
                     Expr::MethodCall(method_name, args)
@@ -306,7 +306,7 @@ fn build_expr(pair: Pair<Rule>) -> Expr {
                     let mut inner = first.into_inner();
 
                     let name = inner.next().unwrap().as_str().to_string();
-                    let args: Vec<Expr> = inner
+                    let args: Vec<Expr> = inner.next().unwrap().into_inner()
                         .map(|inner| build_expr(inner))
                         .collect();
                     Expr::ClassNew(name, args)
@@ -329,7 +329,7 @@ fn build_expr(pair: Pair<Rule>) -> Expr {
                         let mut inner = post.into_inner();
 
                         let fn_name = inner.next().unwrap().as_str().to_string();
-                        let params: Vec<Expr> = inner
+                        let params: Vec<Expr> = inner.next().unwrap().into_inner()
                             .map(|p| build_expr(p))
                             .collect();
 
