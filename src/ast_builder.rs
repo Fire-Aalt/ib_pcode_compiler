@@ -167,16 +167,6 @@ impl AST {
 
                 Stmt::ClassDeclaration(class_name)
             }
-            Rule::method_call => {
-                let mut inner = pair.into_inner();
-
-                let method_name = inner.next().unwrap().as_str().to_string();
-                let args: Vec<Expr> = inner
-                    .map(|inner| build_expr(inner))
-                    .collect();
-
-                Stmt::MethodCall(method_name, args)
-            }
             Rule::expr_stmt => {
                 let mut inner = pair.into_inner();
                 let expr = build_expr(inner.next().unwrap());

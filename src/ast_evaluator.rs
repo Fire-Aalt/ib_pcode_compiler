@@ -143,10 +143,6 @@ impl AST {
                 None
             }
             Stmt::MethodReturn(expr) => Some(self.eval_expr(expr, env)),
-            Stmt::MethodCall(name, params) => {
-                let def = self.function_map.get(name).unwrap();
-                self.exec_fn(def, params, env)
-            }
             Stmt::Expr(expr) => {
                 self.eval_expr(expr, env);
                 None
@@ -222,8 +218,16 @@ impl AST {
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
-                let def = self.function_map.get(name).unwrap();
-                self.exec_fn(def, params, env).expect("No return")
+                let class_name = &env.get_local().class_name;
+
+                let fn_def;
+                if !class_name.is_empty() {
+                    fn_def = self.class_map.get(class_name).unwrap().functions.get(name).unwrap()
+                } else {
+                    fn_def = self.function_map.get(name).unwrap();
+                }
+
+                self.exec_fn(fn_def, params, env).unwrap_or(Value::String(String::from("No return")))
             }
             Expr::SubstringCall { expr, start, end } => {
                 if let Value::String(s) = self.eval_expr(expr, env) {
@@ -248,7 +252,7 @@ impl AST {
             Expr::ClassNew(class_name, params) => {
                 let class_def = self.class_map.get(class_name).unwrap();
 
-                let id = env.create_local();
+                let id = env.create_local(class_name);
                 env.push_local(id);
 
                 for (i, param) in params.iter().enumerate() {

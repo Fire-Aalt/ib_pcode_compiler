@@ -22,7 +22,6 @@ pub enum Stmt {
     Assert(Expr, Expr),
     FunctionDeclaration(String),
     ClassDeclaration(String),
-    MethodCall(String, Vec<Expr>),
     Expr(Expr),
     MethodReturn(Expr),
     EOI,

@@ -11,6 +11,9 @@ Class Account(name,amount)
     this.addInterest = function(percent)
     {
        this.balance = this.balance + this.balance*percent/100
+       this.balance++
+       this.addMoney(this.balance)
+       this.balance *= 100
     }
 
     this.addMoney = function(money)

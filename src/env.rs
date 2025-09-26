@@ -11,6 +11,7 @@ pub struct Env {
 
 #[derive(Debug)]
 pub struct LocalEnv {
+    pub class_name: String,
     pub scopes: Vec<HashMap<String, Value>>,
 }
 
@@ -39,7 +40,7 @@ impl Env {
 
     pub fn new(mode: EnvMode) -> Self {
         let mut e = Self { locals: HashMap::new(), mode, local_ids_stack: Vec::new(), next_local_id: 0 };
-        e.create_local(); // global env
+        e.create_local(""); // global env
         e.push_local(0);
         e
     }
@@ -48,9 +49,9 @@ impl Env {
         logs.push_back(log);
     }
 
-    pub fn create_local(&mut self) -> usize {
+    pub fn create_local(&mut self, class_name: &str) -> usize {
         let id = self.next_local_id;
-        self.locals.insert(id, LocalEnv::new());
+        self.locals.insert(id, LocalEnv::new(class_name));
         self.next_local_id += 1;
         id
     }
@@ -94,8 +95,8 @@ impl Env {
 
 
 impl LocalEnv {
-    pub fn new() -> Self {
-        let mut e = Self { scopes: Vec::new() };
+    pub fn new(class_name: &str) -> Self {
+        let mut e = Self { class_name: class_name.to_string(), scopes: Vec::new() };
         e.push_scope(); // top scope
         e
     }

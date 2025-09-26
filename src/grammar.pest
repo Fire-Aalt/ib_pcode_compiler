@@ -8,9 +8,9 @@ stmt = _{ (class_decl | assign_stmts | control_stmts | input_stmt | output_stmt 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
 
-assign_stmt = { (class_ident | ident) ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
-increment_stmt = { ident ~ "++" }
-decrement_stmt = { ident ~ "--" }
+assign_stmt = { any_ident ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
+increment_stmt = { any_ident ~ "++" }
+decrement_stmt = { any_ident ~ "--" }
 
 assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | assign_divide }
     assign = { "=" }
@@ -51,7 +51,7 @@ loop_until_stmt = { "loop" ~ "until" ~ expr ~ end_line
 
 
 // METHOD
-method_stmts = _{ method_decl | method_call | method_return }
+method_stmts = _{ method_decl | method_return }
 
 method_decl = {
     "method" ~ ident ~  "(" ~ decl_param_list? ~ ")" ~ end_line
@@ -60,7 +60,7 @@ method_decl = {
 }
 decl_param_list = { ident ~ ("," ~ ident)* }
 
-method_call = { ident ~ "(" ~ call_param_list? ~ ")" }
+method_call = { any_ident ~ "(" ~ call_param_list? ~ ")" }
 call_param_list = _{ expr ~ ("," ~ expr)* }
 
 method_return = { "return" ~ expr }
@@ -101,7 +101,6 @@ class_function = {
     ~ stmt*
     ~ "}" ~ end_line
 }
-class_ident = { "this" ~ "." ~ ident }
 class_constructor_stmt = { class_ident ~ "=" ~ expr ~ end_line }
 
 // EXPRESSION
@@ -151,6 +150,9 @@ index = { "[" ~ expr ~ "]" }
 array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") } // Dirty hack
 
 ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+class_ident = { "this" ~ "." ~ ident }
+any_ident = { class_ident | ident }
+
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
