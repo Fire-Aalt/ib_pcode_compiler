@@ -17,7 +17,7 @@ Class Collection()
                 loop J from I to this.index - 2
                     this.array[J] = this.array[J+1]
                 end loop
-                
+
                 this.array[this.index-1] = "undefined"
                 this.index--
 
@@ -55,5 +55,10 @@ Class Collection()
         this.next++
 
         return NEXT
+    }
+
+    this.isEmpty = function()
+    {
+        return this.index <= 0
     }
 end Class
