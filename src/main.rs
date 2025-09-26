@@ -2,29 +2,17 @@ use ib_pseudocompiler::compile_and_run;
 
 fn main() {
     let code = r#"
-NAMES = new Collection()
+NAMES = ["Alex","Bobby","Cho","Deke"]
 
-NAME = ""
+STACK = new Stack()
 
-loop while NAME <> "quit"
-   input NAME
-   if NAME <> "quit" then
-       if NAMES.contains(NAME) then
-           output NAME , " returned"
-           NAMES.remove(NAME)
-       else
-           output NAME , " is leaving"
-           NAMES.addItem(NAME)
-       end if
-   end if
+loop COUNT from 0 to 3
+   STACK.push(NAMES[COUNT])
 end loop
 
-output "The following students left and did not return"
-
-NAMES.resetNext()
-
-loop while NAMES.hasNext()
-   output NAMES.getNext()
+loop while NOT(STACK.isEmpty())
+   NAME = STACK.pop()
+   output NAME
 end loop
 
     "#;

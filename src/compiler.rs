@@ -24,11 +24,15 @@ pub fn compile(code: &str) -> AST {
 
 
 const COLLECTION: &str = "native_classes/Collection";
+const STACK: &str = "native_classes/Stack";
 
 fn load_includes() -> String {
-
     let mut contents = fs::read_to_string(COLLECTION)
         .expect("Should have been able to read the file");
+
+    contents.add_assign("\n");
+    contents.add_assign(fs::read_to_string(STACK)
+                            .expect("Should have been able to read the file").as_str());
 
     contents.add_assign("\n");
 

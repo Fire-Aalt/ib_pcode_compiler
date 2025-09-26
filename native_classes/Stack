@@ -1,0 +1,23 @@
+Class Stack()
+    this.array = new Array()
+    this.index = 0
+
+    this.push = function(item)
+    {
+        this.array[this.index] = item
+        this.index++
+    }
+
+    this.pop = function()
+    {
+        POPPED = this.array[this.index-1]
+        this.index--
+
+        return POPPED
+    }
+
+    this.isEmpty = function()
+    {
+        return this.index <= 0
+    }
+end Class
