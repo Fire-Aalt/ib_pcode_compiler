@@ -3,9 +3,9 @@ pub(crate) use crate::ast_nodes::value::Value;
 
 pub mod value;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Stmt {
-    Assign(String, Option<Expr>, AssignOperator, Expr),
+    Assign(AssignTarget, AssignOperator, Expr),
     Increment(String),
     Decrement(String),
     If {
@@ -27,7 +27,7 @@ pub enum Stmt {
     EOI,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Expr {
     Ident(String),
     Data(Value),
@@ -43,7 +43,13 @@ pub enum Expr {
     Div(Box<Expr>, Box<Expr>)
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
+pub enum AssignTarget {
+    Ident(String),
+    Array(Expr, Expr)
+}
+
+#[derive(Debug)]
 pub enum Operator {
     Add,
     Subtract,
@@ -62,13 +68,13 @@ pub enum Operator {
     Or,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum UnaryOp {
     Neg,
     Not,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum AssignOperator {
     Assign,
     AssignAdd,

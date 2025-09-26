@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, Class, Constructor, Expr, Function, Operator, Stmt, UnaryOp, Value};
+use crate::ast_nodes::{AssignOperator, AssignTarget, Class, Constructor, Expr, Function, Operator, Stmt, UnaryOp, Value};
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
 use std::collections::HashMap;
@@ -16,17 +16,23 @@ impl AST {
             .collect();
     }
 
+
+
     fn build_stmt(&mut self, pair: Pair<Rule>) -> Stmt {
         match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
-                let ident = inner.next().unwrap().as_str().to_string();
+                let assignee = build_expr(inner.next().unwrap());
 
-                let mut index_expr = None;
-                if inner.len() == 3 {
-                    let idx_pair = inner.next().unwrap().into_inner().next().unwrap();
-                    let idx_expr = build_expr(idx_pair);
-                    index_expr = Some(idx_expr);
+                let target;
+                match assignee {
+                    Expr::Ident(name) => {
+                        target = AssignTarget::Ident(name)
+                    }
+                    Expr::Index(array, index) => {
+                        target = AssignTarget::Array(*array, *index)
+                    }
+                    _ => unreachable!(),
                 }
 
                 let op = match inner.next().unwrap().as_rule() {
@@ -38,7 +44,7 @@ impl AST {
                     _ => unreachable!(),
                 };
                 let expr = build_expr(inner.next().unwrap());
-                Stmt::Assign(ident, index_expr, op, expr)
+                Stmt::Assign(target, op, expr)
             }
             Rule::increment_stmt => {
                 let mut inner = pair.into_inner();

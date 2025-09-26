@@ -1,6 +1,7 @@
 WHITESPACE = _{ " " | "\t" | "\r" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
 end_line = _{ "\n"+ }
+allow_end_line = _{ "\n"* }
 
 program = { SOI ~ (stmt | end_line)* ~ EOI }
 stmt = _{ (class_decl | assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts | expr_stmt) ~ end_line }
@@ -8,9 +9,9 @@ stmt = _{ (class_decl | assign_stmts | control_stmts | input_stmt | output_stmt 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
 
-assign_stmt = { any_ident ~ index? ~ assign_operation ~ expr } // doesn't work for [0][1]
-increment_stmt = { any_ident ~ "++" }
-decrement_stmt = { any_ident ~ "--" }
+assign_stmt = { term ~ assign_operation ~ expr }
+increment_stmt = { term ~ "++" }
+decrement_stmt = { term ~ "--" }
 
 assign_operation = _{ assign | assign_add | assign_subtract | assign_multiply | assign_divide }
     assign = { "=" }
@@ -80,7 +81,7 @@ class_function = {
 class_constructor_stmt = { class_ident ~ "=" ~ expr ~ end_line }
 
 // EXPRESSION
-expr_stmt = { expr }
+expr_stmt = { term }
 expr = { logical_or }
 
 logical_or = { logical_and ~ (or ~ logical_and)* }
@@ -127,17 +128,15 @@ postfix = { substring_call | call | index }
 call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
 
-array = { ("[" ~ (expr ~ ("," ~ expr)*)? ~ "]") | ("new" ~ "Array" ~ "()") }
-
-ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-class_ident = { "this" ~ "." ~ ident }
-any_ident = _{ class_ident | ident }
-
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
 bool = { "true" | "false" }
+array = { ("[" ~ allow_end_line ~ (expr ~ ("," ~ allow_end_line ~ expr)*)? ~ allow_end_line ~ "]") | ("new" ~ "Array" ~ "()") }
 
+ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+class_ident = { "this" ~ "." ~ ident }
+any_ident = _{ class_ident | ident }
 
 bw = _{ !(ASCII_ALPHANUMERIC | "_") }
 reserved_keyword = { "Class" ~ bw

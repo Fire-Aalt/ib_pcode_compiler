@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, Expr, Function, Operator, Stmt, UnaryOp, Value};
+use crate::ast_nodes::{AssignOperator, AssignTarget, Expr, Function, Operator, Stmt, UnaryOp, Value};
 use crate::common::{format_val, num_op, str_op};
 use crate::env::{Env, EnvMode};
 use std::cmp::max;
@@ -16,47 +16,48 @@ impl AST {
 
     fn exec_stmt(&self, stmt: &Stmt, env: &mut Env) -> Option<Value> {
         match stmt {
-            Stmt::Assign(name, index_expr, op, expr) => {
+            Stmt::Assign(target, op, expr) => {
                 let val = self.eval_expr(expr, env);
 
-                if let Some(index_expr) = index_expr {
-                    let array = env.get(name).unwrap();
-                    let index = self.eval_expr(index_expr, env).as_num() as i64;
-                    if let Value::Array(a) = array {
-                        if index < 0 {
-                            panic!("Negative index");
+                match target {
+                    AssignTarget::Ident(name) => {
+                        match op {
+                            AssignOperator::Assign => env.assign(name, val),
+                            AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
+                            AssignOperator::AssignSubtract => {
+                                env.assign(name, env.get(name).unwrap() - val)
+                            }
+                            AssignOperator::AssignMultiply => {
+                                env.assign(name, env.get(name).unwrap() * val)
+                            }
+                            AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
                         }
-                        let index = index as usize;
-                        let mut array = a;
-                        if index >= array.len() {
-                            array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
+                    }
+                    AssignTarget::Array(array_expr, index_expr) => {
+                        if let Value::Array(id) = self.eval_expr(array_expr, env) {
+                            let index = self.eval_expr(index_expr, env).as_num() as i64;
+                            let array = env.get_array_mut(id);
+
+                            if index < 0 {
+                                panic!("Negative index");
+                            }
+                            let index = index as usize;
+                            if index >= array.len() {
+                                array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
+                            }
+
+                            let res = match op {
+                                AssignOperator::Assign => val,
+                                AssignOperator::AssignAdd => array[index].clone() + val,
+                                AssignOperator::AssignSubtract => array[index].clone() + val,
+                                AssignOperator::AssignMultiply => array[index].clone() + val,
+                                AssignOperator::AssignDivide => array[index].clone() + val,
+                            };
+                            array[index] = res;
+                        } else {
+                            panic!("Invalid index expression");
                         }
-
-                        let res = match op {
-                            AssignOperator::Assign => val,
-                            AssignOperator::AssignAdd => array[index].clone() + val,
-                            AssignOperator::AssignSubtract => array[index].clone() + val,
-                            AssignOperator::AssignMultiply => array[index].clone() + val,
-                            AssignOperator::AssignDivide => array[index].clone() + val,
-                        };
-                        array[index] = res;
-                        env.assign(name, Value::Array(array));
-                        return None
-                    } else {
-                        panic!("Invalid index expression");
                     }
-                }
-
-                match op {
-                    AssignOperator::Assign => env.assign(name, val),
-                    AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
-                    AssignOperator::AssignSubtract => {
-                        env.assign(name, env.get(name).unwrap() - val)
-                    }
-                    AssignOperator::AssignMultiply => {
-                        env.assign(name, env.get(name).unwrap() * val)
-                    }
-                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
                 }
                 None
             }
@@ -129,7 +130,7 @@ impl AST {
                     }
 
                     let val = self.eval_expr(expr, env);
-                    format_val(&val, &mut output);
+                    format_val(&val, &mut output, env);
                 }
 
                 match &mut env.mode {
@@ -163,7 +164,9 @@ impl AST {
                 for expr in data {
                     array.push_back(self.eval_expr(expr, env))
                 }
-                Value::Array(array)
+
+                let id = env.create_array(array);
+                Value::Array(id)
             }
             Expr::Unary(op, expr) => {
                 let value = self.eval_expr(expr, env);
@@ -218,7 +221,7 @@ impl AST {
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
-                let class_name = &env.get_local().class_name;
+                let class_name = &env.get_local_env().class_name;
 
                 let fn_def;
                 if !class_name.is_empty() {
@@ -240,27 +243,31 @@ impl AST {
                 }
             }
             Expr::Index(left, index) => {
-                if let Value::Array(a) = self.eval_expr(left, env) {
+                if let Value::Array(id) = self.eval_expr(left, env) {
                     let index = self.eval_expr(index, env).as_num() as i64;
-                    if index < 0 || index >= a.len() as i64 {
-                        return Value::String("undefined".to_string())
+
+                    let array = env.get_array_mut(id);
+
+                    if index < 0 || index >= array.len() as i64 {
+                        return Value::String("undefined".to_string()) // TODO: resize
                     }
-                    return a[index as usize].clone()
+
+                    return array[index as usize].clone()
                 }
                 panic!("Invalid index expression");
             }
             Expr::ClassNew(class_name, params) => {
                 let class_def = self.class_map.get(class_name).unwrap();
 
-                let id = env.create_local(class_name);
-                env.push_local(id);
+                let id = env.create_local_env(class_name);
+                env.push_local_env(id);
 
                 for (i, param) in params.iter().enumerate() {
                     let val = self.eval_expr(param, env);
                     env.define(class_def.constructor.vars.get(i).unwrap().0.clone(), val);
                 }
 
-                env.pop_local();
+                env.pop_local_env();
                 Value::Instance(class_name.clone(), id)
             }
             Expr::Call { expr, fn_name, params } => {
@@ -268,9 +275,9 @@ impl AST {
                     let fn_name = "this.".to_string() + fn_name;
                     let fn_def = self.class_map.get(&class_name).unwrap().functions.get(fn_name.as_str()).unwrap();
 
-                    env.push_local(id);
+                    env.push_local_env(id);
                     let returned = self.exec_fn(fn_def, params, env);
-                    env.pop_local();
+                    env.pop_local_env();
 
                     return returned.unwrap_or(Value::Number(0.0));
                 }

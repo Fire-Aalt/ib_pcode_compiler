@@ -1,5 +1,6 @@
 use crate::ast_nodes::value::Value;
 use crate::ast_nodes::Operator;
+use crate::env::Env;
 
 pub fn fix_quotes_plain(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
@@ -83,7 +84,7 @@ pub fn to_str_bool(data: bool) -> String {
     }
 }
 
-pub fn format_val(val: &Value, output: &mut String) {
+pub fn format_val(val: &Value, output: &mut String, env: &Env) {
     match val {
         Value::Number(n) => {
             if n.abs() > 100000000000000000000.0 {
@@ -95,13 +96,13 @@ pub fn format_val(val: &Value, output: &mut String) {
         },
         Value::String(s) => output.push_str(s.trim()),
         Value::Bool(b) => output.push_str(&b.to_string()),
-        Value::Array(v) => {
-            for (i, array_val) in v.iter().enumerate() {
+        Value::Array(id) => {
+            for (i, array_val) in env.get_array(*id).iter().enumerate() {
                 if i > 0 {
                     output.push(',');
                 }
 
-                format_val(array_val, output);
+                format_val(array_val, output, env);
             }
         },
         Value::Instance(name, id) => {
