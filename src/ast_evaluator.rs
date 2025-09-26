@@ -116,7 +116,11 @@ impl AST {
 
     fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
         match expr {
-            Expr::Ident(name) => env.get(name).unwrap(),
+            Expr::Ident(name) => {
+                //println!("{}", name);
+                //println!("{:?}", env);
+                env.get(name).unwrap()
+            },
             Expr::Data(n) => n.clone(),
             Expr::Array(data) => {
                 let mut array = VecDeque::new();
@@ -188,7 +192,8 @@ impl AST {
                     true => self.function_map.get(name).unwrap(),
                 };
 
-                self.exec_fn(fn_def, params, env).unwrap_or(Value::String(String::from("No return")))
+                let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
+                self.exec_fn(fn_def, &params, env).unwrap_or(Value::String(String::from("No return")))
             }
             Expr::SubstringCall { expr, start, end } => {
                 if let Value::String(s) = self.eval_expr(expr, env) {
@@ -247,8 +252,10 @@ impl AST {
                     let fn_name = "this.".to_string() + fn_name;
                     let fn_def = self.get_fn_definition(class_name, fn_name.as_str());
 
+                    let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
+
                     env.push_local_env(id);
-                    let returned = self.exec_fn(fn_def, params, env);
+                    let returned = self.exec_fn(fn_def, &params, env);
                     env.pop_local_env();
 
                     return returned.unwrap_or(Value::Number(0.0));
@@ -301,7 +308,7 @@ impl AST {
         }
     }
 
-    fn exec_fn(&self, def: &Function, params: &[Expr], env: &mut Env) -> Option<Value> {
+    fn exec_fn(&self, def: &Function, params: &Vec<Value>, env: &mut Env) -> Option<Value> {
         env.push_scope();
         self.define_method_params(def, params, env);
         let returned = self.exec_body(&def.body, env);
@@ -314,10 +321,9 @@ impl AST {
         self.eval_expr(cond, env).as_bool()
     }
 
-    fn define_method_params(&self, method_def: &Function, params: &[Expr], env: &mut Env) {
+    fn define_method_params(&self, method_def: &Function, params: &Vec<Value>, env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
-            let value = self.eval_expr(param, env);
-            env.define(method_def.args[i].clone(), value);
+            env.define(method_def.args[i].clone(), param.clone());
         }
     }
 
@@ -335,7 +341,7 @@ impl AST {
 
         match &mut env.mode {
             EnvMode::Release => {
-                print!("{}", ask_string);
+                print!("{}: ", ask_string);
                 io::stdout().flush().unwrap();
 
                 input = String::new();

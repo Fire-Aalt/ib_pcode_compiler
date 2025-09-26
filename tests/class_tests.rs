@@ -3,6 +3,102 @@ use crate::common::compile_run_check_logs;
 pub mod common;
 
 #[test]
+fn names_collection() {
+    let code = r#"
+NAMES = new Collection()
+
+NAMES.addItem("Bob")
+NAMES.addItem("Dave")
+NAMES.addItem("Betty")
+NAMES.addItem("Kim")
+NAMES.addItem("Debbie")
+NAMES.addItem("Lucy")
+
+NAMES.resetNext()
+
+output "These names start with D"
+
+loop while NAMES.hasNext()
+    NAME = NAMES.getNext()
+    if firstLetter(NAME) = "D" then
+      output NAME
+    end if
+end loop
+
+method firstLetter(s)
+   return s.substring(0,1)
+end method
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+These names start with D
+Dave
+Debbie
+"#,
+    );
+}
+
+#[test]
+fn checkout_collection() {
+    let code = r#"
+NAMES = new Collection()
+NAME = ""
+
+loop while NAME <> "quit"
+   input NAME
+   if NAME <> "quit" then
+       if NAMES.contains(NAME) then
+           output NAME , " returned"
+           NAMES.remove(NAME)
+       else
+           output NAME , " is leaving"
+           NAMES.addItem(NAME)
+       end if
+   end if
+end loop
+
+output "The following students left and did not return"
+
+NAMES.resetNext()
+
+loop while NAMES.hasNext()
+   output NAMES.getNext()
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        r#"
+Numy
+RRR
+Tom
+Tom
+Wert
+Numy
+Cl
+quit
+        "#,
+        r#"
+Numy is leaving
+RRR is leaving
+Tom is leaving
+Tom returned
+Wert is leaving
+Numy returned
+Cl is leaving
+The following students left and did not return
+RRR
+Wert
+Cl 
+"#,
+    );
+}
+
+
+#[test]
 fn bank_classes() {
     let code = r#"
 Class Account(name,amount)
@@ -80,3 +176,4 @@ Pat 259.37424601
 "#,
     );
 }
+

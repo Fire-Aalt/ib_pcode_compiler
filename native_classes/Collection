@@ -2,28 +2,58 @@ Class Collection()
     this.array = new Array()
     this.index = 0
     this.next = 0
-    
+
     this.addItem = function(item)
     {
         this.array[this.index] = item
         this.index++
     }
-    
+
+    this.remove = function(item)
+    {
+        loop I from 0 to this.index - 1
+            if this.array[I] == item then
+                this.array[I] = "undefined"
+                loop J from I to this.index - 2
+                    this.array[J] = this.array[J+1]
+                end loop
+                
+                this.array[this.index-1] = "undefined"
+                this.index--
+
+                return true
+            end if
+        end loop
+
+        return false
+    }
+
+    this.contains = function(item)
+    {
+        loop I from 0 to this.index - 1
+            if this.array[I] == item then
+                return true
+            end if
+        end loop
+
+        return false
+    }
+
     this.resetNext = function()
     {
         this.next = 0
     }
-    
+
     this.hasNext = function()
     {
         return this.array[this.next] != "undefined"
     }
-    
+
     this.getNext = function()
     {
         NEXT = this.array[this.next]
         this.next++
-    
+
         return NEXT
     }
 end Class

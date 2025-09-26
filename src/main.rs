@@ -4,27 +4,28 @@ fn main() {
     let code = r#"
 NAMES = new Collection()
 
-NAMES.addItem("Bob")
-NAMES.addItem("Dave")
-NAMES.addItem("Betty")
-NAMES.addItem("Kim")
-NAMES.addItem("Debbie")
-NAMES.addItem("Lucy")
+NAME = ""
+
+loop while NAME <> "quit"
+   input NAME
+   if NAME <> "quit" then
+       if NAMES.contains(NAME) then
+           output NAME , " returned"
+           NAMES.remove(NAME)
+       else
+           output NAME , " is leaving"
+           NAMES.addItem(NAME)
+       end if
+   end if
+end loop
+
+output "The following students left and did not return"
 
 NAMES.resetNext()
 
-output "These names start with D"
-
 loop while NAMES.hasNext()
-    NAME = NAMES.getNext()
-    if firstLetter(NAME) = "D" then
-      output NAME
-    end if
+   output NAMES.getNext()
 end loop
-
-method firstLetter(s)
-   return s.substring(0,1)
-end method
 
     "#;
 
