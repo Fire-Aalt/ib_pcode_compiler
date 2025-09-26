@@ -153,10 +153,6 @@ impl AST {
                     }
                 }
 
-                if constructors.len() != args.len() {
-                    panic!("Incorrect number of arguments")
-                }
-
                 self.class_map.insert(class_name.clone(), Class {
                     functions,
                     constructor: Constructor { constructors, args },

@@ -1,0 +1,29 @@
+Class Collection()
+    this.array = new Array()
+    this.index = 0
+    this.next = 0
+    
+    this.addItem = function(item)
+    {
+        this.array[this.index] = item
+        this.index++
+    }
+    
+    this.resetNext = function()
+    {
+        this.next = 0
+    }
+    
+    this.hasNext = function()
+    {
+        return this.array[this.next] != "undefined"
+    }
+    
+    this.getNext = function()
+    {
+        NEXT = this.array[this.next]
+        this.next++
+    
+        return NEXT
+    }
+end Class

@@ -2,29 +2,30 @@ use ib_pseudocompiler::compile_and_run;
 
 fn main() {
     let code = r#"
-Class Account(name,amount)
-    this.id = name + amount
-    this.balance = amount
+NAMES = new Collection()
 
-    this.addInterest = function(percent)
-    {
-       this.balance = this.balance + this.balance*percent/100
-    }
+NAMES.addItem("Bob")
+NAMES.addItem("Dave")
+NAMES.addItem("Betty")
+NAMES.addItem("Kim")
+NAMES.addItem("Debbie")
+NAMES.addItem("Lucy")
 
-    this.addMoney = function(money)
-    {
-       this.balance = this.balance + money
-       return this.balance*percent/100
-    }
+NAMES.resetNext()
 
-    this.show = function()
-    {
-       output this.id + "  " + this.balance
-    }
-end Class
+output "These names start with D"
 
-PAYMENTS = new Account("Abbey",100.0)
-output PAYMENTS
+loop while NAMES.hasNext()
+    NAME = NAMES.getNext()
+    if firstLetter(NAME) = "D" then
+      output NAME
+    end if
+end loop
+
+method firstLetter(s)
+   return s.substring(0,1)
+end method
+
     "#;
 
     compile_and_run(code);
