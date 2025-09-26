@@ -31,6 +31,15 @@ impl LocalEnv {
         }
     }
 
+    /// Undefine in current (top) scope
+    pub fn undefine(&mut self, name: &str) {
+        if let Some(top) = self.scopes.last_mut() {
+            top.remove(name);
+        } else {
+            panic!("no scope to define variable");
+        }
+    }
+
     /// Assign to nearest existing scope containing the var, or create in current scope
     pub fn assign(&mut self, name: &str, val: Value) {
         if name.starts_with("this.") {

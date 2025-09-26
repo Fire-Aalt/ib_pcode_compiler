@@ -15,7 +15,7 @@ impl AST {
             .map(|inner| self.build_stmt(inner))
             .collect();
     }
-    
+
     fn build_stmt(&mut self, pair: Pair<Rule>) -> Stmt {
         match pair.as_rule() {
             Rule::assign_stmt => {
@@ -130,9 +130,9 @@ impl AST {
                 let mut inner = pair.into_inner();
 
                 let class_name = inner.next().unwrap().as_str().to_string();
-                let constructor_args = build_args(&mut inner);
+                let args = build_args(&mut inner);
 
-                let mut constructor_vars = Vec::new();
+                let mut constructors = Vec::new();
                 let mut functions = HashMap::new();
 
                 for stmt in inner {
@@ -143,7 +143,7 @@ impl AST {
                             let var_name = inner.next().unwrap().as_str().to_string();
                             let expr = build_expr(inner.next().unwrap());
 
-                            constructor_vars.push((var_name, expr));
+                            constructors.push((var_name, expr));
                         }
                         Rule::class_function => {
                             let (fn_name, function) = self.build_fn(stmt);
@@ -153,13 +153,13 @@ impl AST {
                     }
                 }
 
-                if constructor_vars.len() != constructor_args.len() {
+                if constructors.len() != args.len() {
                     panic!("Incorrect number of arguments")
                 }
 
                 self.class_map.insert(class_name.clone(), Class {
                     functions,
-                    constructor: Constructor { args: constructor_args, vars: constructor_vars },
+                    constructor: Constructor { constructors, args },
                 });
 
                 Stmt::ClassDeclaration(class_name)

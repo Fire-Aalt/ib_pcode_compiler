@@ -88,8 +88,20 @@ impl Env {
         self.get_local_env_mut().define(name, val);
     }
 
+    pub fn undefine(&mut self, name: &str) {
+        self.get_local_env_mut().undefine(name);
+    }
+
     pub fn get(&self, name: &str) -> Option<Value> {
         self.get_local_env().get(name)
+    }
+
+    pub fn get_class_name(&self, id: &usize) -> &str {
+        self.get_local_env_at(id).class_name.as_str()
+    }
+
+    pub fn get_local_env_at(&self, id: &usize) -> &LocalEnv {
+        self.locals.get(id).unwrap()
     }
 
     pub fn get_local_env(&self) -> &LocalEnv {

@@ -70,20 +70,6 @@ pub fn to_bool_num(num: f64) -> bool {
     num != 0.0
 }
 
-pub fn to_num_bool(data: bool) -> f64 {
-    match data {
-        true => 1.0,
-        false => 0.0,
-    }
-}
-
-pub fn to_str_bool(data: bool) -> String {
-    match data {
-        true => String::from("true"),
-        false => String::from("false"),
-    }
-}
-
 pub fn format_val(val: &Value, output: &mut String, env: &Env) {
     match val {
         Value::Number(n) => {
@@ -105,15 +91,22 @@ pub fn format_val(val: &Value, output: &mut String, env: &Env) {
                 format_val(array_val, output, env);
             }
         },
-        Value::Instance(name, id) => {
-/*            for pair in env.get_local().scopes.first().unwrap().iter(). {
+        Value::Instance(id) => {
+            let local = env.get_local_env_at(id);
+
+            output.push_str(local.class_name.as_str());
+            output.push_str(": [");
+
+            for (i, (name, val)) in local.scopes.first().unwrap().iter().enumerate() {
                 if i > 0 {
                     output.push(',');
                 }
 
-                format_val(array_val, output);
-            }*/
-            todo!()
+                output.push_str(name);
+                output.push_str(": ");
+                format_val(val, output, env);
+            }
+            output.push(']');
         },
     }
 }

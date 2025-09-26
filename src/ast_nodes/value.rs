@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::collections::VecDeque;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Div, Mul, Neg, Not, Sub};
@@ -10,7 +9,7 @@ pub enum Value {
     Bool(bool),
     String(String),
     Array(usize),
-    Instance(String, usize),
+    Instance(usize),
 }
 
 impl Value {
@@ -148,7 +147,7 @@ impl Display for Value {
             Value::String(s) => write!(formatter, "String(\"{}\")", s),
             Value::Bool(b) => write!(formatter, "Bool({})", b),
             Value::Array(id) => write!(formatter, "Array(Id: {})", id),
-            Value::Instance(name, id) => write!(formatter, "Instance(Name: {}, Id: {})", name, id),
+            Value::Instance(id) => write!(formatter, "Instance(Id: {})", id),
         }
     }
 }

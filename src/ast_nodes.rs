@@ -97,6 +97,6 @@ pub struct Class {
 
 #[derive(Debug)]
 pub struct Constructor {
+    pub constructors: Vec<(String, Expr)>,
     pub args: Vec<String>,
-    pub vars: Vec<(String, Expr)>,
 }

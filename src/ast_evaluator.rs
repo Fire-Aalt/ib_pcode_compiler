@@ -215,22 +215,37 @@ impl AST {
             }
             Expr::ClassNew(class_name, params) => {
                 let class_def = self.class_map.get(class_name).unwrap();
-
                 let id = env.create_local_env(class_name);
-                env.push_local_env(id);
 
+                env.push_local_env(id);
+                // Define temp arg values
                 for (i, param) in params.iter().enumerate() {
+                    let arg_name = &class_def.constructor.args[i];
                     let val = self.eval_expr(param, env);
-                    env.define(class_def.constructor.vars.get(i).unwrap().0.clone(), val);
+
+                    env.define(arg_name.clone(), val);
                 }
 
+                // Constructor
+                for (name, expr) in &class_def.constructor.constructors {
+                    let val = self.eval_expr(expr, env);
+                    env.define(name.clone(), val);
+                }
+
+                // Undefine temp arg values
+                for arg in &class_def.constructor.args {
+                    env.undefine(arg.as_str());
+                }
                 env.pop_local_env();
-                Value::Instance(class_name.clone(), id)
+
+                Value::Instance(id)
             }
             Expr::Call { expr, fn_name, params } => {
-                if let Value::Instance(class_name, id) = self.eval_expr(expr, env) {
+                if let Value::Instance(id) = self.eval_expr(expr, env) {
+                    let class_name = env.get_class_name(&id);
+
                     let fn_name = "this.".to_string() + fn_name;
-                    let fn_def = self.class_map.get(&class_name).unwrap().functions.get(fn_name.as_str()).unwrap();
+                    let fn_def = self.get_fn_definition(class_name, fn_name.as_str());
 
                     env.push_local_env(id);
                     let returned = self.exec_fn(fn_def, params, env);
