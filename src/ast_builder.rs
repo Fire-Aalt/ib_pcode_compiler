@@ -15,25 +15,14 @@ impl AST {
             .map(|inner| self.build_stmt(inner))
             .collect();
     }
-
-
-
+    
     fn build_stmt(&mut self, pair: Pair<Rule>) -> Stmt {
         match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
-                let assignee = build_expr(inner.next().unwrap());
 
-                let target;
-                match assignee {
-                    Expr::Ident(name) => {
-                        target = AssignTarget::Ident(name)
-                    }
-                    Expr::Index(array, index) => {
-                        target = AssignTarget::Array(*array, *index)
-                    }
-                    _ => unreachable!(),
-                }
+                let assignee = build_expr(inner.next().unwrap());
+                let assign_target = get_assign_target(assignee);
 
                 let op = match inner.next().unwrap().as_rule() {
                     Rule::assign => AssignOperator::Assign,
@@ -44,17 +33,19 @@ impl AST {
                     _ => unreachable!(),
                 };
                 let expr = build_expr(inner.next().unwrap());
-                Stmt::Assign(target, op, expr)
+                Stmt::Assign(assign_target, op, expr)
             }
             Rule::increment_stmt => {
                 let mut inner = pair.into_inner();
-                let ident = inner.next().unwrap().as_str().to_string();
-                Stmt::Increment(ident)
+                let assignee = build_expr(inner.next().unwrap());
+                let assign_target = get_assign_target(assignee);
+                Stmt::Increment(assign_target)
             }
             Rule::decrement_stmt => {
                 let mut inner = pair.into_inner();
-                let ident = inner.next().unwrap().as_str().to_string();
-                Stmt::Decrement(ident)
+                let assignee = build_expr(inner.next().unwrap());
+                let assign_target = get_assign_target(assignee);
+                Stmt::Decrement(assign_target)
             }
             Rule::if_stmt => {
                 let mut inner = pair.into_inner();
@@ -196,7 +187,18 @@ impl AST {
         let fn_body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
         (fn_name, Function { args: fn_args, body: fn_body } )
     }
+}
 
+fn get_assign_target(assignee: Expr) -> AssignTarget {
+    match assignee {
+        Expr::Ident(name) => {
+            AssignTarget::Ident(name)
+        }
+        Expr::Index(array, index) => {
+            AssignTarget::Array(*array, *index)
+        }
+        _ => unreachable!(),
+    }
 }
 
 fn build_args(inner: &mut Pairs<Rule>) -> Vec<String> {

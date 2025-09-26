@@ -18,55 +18,15 @@ impl AST {
         match stmt {
             Stmt::Assign(target, op, expr) => {
                 let val = self.eval_expr(expr, env);
-
-                match target {
-                    AssignTarget::Ident(name) => {
-                        match op {
-                            AssignOperator::Assign => env.assign(name, val),
-                            AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
-                            AssignOperator::AssignSubtract => {
-                                env.assign(name, env.get(name).unwrap() - val)
-                            }
-                            AssignOperator::AssignMultiply => {
-                                env.assign(name, env.get(name).unwrap() * val)
-                            }
-                            AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
-                        }
-                    }
-                    AssignTarget::Array(array_expr, index_expr) => {
-                        if let Value::Array(id) = self.eval_expr(array_expr, env) {
-                            let index = self.eval_expr(index_expr, env).as_num() as i64;
-                            let array = env.get_array_mut(id);
-
-                            if index < 0 {
-                                panic!("Negative index");
-                            }
-                            let index = index as usize;
-                            if index >= array.len() {
-                                array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
-                            }
-
-                            let res = match op {
-                                AssignOperator::Assign => val,
-                                AssignOperator::AssignAdd => array[index].clone() + val,
-                                AssignOperator::AssignSubtract => array[index].clone() + val,
-                                AssignOperator::AssignMultiply => array[index].clone() + val,
-                                AssignOperator::AssignDivide => array[index].clone() + val,
-                            };
-                            array[index] = res;
-                        } else {
-                            panic!("Invalid index expression");
-                        }
-                    }
-                }
+                self.exec_assign_stmt(target, op, val, env);
                 None
             }
-            Stmt::Increment(name) => {
-                env.assign(name, env.get(name).unwrap() + Value::Number(1.0));
+            Stmt::Increment(target) => {
+                self.exec_assign_stmt(target, &AssignOperator::AssignAdd, Value::Number(1.0), env);
                 None
             }
-            Stmt::Decrement(name) => {
-                env.assign(name, env.get(name).unwrap() - Value::Number(1.0));
+            Stmt::Decrement(target) => {
+                self.exec_assign_stmt(target, &AssignOperator::AssignSubtract, Value::Number(1.0), env);
                 None
             }
             Stmt::If { cond, then_branch, elifs, else_branch } => {
@@ -223,12 +183,10 @@ impl AST {
             Expr::MethodCall(name, params) => {
                 let class_name = &env.get_local_env().class_name;
 
-                let fn_def;
-                if !class_name.is_empty() {
-                    fn_def = self.class_map.get(class_name).unwrap().functions.get(name).unwrap()
-                } else {
-                    fn_def = self.function_map.get(name).unwrap();
-                }
+                let fn_def = match class_name.is_empty() {
+                    false => self.class_map.get(class_name).unwrap().functions.get(name).unwrap(),
+                    true => self.function_map.get(name).unwrap(),
+                };
 
                 self.exec_fn(fn_def, params, env).unwrap_or(Value::String(String::from("No return")))
             }
@@ -245,11 +203,10 @@ impl AST {
             Expr::Index(left, index) => {
                 if let Value::Array(id) = self.eval_expr(left, env) {
                     let index = self.eval_expr(index, env).as_num() as i64;
-
-                    let array = env.get_array_mut(id);
+                    let array = env.get_array_mut(&id);
 
                     if index < 0 || index >= array.len() as i64 {
-                        return Value::String("undefined".to_string()) // TODO: resize
+                        return Value::String("undefined".to_string())
                     }
 
                     return array[index as usize].clone()
@@ -286,16 +243,55 @@ impl AST {
         }
     }
 
+    fn exec_assign_stmt(&self, target: &AssignTarget, op: &AssignOperator, val: Value, env: &mut Env) {
+        match target {
+            AssignTarget::Ident(name) => {
+                match op {
+                    AssignOperator::Assign => env.assign(name, val),
+                    AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
+                    AssignOperator::AssignSubtract => {
+                        env.assign(name, env.get(name).unwrap() - val)
+                    }
+                    AssignOperator::AssignMultiply => {
+                        env.assign(name, env.get(name).unwrap() * val)
+                    }
+                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
+                }
+            }
+            AssignTarget::Array(array_expr, index_expr) => {
+                if let Value::Array(id) = self.eval_expr(array_expr, env) {
+                    let index = self.eval_expr(index_expr, env).as_num() as i64;
+                    let array = env.get_array_mut(&id);
+
+                    if index < 0 {
+                        panic!("Negative index");
+                    }
+                    let index = index as usize;
+                    if index >= array.len() {
+                        array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
+                    }
+
+                    let res = match op {
+                        AssignOperator::Assign => val,
+                        AssignOperator::AssignAdd => array[index].clone() + val,
+                        AssignOperator::AssignSubtract => array[index].clone() + val,
+                        AssignOperator::AssignMultiply => array[index].clone() + val,
+                        AssignOperator::AssignDivide => array[index].clone() + val,
+                    };
+                    array[index] = res;
+                } else {
+                    panic!("Invalid index expression");
+                }
+            }
+        }
+    }
+
     fn exec_fn(&self, def: &Function, params: &[Expr], env: &mut Env) -> Option<Value> {
         env.push_scope();
         self.define_method_params(def, params, env);
-
-        let returned;
-        match self.exec_body(&def.body, env) {
-            Some(returned_val) => returned = Some(returned_val),
-            None => returned = None,
-        };
+        let returned = self.exec_body(&def.body, env);
         env.pop_scope();
+
         returned
     }
 

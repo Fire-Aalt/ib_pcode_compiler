@@ -6,8 +6,8 @@ pub mod value;
 #[derive(Debug)]
 pub enum Stmt {
     Assign(AssignTarget, AssignOperator, Expr),
-    Increment(String),
-    Decrement(String),
+    Increment(AssignTarget),
+    Decrement(AssignTarget),
     If {
         cond: Expr,
         then_branch: Vec<Stmt>,

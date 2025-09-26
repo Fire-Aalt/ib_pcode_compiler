@@ -97,7 +97,7 @@ pub fn format_val(val: &Value, output: &mut String, env: &Env) {
         Value::String(s) => output.push_str(s.trim()),
         Value::Bool(b) => output.push_str(&b.to_string()),
         Value::Array(id) => {
-            for (i, array_val) in env.get_array(*id).iter().enumerate() {
+            for (i, array_val) in env.get_array(id).iter().enumerate() {
                 if i > 0 {
                     output.push(',');
                 }
