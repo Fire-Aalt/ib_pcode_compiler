@@ -1,0 +1,24 @@
+Class Queue()
+    this.array = new Array()
+    this.index = 0
+    this.head = 0
+
+    this.enqueue = function(item)
+    {
+        this.array[this.index] = item
+        this.index++
+    }
+
+    this.dequeue = function()
+    {
+        DEQUEUED = this.array[this.head]
+        this.head++
+
+        return DEQUEUED
+    }
+
+    this.isEmpty = function()
+    {
+        return this.head >= this.index
+    }
+end Class

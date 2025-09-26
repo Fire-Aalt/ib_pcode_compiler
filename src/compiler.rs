@@ -23,18 +23,24 @@ pub fn compile(code: &str) -> AST {
 }
 
 
+
 const COLLECTION: &str = "native_classes/Collection";
 const STACK: &str = "native_classes/Stack";
+const QUEUE: &str = "native_classes/Queue";
+
 
 fn load_includes() -> String {
-    let mut contents = fs::read_to_string(COLLECTION)
-        .expect("Should have been able to read the file");
+    let include_paths: Vec<&str> = vec![COLLECTION, STACK, QUEUE];
 
-    contents.add_assign("\n");
-    contents.add_assign(fs::read_to_string(STACK)
-                            .expect("Should have been able to read the file").as_str());
+    let mut output = "".to_string();
 
-    contents.add_assign("\n");
+    for path in include_paths {
+        let contents = fs::read_to_string(path)
+            .expect("Should have been able to read the file");
 
-    contents
+        output.add_assign(contents.as_str());
+        output.add_assign("\n");
+    }
+
+    output
 }
