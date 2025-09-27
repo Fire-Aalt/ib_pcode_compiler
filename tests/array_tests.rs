@@ -1,6 +1,6 @@
 use crate::common::compile_run_check_logs;
 
-pub mod common;
+mod common;
 
 #[test]
 fn primes_array() {

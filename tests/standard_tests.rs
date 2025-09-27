@@ -1,7 +1,7 @@
 use crate::common::{compile_run_check_logs, run_check_logs};
 use ib_pseudocompiler::compiler::compile;
 
-pub mod common;
+mod common;
 
 #[test]
 fn intro() {

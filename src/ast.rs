@@ -7,12 +7,14 @@ use crate::data::name_hash::NameHash;
 use crate::data::Value;
 use crate::env::Env;
 
+pub mod builder;
+pub mod evaluator;
+
 pub struct AST {
     pub statements: Vec<Stmt>,
     class_map: HashMap<NameHash, Class>,
     hash_to_name_map: HashMap<NameHash, String>
 }
-
 
 impl Display for AST {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
