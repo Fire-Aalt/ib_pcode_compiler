@@ -1,8 +1,10 @@
-use crate::env::allocated_lookup_map::AllocatedLookupMap;
-use crate::env::local_env::LocalEnv;
 use crate::ast::main_hash;
 use crate::data::{NameHash, Value};
+use crate::env::allocated_lookup_map::AllocatedLookupMap;
+use crate::env::local_env::LocalEnv;
 use std::collections::VecDeque;
+use std::fmt::{Display, Formatter};
+use std::fmt;
 
 mod allocated_lookup_map;
 mod local_env;
@@ -13,6 +15,12 @@ pub struct Env {
     pub locals: AllocatedLookupMap<LocalEnv>,
     pub local_ids_stack: Vec<usize>,
     pub mode: EnvMode,
+}
+
+impl Display for Env {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}\n--------\n{:?}", self.arrays, self.locals)
+    }
 }
 
 #[derive(Debug)]
@@ -98,7 +106,7 @@ impl Env {
     }
 
     pub fn get_class_name_hash(&self, id: &usize) -> &NameHash {
-        &self.get_local_env_at(id).class_name_hash
+        &self.get_local_env_at(id).class_name
     }
 
     pub fn get_local_env_at(&self, id: &usize) -> &LocalEnv {

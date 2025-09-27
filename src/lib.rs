@@ -1,5 +1,6 @@
 use crate::ast::AST;
 use crate::compiler::compile;
+use crate::data::name_hash::with_name_map;
 use crate::env::Env;
 
 pub mod common;
@@ -15,7 +16,9 @@ pub fn compile_and_run(code: &str) {
     let mut env = Env::release();
 
     run(&ast, &mut env);
-    println!("Final env: {:?}", env);
+    with_name_map(&ast.hash_to_name_map, || {
+        println!("Final env: {}", env);
+    });
 }
 
 pub fn run(ast: &AST, env: &mut Env) {

@@ -77,7 +77,7 @@ impl AST {
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
-                let class_name = &env.get_local_env().class_name_hash;
+                let class_name = &env.get_local_env().class_name;
 
                 let fn_def = self.get_function(class_name, name);
 

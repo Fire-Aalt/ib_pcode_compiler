@@ -1,11 +1,11 @@
-use std::collections::HashMap;
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::hash::{DefaultHasher, Hash, Hasher};
 use crate::data::ast_nodes::{Class, Constructor, Function, Stmt};
-use crate::data::name_hash::NameHash;
+use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
 use crate::env::Env;
+use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
+use std::hash::{DefaultHasher, Hash, Hasher};
+use std::fmt;
 
 pub mod builder;
 pub mod evaluator;
@@ -13,12 +13,14 @@ pub mod evaluator;
 pub struct AST {
     pub statements: Vec<Stmt>,
     class_map: HashMap<NameHash, Class>,
-    hash_to_name_map: HashMap<NameHash, String>
+    pub hash_to_name_map: HashMap<NameHash, String>
 }
 
 impl Display for AST {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:#?}\n{:#?}", self.class_map, self.statements)
+        with_name_map(&self.hash_to_name_map, || {
+            write!(f, "{:#?}\n{:#?}", self.class_map, self.statements)
+        })
     }
 }
 
@@ -85,7 +87,7 @@ impl AST {
             Value::Instance(id) => {
                 let local = env.get_local_env_at(id);
 
-                output.push_str(self.get_name(&local.class_name_hash));
+                output.push_str(self.get_name(&local.class_name));
                 output.push_str(": [");
 
                 for (i, (name, val)) in local.scopes.first().unwrap().iter().enumerate() {

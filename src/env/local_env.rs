@@ -3,13 +3,13 @@ use crate::data::{NameHash, Value};
 
 #[derive(Debug)]
 pub struct LocalEnv {
-    pub class_name_hash: NameHash,
+    pub class_name: NameHash,
     pub scopes: Vec<HashMap<NameHash, Value>>,
 }
 
 impl LocalEnv {
     pub fn new(class_name_hash: NameHash) -> Self {
-        let mut e = Self { class_name_hash, scopes: Vec::new() };
+        let mut e = Self { class_name: class_name_hash, scopes: Vec::new() };
         e.push_scope(); // top scope
         e
     }
