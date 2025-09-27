@@ -91,10 +91,10 @@ pub fn format_val(val: &Value, output: &mut String, env: &Env) {
                 format_val(array_val, output, env);
             }
         },
-        Value::Instance(id) => {
-            let local = env.get_local_env_at(id);
+        Value::Instance(id) => { // TODO
+/*            let local = env.get_local_env_at(id);
 
-            output.push_str(local.class_name.as_str());
+            output.push_str(local.class_name_hash);
             output.push_str(": [");
 
             for (i, (name, val)) in local.scopes.first().unwrap().iter().enumerate() {
@@ -106,7 +106,7 @@ pub fn format_val(val: &Value, output: &mut String, env: &Env) {
                 output.push_str(": ");
                 format_val(val, output, env);
             }
-            output.push(']');
+            output.push(']');*/
         },
     }
 }

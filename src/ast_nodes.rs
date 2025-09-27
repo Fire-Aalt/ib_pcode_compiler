@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use crate::ast::NameHash;
 pub(crate) use crate::ast_nodes::value::Value;
 
 pub mod value;
@@ -15,13 +16,13 @@ pub enum Stmt {
         else_branch: Option<Vec<Stmt>>,
     },
     While(Expr, Vec<Stmt>),
-    For(String, Expr, Expr, Vec<Stmt>),
+    For(NameHash, Expr, Expr, Vec<Stmt>),
     Until(Expr, Vec<Stmt>),
-    Input(String),
+    Input(NameHash),
     Output(Vec<Expr>),
     Assert(Expr, Expr),
-    FunctionDeclaration(String),
-    ClassDeclaration(String),
+    FunctionDeclaration(NameHash),
+    ClassDeclaration(NameHash),
     Expr(Expr),
     MethodReturn(Expr),
     EOI,
@@ -29,15 +30,15 @@ pub enum Stmt {
 
 #[derive(Debug)]
 pub enum Expr {
-    Ident(String),
+    Ident(NameHash),
     Data(Value),
     Array(Vec<Expr>),
     Unary(UnaryOp, Box<Expr>),
     BinOp(Box<Expr>, Operator, Box<Expr>),
-    MethodCall(String, Vec<Expr>),
+    MethodCall(NameHash, Vec<Expr>),
     SubstringCall { expr: Box<Expr>, start: Box<Expr>, end: Box<Expr> },
-    ClassNew(String, Vec<Expr>),
-    Call { expr: Box<Expr>, fn_name: String, params: Vec<Expr> },
+    ClassNew(NameHash, Vec<Expr>),
+    Call { expr: Box<Expr>, fn_name: NameHash, params: Vec<Expr> },
     Index(Box<Expr>, Box<Expr>),
     Input(Box<Expr>),
     Div(Box<Expr>, Box<Expr>)
@@ -45,7 +46,7 @@ pub enum Expr {
 
 #[derive(Debug)]
 pub enum AssignTarget {
-    Ident(String),
+    Ident(NameHash),
     Array(Expr, Expr)
 }
 
@@ -85,18 +86,18 @@ pub enum AssignOperator {
 
 #[derive(Debug)]
 pub struct Function {
-    pub args: Vec<String>,
+    pub args: Vec<NameHash>,
     pub body: Vec<Stmt>,
 }
 
 #[derive(Debug)]
 pub struct Class {
-    pub functions: HashMap<String, Function>,
+    pub functions: HashMap<NameHash, Function>,
     pub constructor: Constructor,
 }
 
 #[derive(Debug)]
 pub struct Constructor {
-    pub constructors: Vec<(String, Expr)>,
-    pub args: Vec<String>,
+    pub constructors: Vec<(NameHash, Expr)>,
+    pub args: Vec<NameHash>,
 }

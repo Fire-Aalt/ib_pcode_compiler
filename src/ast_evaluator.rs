@@ -77,8 +77,8 @@ impl AST {
                 None
             }
             Stmt::Input(ident) => {
-                let input = self.exec_input(ident, env);
-                env.assign(ident.as_str(), input);
+                let input = self.exec_input(&self.hash_to_name_map[ident], env);
+                env.assign(ident, input);
                 None
             }
             Stmt::Output(body) => {
@@ -185,9 +185,9 @@ impl AST {
                 Value::Number((left as i64 / right as i64) as f64)
             }
             Expr::MethodCall(name, params) => {
-                let class_name = &env.get_local_env().class_name;
+                let class_name = &env.get_local_env().class_name_hash;
 
-                let fn_def = match class_name.is_empty() {
+                let fn_def = match class_name.hash == 0 {
                     false => self.class_map.get(class_name).unwrap().functions.get(name).unwrap(),
                     true => self.function_map.get(name).unwrap(),
                 };
@@ -218,28 +218,28 @@ impl AST {
                 }
                 panic!("Invalid index expression");
             }
-            Expr::ClassNew(class_name, params) => {
-                let class_def = self.class_map.get(class_name).unwrap();
-                let id = env.create_local_env(class_name);
+            Expr::ClassNew(class_name_hash, params) => {
+                let class_def = self.class_map.get(class_name_hash).unwrap();
+                let id = env.create_local_env(class_name_hash.clone());
 
                 env.push_local_env(id);
                 // Define temp arg values
                 for (i, param) in params.iter().enumerate() {
-                    let arg_name = &class_def.constructor.args[i];
+                    let arg_name_hash = &class_def.constructor.args[i];
                     let val = self.eval_expr(param, env);
 
-                    env.define(arg_name.clone(), val);
+                    env.define(arg_name_hash, val);
                 }
 
                 // Constructor
-                for (name, expr) in &class_def.constructor.constructors {
+                for (name_hash, expr) in &class_def.constructor.constructors {
                     let val = self.eval_expr(expr, env);
-                    env.define(name.clone(), val);
+                    env.define(name_hash, val);
                 }
 
                 // Undefine temp arg values
-                for arg in &class_def.constructor.args {
-                    env.undefine(arg.as_str());
+                for arg_name_hash in &class_def.constructor.args {
+                    env.undefine(arg_name_hash);
                 }
                 env.pop_local_env();
 
@@ -247,10 +247,9 @@ impl AST {
             }
             Expr::Call { expr, fn_name, params } => {
                 if let Value::Instance(id) = self.eval_expr(expr, env) {
-                    let class_name = env.get_class_name(&id);
+                    let class_name_hash = env.get_class_name_hash(&id);
 
-                    let fn_name = "this.".to_string() + fn_name;
-                    let fn_def = self.get_fn_definition(class_name, fn_name.as_str());
+                    let fn_def = self.get_fn_definition(class_name_hash, fn_name);
 
                     let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
 
@@ -323,7 +322,7 @@ impl AST {
 
     fn define_method_params(&self, method_def: &Function, params: &Vec<Value>, env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
-            env.define(method_def.args[i].clone(), param.clone());
+            env.define(&method_def.args[i], param.clone());
         }
     }
 

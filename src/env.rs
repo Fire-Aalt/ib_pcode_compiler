@@ -2,6 +2,7 @@ use crate::ast_nodes::Value;
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
 use std::collections::VecDeque;
+use crate::ast::NameHash;
 
 mod allocated_lookup_map;
 mod local_env;
@@ -39,7 +40,7 @@ impl Env {
 
     pub fn new(mode: EnvMode) -> Self {
         let mut e = Self { arrays: AllocatedLookupMap::new(), locals: AllocatedLookupMap::new(), local_ids_stack: Vec::new(), mode };
-        e.create_local_env(""); // global env
+        e.create_local_env(NameHash { hash: 0, this_keyword: false }); // global env
         e.push_local_env(0);
         e
     }
@@ -48,8 +49,8 @@ impl Env {
         logs.push_back(log);
     }
 
-    pub fn create_local_env(&mut self, class_name: &str) -> usize {
-        self.locals.alloc(LocalEnv::new(class_name))
+    pub fn create_local_env(&mut self, class_name_hash: NameHash) -> usize {
+        self.locals.alloc(LocalEnv::new(class_name_hash))
     }
 
     pub fn create_array(&mut self, array: VecDeque<Value>) -> usize {
@@ -80,24 +81,24 @@ impl Env {
         self.get_local_env_mut().pop_scope();
     }
 
-    pub fn assign(&mut self, name: &str, val: Value) {
-        self.get_local_env_mut().assign(name, val);
+    pub fn assign(&mut self, name_hash: &NameHash, val: Value) {
+        self.get_local_env_mut().assign(name_hash, val);
     }
 
-    pub fn define(&mut self, name: String, val: Value) {
-        self.get_local_env_mut().define(name, val);
+    pub fn define(&mut self, name_hash: &NameHash, val: Value) {
+        self.get_local_env_mut().define(name_hash, val);
     }
 
-    pub fn undefine(&mut self, name: &str) {
-        self.get_local_env_mut().undefine(name);
+    pub fn undefine(&mut self, name_hash: &NameHash) {
+        self.get_local_env_mut().undefine(name_hash);
     }
 
-    pub fn get(&self, name: &str) -> Option<Value> {
-        self.get_local_env().get(name)
+    pub fn get(&self, name_hash: &NameHash) -> Option<Value> {
+        self.get_local_env().get(name_hash)
     }
 
-    pub fn get_class_name(&self, id: &usize) -> &str {
-        self.get_local_env_at(id).class_name.as_str()
+    pub fn get_class_name_hash(&self, id: &usize) -> &NameHash {
+        &self.get_local_env_at(id).class_name_hash
     }
 
     pub fn get_local_env_at(&self, id: &usize) -> &LocalEnv {
