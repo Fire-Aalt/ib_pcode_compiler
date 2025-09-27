@@ -1,8 +1,8 @@
-use crate::ast_nodes::Value;
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
+use crate::ast::main_hash;
+use crate::data::{NameHash, Value};
 use std::collections::VecDeque;
-use crate::ast::NameHash;
 
 mod allocated_lookup_map;
 mod local_env;
@@ -40,7 +40,7 @@ impl Env {
 
     pub fn new(mode: EnvMode) -> Self {
         let mut e = Self { arrays: AllocatedLookupMap::new(), locals: AllocatedLookupMap::new(), local_ids_stack: Vec::new(), mode };
-        e.create_local_env(NameHash { hash: 0, this_keyword: false }); // global env
+        e.create_local_env(main_hash()); // global env
         e.push_local_env(0);
         e
     }

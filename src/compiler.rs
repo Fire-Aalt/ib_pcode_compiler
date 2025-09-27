@@ -17,7 +17,7 @@ pub fn compile(code: &str) -> AST {
         .next()
         .unwrap();
 
-    let mut ast = AST::default();
+    let mut ast = AST::new();
     ast.build_ast(parsed);
     ast
 }

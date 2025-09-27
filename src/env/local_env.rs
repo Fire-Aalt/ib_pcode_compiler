@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use crate::ast::NameHash;
-use crate::ast_nodes::Value;
+use crate::data::{NameHash, Value};
 
 #[derive(Debug)]
 pub struct LocalEnv {

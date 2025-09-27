@@ -1,8 +1,5 @@
 use std::collections::HashMap;
-use crate::ast::NameHash;
-pub(crate) use crate::ast_nodes::value::Value;
-
-pub mod value;
+use crate::data::{NameHash, Value};
 
 #[derive(Debug)]
 pub enum Stmt {
@@ -96,7 +93,7 @@ pub struct Class {
     pub constructor: Constructor,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Constructor {
     pub constructors: Vec<(NameHash, Expr)>,
     pub args: Vec<NameHash>,

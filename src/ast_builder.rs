@@ -1,13 +1,13 @@
-use crate::ast::{NameHash, AST};
-use crate::ast_nodes::{AssignOperator, AssignTarget, Class, Constructor, Expr, Function, Operator, Stmt, UnaryOp, Value};
+use crate::ast::AST;
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
 use pest::iterators::{Pair, Pairs};
 use std::collections::HashMap;
+use crate::data::ast_nodes::{AssignOperator, AssignTarget, Class, Constructor, Expr, Function, Operator, Stmt, UnaryOp};
+use crate::data::{NameHash, Value};
 
 impl AST {
     pub fn build_ast(&mut self, pair: Pair<Rule>) {
-        self.function_map = HashMap::new();
         assert_eq!(pair.as_rule(), Rule::program);
 
         self.statements = pair
@@ -122,7 +122,7 @@ impl AST {
             }
             Rule::method_decl => {
                 let (fn_name, function) = self.build_fn(pair);
-                self.function_map.insert(fn_name.clone(), function);
+                self.add_function(fn_name.clone(), function);
 
                 Stmt::FunctionDeclaration(fn_name)
             }
@@ -153,7 +153,7 @@ impl AST {
                     }
                 }
 
-                self.class_map.insert(class_name_hash.clone(), Class {
+                self.add_class(class_name_hash.clone(), Class {
                     functions,
                     constructor: Constructor { constructors, args },
                 });

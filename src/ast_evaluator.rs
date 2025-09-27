@@ -1,11 +1,12 @@
 use crate::ast::AST;
-use crate::ast_nodes::{AssignOperator, AssignTarget, Expr, Function, Operator, Stmt, UnaryOp, Value};
-use crate::common::{format_val, num_op, str_op};
+use crate::common::{num_op, str_op};
 use crate::env::{Env, EnvMode};
 use std::cmp::max;
 use std::collections::VecDeque;
 use std::io;
 use std::io::Write;
+use crate::data::ast_nodes::{AssignOperator, AssignTarget, Expr, Function, Operator, Stmt, UnaryOp};
+use crate::data::Value;
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) {
@@ -77,7 +78,7 @@ impl AST {
                 None
             }
             Stmt::Input(ident) => {
-                let input = self.exec_input(&self.hash_to_name_map[ident], env);
+                let input = self.exec_input(self.get_name(ident), env);
                 env.assign(ident, input);
                 None
             }
@@ -90,7 +91,7 @@ impl AST {
                     }
 
                     let val = self.eval_expr(expr, env);
-                    format_val(&val, &mut output, env);
+                    self.format_val(&val, &mut output, env);
                 }
 
                 match &mut env.mode {
@@ -187,10 +188,7 @@ impl AST {
             Expr::MethodCall(name, params) => {
                 let class_name = &env.get_local_env().class_name_hash;
 
-                let fn_def = match class_name.hash == 0 {
-                    false => self.class_map.get(class_name).unwrap().functions.get(name).unwrap(),
-                    true => self.function_map.get(name).unwrap(),
-                };
+                let fn_def = self.get_function(class_name, name);
 
                 let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
                 self.exec_fn(fn_def, &params, env).unwrap_or(Value::String(String::from("No return")))
@@ -219,7 +217,7 @@ impl AST {
                 panic!("Invalid index expression");
             }
             Expr::ClassNew(class_name_hash, params) => {
-                let class_def = self.class_map.get(class_name_hash).unwrap();
+                let class_def = self.get_class(class_name_hash);
                 let id = env.create_local_env(class_name_hash.clone());
 
                 env.push_local_env(id);
@@ -248,9 +246,8 @@ impl AST {
             Expr::Call { expr, fn_name, params } => {
                 if let Value::Instance(id) = self.eval_expr(expr, env) {
                     let class_name_hash = env.get_class_name_hash(&id);
-
-                    let fn_def = self.get_fn_definition(class_name_hash, fn_name);
-
+                    let fn_def = self.get_function(class_name_hash, fn_name);
+                    
                     let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
 
                     env.push_local_env(id);
@@ -335,7 +332,7 @@ impl AST {
         None
     }
 
-    fn exec_input(&self, ask_string: &String, env: &mut Env) -> Value {
+    fn exec_input(&self, ask_string: &str, env: &mut Env) -> Value {
         let mut input;
 
         match &mut env.mode {

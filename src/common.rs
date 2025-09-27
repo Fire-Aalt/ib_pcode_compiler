@@ -1,6 +1,5 @@
-use crate::ast_nodes::value::Value;
-use crate::ast_nodes::Operator;
-use crate::env::Env;
+use crate::data::ast_nodes::Operator;
+use crate::data::Value;
 
 pub fn fix_quotes_plain(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
@@ -70,43 +69,3 @@ pub fn to_bool_num(num: f64) -> bool {
     num != 0.0
 }
 
-pub fn format_val(val: &Value, output: &mut String, env: &Env) {
-    match val {
-        Value::Number(n) => {
-            if n.abs() > 100000000000000000000.0 {
-                output.push_str(&format!("{:e}", n));
-            }
-            else {
-                output.push_str(&format!("{}", n));
-            }
-        },
-        Value::String(s) => output.push_str(s.trim()),
-        Value::Bool(b) => output.push_str(&b.to_string()),
-        Value::Array(id) => {
-            for (i, array_val) in env.get_array(id).iter().enumerate() {
-                if i > 0 {
-                    output.push(',');
-                }
-
-                format_val(array_val, output, env);
-            }
-        },
-        Value::Instance(id) => { // TODO
-/*            let local = env.get_local_env_at(id);
-
-            output.push_str(local.class_name_hash);
-            output.push_str(": [");
-
-            for (i, (name, val)) in local.scopes.first().unwrap().iter().enumerate() {
-                if i > 0 {
-                    output.push(',');
-                }
-
-                output.push_str(name);
-                output.push_str(": ");
-                format_val(val, output, env);
-            }
-            output.push(']');*/
-        },
-    }
-}
