@@ -25,7 +25,7 @@ pub enum ErrorType {
     NoReturn,
     OutOfBounds,
     InvalidType,
-    UninitializedVariable,
+    Uninitialized,
 }
 
 impl StmtNode {
@@ -38,7 +38,11 @@ impl StmtNode {
 impl ExprNode {
     //noinspection DuplicatedCode
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
-        Err(Diagnostic { error_type, line: self.line.clone(), message: message.to_string() })
+        Err(self.diagnostic(error_type, message))
+    }
+
+    pub fn diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
+        Diagnostic { error_type, line: self.line.clone(), message: message.to_string() }
     }
 }
 

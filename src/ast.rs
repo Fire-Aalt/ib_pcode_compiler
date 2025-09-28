@@ -53,12 +53,12 @@ impl AST {
         self.hash_to_name_map.get(name_hash).unwrap().as_str()
     }
 
-    pub fn get_class(&self, name_hash: &NameHash) -> &Class {
-        self.class_map.get(name_hash).unwrap()
+    pub fn get_class(&self, name_hash: &NameHash) -> Option<&Class> {
+        self.class_map.get(name_hash)
     }
 
-    pub fn get_function(&self, class_name_hash: &NameHash, fn_name_hash: &NameHash) -> &Function {
-        self.class_map.get(class_name_hash).unwrap().functions.get(fn_name_hash).unwrap()
+    pub fn get_function(&self, class_name_hash: &NameHash, fn_name_hash: &NameHash) -> Option<&Function> {
+        self.class_map.get(class_name_hash).unwrap().functions.get(fn_name_hash)
     }
 
     pub fn hash(&mut self, string: &str) -> NameHash {

@@ -132,7 +132,7 @@ number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
 bool = { "true" | "false" }
-array = { ("[" ~ allow_end_line ~ (expr ~ ("," ~ allow_end_line ~ expr)*)? ~ allow_end_line ~ "]") | ("new" ~ "Array" ~ "()") }
+array = { ("[" ~ allow_end_line ~ (expr ~ (allow_end_line ~ "," ~ allow_end_line ~ expr)*)? ~ allow_end_line ~ "]") | ("new" ~ "Array" ~ "()") }
 
 ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 class_ident = { "this" ~ "." ~ ident }
