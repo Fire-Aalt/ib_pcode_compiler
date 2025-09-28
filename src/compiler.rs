@@ -1,8 +1,11 @@
-use std::fs;
-use std::ops::{AddAssign};
+use crate::ast::AST;
 use pest::Parser;
 use pest_derive::Parser;
-use crate::ast::AST;
+use std::fs;
+use std::ops::AddAssign;
+use crate::compiler::errors::print_parsing_error;
+
+pub mod errors;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -14,19 +17,25 @@ const QUEUE: &str = "native_classes/Queue";
 
 pub fn compile(code: &str) -> AST {
     let includes = load_includes();
+    let user_code_start_line = includes.lines().count() as u32;
 
     let mut program = includes.clone();
     program.add_assign(code);
 
-    let parsed = DSLParser::parse(Rule::program, program.as_str())
-        .expect("parse failed")
-        .next()
-        .unwrap();
+    let parsed = match DSLParser::parse(Rule::program, program.as_str()) {
+        Ok(parsed) => parsed,
+        Err(err) => {
+            print_parsing_error(&program, user_code_start_line, err);
+            std::process::exit(0)
+        }
+    }.next().unwrap();
 
-    let mut ast = AST::new(program.clone(), includes.lines().count() as u32);
+    let mut ast = AST::new(program.clone(), user_code_start_line);
     ast.build_ast(parsed);
     ast
 }
+
+
 
 fn load_includes() -> String {
     let include_paths: Vec<&str> = vec![COLLECTION, STACK, QUEUE];

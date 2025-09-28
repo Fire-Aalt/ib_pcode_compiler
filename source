@@ -1,17 +1,7 @@
-//==== Checking Lists for Duplicates ====================
-// This program compares two lists, stored in Arrays,
-// checking for duplicate names that appear in both lists.
-// ======================================================
+input X
 
-TENNIS = ["Al","Bobby","Carla","Dave","Ellen"]
-BBALL = ["Lou","Dave","Hellen","Alan","Al"]
-
-output "The following appear in both lists"
-
-loop T from 0 to 4
-    loop B from 0 to 4
-        if TENNIS[T] = BBALL[Y] then
-            output TENNIS[T]
-        end if
-    end loop
-end loop
+if X == 1 then
+    output Y
+else
+    output "No error"
+end if
