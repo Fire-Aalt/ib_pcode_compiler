@@ -1,3 +1,4 @@
+use std::collections::hash_map::Entry::Occupied;
 use std::collections::HashMap;
 use crate::data::{NameHash, Value};
 
@@ -48,8 +49,8 @@ impl LocalEnv {
         }
 
         for scope in self.scopes.iter_mut().rev() {
-            if scope.contains_key(&name_hash.clone()) {
-                scope.insert(name_hash.clone(), val);
+            if let Occupied(mut e) = scope.entry(name_hash.clone()) {
+                e.insert(val);
                 return;
             }
         }
