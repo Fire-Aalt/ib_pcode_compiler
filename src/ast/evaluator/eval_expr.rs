@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Diagnostic, Expr, ExprNode, Line, Operator, UnaryOp};
+use crate::data::ast_nodes::{Diagnostic, ErrorType, Expr, ExprNode, Line, Operator, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 
@@ -9,11 +9,9 @@ impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
         match &expr_node.expr {
             Expr::Ident(name) => {
-                //println!("{}", name);
-                //println!("{:?}", env);
                 match env.get(name) {
                     Some(val) => Ok(val),
-                    None => expr_node.error("Not initialized variable")
+                    None => expr_node.error(ErrorType::UninitializedVariable, format!("Variable {} was not initialized", name).as_str()),
                 }
             },
             Expr::Data(n) => Ok(n.clone()),
@@ -82,10 +80,10 @@ impl AST {
 
                 Ok(Value::Number((left as i64 / right as i64) as f64))
             }
-            Expr::MethodCall(name, params) => {
-                let class_name = &env.get_local_env().class_name;
+            Expr::MethodCall(fn_name, params) => {
+                let class_name = &env.get_local_env().class_name.clone();
 
-                let fn_def = self.get_function(class_name, name);
+                let fn_def = self.get_function(class_name, &fn_name);
 
                 let mut resolved_params = Vec::new();
                 for param in params {
@@ -93,7 +91,10 @@ impl AST {
                 }
 
                 let returned = self.exec_fn(fn_def, &resolved_params, env)?;
-                Ok(returned.unwrap_or(Value::Number(0.0)))
+                match returned {
+                    Some(val) => Ok(val),
+                    None => expr_node.error(ErrorType::NoReturn, format!("No return found for function {} in class {}", fn_name, class_name).as_str())
+                }
             }
             Expr::SubstringCall { expr, start, end } => {
                 if let Value::String(s) = self.eval_expr(expr, env)? {
@@ -102,7 +103,7 @@ impl AST {
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    expr_node.error("Substring used not on a string")
+                    expr_node.error(ErrorType::InvalidType, "Substring used not on a string")
                 }
             }
             Expr::Index(left, index) => {
@@ -111,12 +112,12 @@ impl AST {
                     let array = env.get_array_mut(&id);
 
                     if index < 0 || index >= array.len() as i64 {
-                        return expr_node.error(format!("Index {} is out of bounds {}", index, array.len()).as_str());
+                        return expr_node.error(ErrorType::OutOfBounds, format!("Index {} is out of bounds {}", index, array.len()).as_str());
                     }
 
                     return Ok(array[index as usize].clone())
                 }
-                expr_node.error("Invalid index expression")
+                expr_node.error(ErrorType::InvalidType, "Invalid index expression")
             }
             Expr::ClassNew(class_name_hash, params) => {
                 let class_def = self.get_class(class_name_hash);
@@ -147,7 +148,7 @@ impl AST {
             Expr::Call { expr, fn_name, params } => {
                 let val = self.eval_expr(expr, env)?;
                 if let Value::Instance(id) = val {
-                    let class_name_hash = env.get_class_name_hash(&id);
+                    let class_name_hash = &env.get_class_name_hash(&id).clone();
                     let fn_def = self.get_function(class_name_hash, fn_name);
 
                     let mut resolved_params = Vec::new();
@@ -159,9 +160,12 @@ impl AST {
                     let returned = self.exec_fn(fn_def, &resolved_params, env)?;
                     env.pop_local_env();
 
-                    return Ok(returned.unwrap_or(Value::Number(0.0)));
+                    return match returned {
+                        Some(val) => Ok(val),
+                        None => expr_node.error(ErrorType::NoReturn, format!("No return found for function {} in class {}", fn_name, class_name_hash).as_str())
+                    }
                 }
-                expr_node.error(format!("Tried invoking a method {} not on an instance of a class: {}", fn_name, val).as_str())
+                expr_node.error(ErrorType::InvalidType, format!("Tried invoking a method {} not on an instance of a class: {}", fn_name, val).as_str())
             }
         }
     }

@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::data::ast_nodes::{AssignOperator, AssignTarget, Diagnostic, Stmt, StmtNode};
+use crate::data::ast_nodes::{AssignOperator, AssignTarget, Diagnostic, ErrorType, Stmt, StmtNode};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::cmp::max;
@@ -96,8 +96,15 @@ impl AST {
             }
             Stmt::MethodReturn(expr) => Ok(Some(self.eval_expr(expr, env)?)),
             Stmt::Expr(expr) => {
-                self.eval_expr(expr, env)?;
-                Ok(None)
+                match self.eval_expr(expr, env) {
+                    Err(e) => {
+                        match e.error_type {
+                            ErrorType::NoReturn => Ok(None),
+                            _ => Err(e),
+                        }
+                    },
+                    Ok(_) => Ok(None),
+                }
             }
             Stmt::FunctionDeclaration(_) => Ok(None),
             Stmt::ClassDeclaration(_) => Ok(None),
@@ -127,13 +134,13 @@ impl AST {
                     let array = env.get_array_mut(&id);
 
                     if index < 0 {
-                        stmt.error(format!("Negative index: {}", index).as_str())?;
+                        stmt.error(ErrorType::OutOfBounds, format!("Negative index: {}", index).as_str())?;
                     }
                     let index = index as usize;
-                    while array.len() < index {
+                    while array.len() <= index {
                         array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
                     }
-                    
+
                     let res = match op {
                         AssignOperator::Assign => val,
                         AssignOperator::AssignAdd => array[index].clone() + val,
@@ -144,7 +151,7 @@ impl AST {
                     array[index] = res;
                     Ok(None)
                 } else {
-                    stmt.error("Invalid index expression")
+                    stmt.error(ErrorType::InvalidType, "Invalid index expression")
                 }
             }
         }

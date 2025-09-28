@@ -41,7 +41,7 @@ pub fn print_diagnostic(ast: &AST, diagnostic: Diagnostic) {
 
     let lines: Vec<&str> = ast.source.lines().collect();
 
-    eprintln!("Runtime error: {}", diagnostic.message);
+    eprintln!("Runtime {:?} error: {}", diagnostic.error_type, diagnostic.message);
 
     if diagnostic.line.end_line != diagnostic.line.start_line {
         eprint!("At lines: {}-{}", diagnostic.line.start_line, diagnostic.line.end_line);

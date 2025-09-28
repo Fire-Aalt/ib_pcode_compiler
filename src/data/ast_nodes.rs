@@ -15,19 +15,30 @@ pub struct ExprNode {
 
 #[derive(Debug)]
 pub struct Diagnostic {
+    pub error_type: ErrorType,
     pub line: Line,
     pub message: String,
 }
 
+#[derive(Debug)]
+pub enum ErrorType {
+    NoReturn,
+    OutOfBounds,
+    InvalidType,
+    UninitializedVariable,
+}
+
 impl StmtNode {
-    pub fn error(&self, message: &str) -> Result<Option<Value>, Diagnostic> {
-        Err(Diagnostic { line: self.line.clone(), message: message.to_string() })
+    //noinspection DuplicatedCode
+    pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
+        Err(Diagnostic { error_type, line: self.line.clone(), message: message.to_string() })
     }
 }
 
 impl ExprNode {
-    pub fn error(&self, message: &str) -> Result<Value, Diagnostic> {
-        Err(Diagnostic { line: self.line.clone(), message: message.to_string() })
+    //noinspection DuplicatedCode
+    pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
+        Err(Diagnostic { error_type, line: self.line.clone(), message: message.to_string() })
     }
 }
 
