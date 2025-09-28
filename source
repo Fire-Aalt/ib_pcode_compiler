@@ -1,4 +1,22 @@
+Class YYY()
+    this.array = new Array()
+    this.index = 0
+    this.head = 0
 
+    this.enqueue = function(item)
+    {
+        this.array[this.index] = item
+        this.index++
+    }
 
-NAMES = [4, 5, 7]
-output NAMES[2].length
+    this.dequeue = function()
+    {
+    }
+
+    this.isEmpty = function()
+    {
+        NUM = this.dequeue()
+    }
+end Class
+
+output new YYY().dequeue()

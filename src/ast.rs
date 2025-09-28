@@ -5,13 +5,14 @@ use crate::data::diagnostic::LineInfo;
 use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
 
 pub mod builder;
 pub mod evaluator;
+mod validator;
 
 pub struct AST {
     pub source: String,

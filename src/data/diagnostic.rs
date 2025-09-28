@@ -1,4 +1,6 @@
 use std::fmt::{Debug, Formatter};
+use crate::data::ast_nodes::ExprNode;
+use crate::data::Value;
 
 #[derive(Debug)]
 pub struct Diagnostic {
@@ -20,6 +22,28 @@ pub struct LineInfo {
     pub end_line: u32,
     pub start_col: u16,
     pub end_col: u16,
+}
+
+impl LineInfo {
+    pub fn valid_error(&self, error_type: ErrorType, message: &str) -> Result<(), Diagnostic> {
+        Err(self.diagnostic(error_type, message))
+    }
+
+    pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
+        Err(self.diagnostic(error_type, message))
+    }
+
+    pub fn option_error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
+        Err(self.diagnostic(error_type, message))
+    }
+
+    pub fn diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
+        Diagnostic {
+            error_type,
+            line_info: self.clone(),
+            message: message.to_string(),
+        }
+    }
 }
 
 impl Debug for ErrorType {

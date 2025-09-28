@@ -111,13 +111,14 @@ impl AST {
                 }
             }
             Expr::SubstringCall { expr, start, end } => {
-                if let Value::String(s) = self.eval_expr(expr, env)? {
+                let val = self.eval_expr(expr, env)?;
+                if let Value::String(s) = val {
                     let start = self.eval_expr(start, env)?.as_num() as usize;
                     let end = self.eval_expr(end, env)?.as_num() as usize;
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    expr_node.error(ErrorType::InvalidType, ".substring(start, end) used not on a string")
+                    expr_node.error(ErrorType::InvalidType, format!(".substring(start, end) used on {}. Only strings are supported", val).as_str())
                 }
             }
             Expr::LengthCall(expr) => {

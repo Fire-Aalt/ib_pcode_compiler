@@ -6,7 +6,7 @@ use crate::compiler::Rule;
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 
-pub fn print_diagnostic_error(ast: &AST, diagnostic: Diagnostic) {
+pub fn print_diagnostic_error(ast: &AST, error_category: &str, diagnostic: Diagnostic) {
     let start_line = diagnostic.line_info.start_line as usize;
     let end_line = diagnostic.line_info.end_line as usize;
     let start_col = diagnostic.line_info.start_col as usize;
@@ -16,7 +16,7 @@ pub fn print_diagnostic_error(ast: &AST, diagnostic: Diagnostic) {
     let user_end_line = end_line - ast.user_code_start_line as usize;
 
     eprint!("{}", RED);
-    eprintln!("Runtime {:?} error: {}", diagnostic.error_type, diagnostic.message);
+    eprintln!("{} {:?} error: {}", error_category, diagnostic.error_type, diagnostic.message);
     print_line_info(&ast.source, user_start_line, user_end_line, start_line, end_line, start_col, end_col);
     eprint!("{}", RESET);
 }

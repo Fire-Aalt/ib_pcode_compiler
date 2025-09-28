@@ -1,6 +1,6 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignTarget, StmtNode, Expr, Function, ExprNode};
+use crate::data::ast_nodes::{AssignTarget, StmtNode, Expr, Function, ExprNode, Stmt};
 use crate::data::NameHash;
 use pest::iterators::{Pair, Pairs};
 
@@ -22,9 +22,18 @@ impl AST {
 
         let fn_name = inner.next().unwrap().as_str();
         let fn_args = self.build_args(&mut inner);
+        let mut fn_returns = false;
 
-        let fn_body: Vec<StmtNode> = inner.map(|inner| self.build_stmt(inner)).collect();
-        (self.hash(fn_name), Function { args: fn_args, body: fn_body } )
+        let mut fn_body = Vec::new();
+        for pair in inner {
+            let stmt_node = self.build_stmt(pair);
+            if let Stmt::MethodReturn(_) = &stmt_node.stmt {
+                fn_returns = true;
+            }
+            fn_body.push(stmt_node);
+        }
+        
+        (self.hash(fn_name), Function { args: fn_args, body: fn_body, returns: fn_returns } )
     }
 
     fn build_args(&mut self, inner: &mut Pairs<Rule>) -> Vec<NameHash> {

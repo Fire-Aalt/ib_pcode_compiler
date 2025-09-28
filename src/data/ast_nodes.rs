@@ -2,13 +2,13 @@ use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Value};
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StmtNode {
     pub line_info: LineInfo,
     pub stmt: Stmt,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ExprNode {
     pub line_info: LineInfo,
     pub expr: Expr,
@@ -16,29 +16,25 @@ pub struct ExprNode {
 
 impl StmtNode {
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
-        Err(Diagnostic {
-            error_type,
-            line_info: self.line_info.clone(),
-            message: message.to_string(),
-        })
+        self.line_info.option_error(error_type, message)
     }
 }
 
 impl ExprNode {
+    pub fn valid_error(&self, error_type: ErrorType, message: &str) -> Result<(), Diagnostic> {
+        self.line_info.valid_error(error_type, message)
+    }
+
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
-        Err(self.diagnostic(error_type, message))
+        self.line_info.error(error_type, message)
     }
 
     pub fn diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
-        Diagnostic {
-            error_type,
-            line_info: self.line_info.clone(),
-            message: message.to_string(),
-        }
+        self.line_info.diagnostic(error_type, message)
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Stmt {
     Assign(AssignTarget, AssignOperator, ExprNode),
     Increment(AssignTarget),
@@ -62,7 +58,7 @@ pub enum Stmt {
     EOI,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Ident(NameHash),
     Data(Value),
@@ -87,13 +83,13 @@ pub enum Expr {
     Div(Box<ExprNode>, Box<ExprNode>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AssignTarget {
     Ident(NameHash),
     Array(ExprNode, ExprNode),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operator {
     Add,
     Subtract,
@@ -112,13 +108,13 @@ pub enum Operator {
     Or,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UnaryOp {
     Neg,
     Not,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AssignOperator {
     Assign,
     AssignAdd,
@@ -127,19 +123,20 @@ pub enum AssignOperator {
     AssignDivide,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Function {
     pub args: Vec<NameHash>,
     pub body: Vec<StmtNode>,
+    pub returns: bool
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Class {
     pub functions: HashMap<NameHash, Function>,
     pub constructor: Constructor,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Constructor {
     pub constructors: Vec<(NameHash, ExprNode)>,
     pub args: Vec<NameHash>,

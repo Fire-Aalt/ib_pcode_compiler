@@ -20,6 +20,12 @@ impl NameHash {
     }
 }
 
+impl PartialEq<NameHash> for &NameHash {
+    fn eq(&self, other: &NameHash) -> bool {
+        self.hash == other.hash && self.this_keyword == other.this_keyword
+    }
+}
+
 impl Display for NameHash {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.fmt(f)

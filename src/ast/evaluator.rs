@@ -10,11 +10,11 @@ mod exec_stmt;
 mod eval_expr;
 
 impl AST {
-    pub fn traverse(&self, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+    pub fn traverse(&self, env: &mut Env) -> Result<(), Diagnostic> {
         for stmt_node in &self.nodes {
             self.exec_stmt(stmt_node, env)?;
         }
-        Ok(None)
+        Ok(())
     }
 
     fn exec_fn(&self, def: &Function, params: &[Value], env: &mut Env) -> Result<Option<Value>, Diagnostic> {
