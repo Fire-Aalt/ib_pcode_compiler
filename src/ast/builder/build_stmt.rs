@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 impl AST {
     pub fn build_stmt(&mut self, pair: Pair<Rule>) -> StmtNode {
-        let line = self.as_line(&pair);
+        let line = self.as_line_info(&pair);
         let stmt = match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();

@@ -16,10 +16,10 @@ pub enum ErrorType {
 
 #[derive(Clone)]
 pub struct LineInfo {
-    pub start_line: i32,
-    pub end_line: i32,
-    pub start_pos: u16,
-    pub end_pos: u16,
+    pub start_line: u32,
+    pub end_line: u32,
+    pub start_col: u16,
+    pub end_col: u16,
 }
 
 impl Debug for ErrorType {

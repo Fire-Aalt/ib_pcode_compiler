@@ -38,25 +38,28 @@ pub fn run(ast: &AST, env: &mut Env) {
 }
 
 pub fn print_diagnostic(ast: &AST, diagnostic: Diagnostic) {
-    let start_line = (ast.start_line as i32 + diagnostic.line_info.start_line) as usize;
-    let end_line = (ast.start_line as i32 + diagnostic.line_info.end_line) as usize;
-    let start_col = diagnostic.line_info.start_pos as usize;
-    let end_col = diagnostic.line_info.end_pos as usize;
+    let start_line = diagnostic.line_info.start_line as usize;
+    let end_line = diagnostic.line_info.end_line as usize;
+    let start_col = diagnostic.line_info.start_col as usize;
+    let end_col = diagnostic.line_info.end_col as usize;
+
+    let user_start_line = start_line - ast.user_code_start_line as usize;
+    let user_end_line = end_line - ast.user_code_start_line as usize;
 
     let lines: Vec<&str> = ast.source.lines().collect();
 
     eprintln!("{}", RED);
     eprintln!("Runtime {:?} error: {}", diagnostic.error_type, diagnostic.message);
 
-    if diagnostic.line_info.end_line != diagnostic.line_info.start_line {
-        eprint!("At lines: {}-{}", diagnostic.line_info.start_line, diagnostic.line_info.end_line);
+    if user_end_line != user_start_line {
+        eprint!("At lines: {}-{}", user_start_line, user_end_line);
     } else {
-        eprint!("At line: {}", diagnostic.line_info.start_line);
+        eprint!("At line: {}", user_start_line);
     }
 
     eprint!(", ");
 
-    if diagnostic.line_info.end_pos - 1 != diagnostic.line_info.start_pos {
+    if diagnostic.line_info.end_col - 1 != diagnostic.line_info.start_col {
         eprint!("characters: {}-{}", start_col, end_col);
     } else {
         eprint!("character: {}", start_col);
@@ -84,7 +87,7 @@ pub fn print_diagnostic(ast: &AST, diagnostic: Diagnostic) {
     }
 
     if end_line > start_line {
-        if let Some(last_line) = lines.get(end_line - 1) {
+        if let Some(last_line) = lines.get(user_end_line - 1) {
             eprintln!("...");
             eprintln!("{}", last_line);
 

@@ -1,24 +1,24 @@
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
-use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
+use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
+use crate::data::diagnostic::LineInfo;
+use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
-use crate::data::diagnostic::LineInfo;
 
 pub mod builder;
 pub mod evaluator;
 
 pub struct AST {
     pub source: String,
+    pub user_code_start_line: u32,
     pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
     class_map: HashMap<NameHash, Class>,
-    pub start_line: usize,
 }
 
 impl Display for AST {
@@ -30,10 +30,22 @@ impl Display for AST {
 }
 
 impl AST {
-    pub fn new(source: &str, start_line: usize) -> Self {
-        let mut ast = Self { source: source.to_string(), nodes: Vec::new(), class_map: HashMap::new(), hash_to_name_map: HashMap::new(), start_line };
+    pub fn new(source: String, user_code_start_line: u32) -> Self {
+        let mut ast = Self {
+            source,
+            user_code_start_line,
+            nodes: Vec::new(),
+            class_map: HashMap::new(),
+            hash_to_name_map: HashMap::new(),
+        };
         let main = ast.main_hash();
-        ast.add_class(main, Class { functions: HashMap::new(), constructor: Constructor::default() });
+        ast.add_class(
+            main,
+            Class {
+                functions: HashMap::new(),
+                constructor: Constructor::default(),
+            },
+        );
         ast
     }
 
@@ -47,7 +59,11 @@ impl AST {
 
     pub fn add_function(&mut self, name_hash: NameHash, function: Function) {
         let hash = &self.main_hash();
-        self.class_map.get_mut(hash).unwrap().functions.insert(name_hash, function);
+        self.class_map
+            .get_mut(hash)
+            .unwrap()
+            .functions
+            .insert(name_hash, function);
     }
 
     pub fn get_name(&self, name_hash: &NameHash) -> &str {
@@ -58,13 +74,22 @@ impl AST {
         self.class_map.get(name_hash)
     }
 
-    pub fn get_function(&self, class_name_hash: &NameHash, fn_name_hash: &NameHash) -> Option<&Function> {
-        self.class_map.get(class_name_hash).unwrap().functions.get(fn_name_hash)
+    pub fn get_function(
+        &self,
+        class_name_hash: &NameHash,
+        fn_name_hash: &NameHash,
+    ) -> Option<&Function> {
+        self.class_map
+            .get(class_name_hash)
+            .unwrap()
+            .functions
+            .get(fn_name_hash)
     }
 
     pub fn hash(&mut self, string: &str) -> NameHash {
         let name_hash = hash(string);
-        self.hash_to_name_map.insert(name_hash.clone(), string.to_string());
+        self.hash_to_name_map
+            .insert(name_hash.clone(), string.to_string());
         name_hash
     }
 
@@ -73,11 +98,10 @@ impl AST {
             Value::Number(n) => {
                 if n.abs() > 100000000000000000000.0 {
                     output.push_str(&format!("{:e}", n));
-                }
-                else {
+                } else {
                     output.push_str(&format!("{}", n));
                 }
-            },
+            }
             Value::String(s) => output.push_str(s.trim()),
             Value::Bool(b) => output.push_str(&b.to_string()),
             Value::Array(id) => {
@@ -88,7 +112,7 @@ impl AST {
 
                     self.format_val(array_val, output, env);
                 }
-            },
+            }
             Value::Instance(id) => {
                 let local = env.get_local_env_at(id);
 
@@ -105,24 +129,21 @@ impl AST {
                     self.format_val(val, output, env);
                 }
                 output.push(']');
-            },
+            }
         }
     }
 
-    pub fn as_line(&self, pair: &Pair<Rule>) -> LineInfo {
+    pub fn as_line_info(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
-        let (line, col) = pair.line_col();
+        let (start_line, start_col) = pair.line_col();
         let (end_line, end_col) = span.end_pos().line_col();
 
-        LineInfo { start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
-    }
-
-    pub fn as_sub_line(&self, pair: &Pair<Rule>) -> LineInfo {
-        let span = pair.as_span();
-        let (start_line, start_pos) = pair.line_col();
-        let (end_line, end_col) = span.end_pos().line_col();
-
-        LineInfo { start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
+        LineInfo {
+            start_line: start_line as u32,
+            start_col: start_col as u16,
+            end_line: end_line as u32,
+            end_col: end_col as u16,
+        }
     }
 }
 
@@ -132,11 +153,17 @@ pub fn hash(string: &str) -> NameHash {
     let name_hash = match string.strip_prefix("this.") {
         Some(stripped) => {
             stripped.hash(&mut hasher);
-            NameHash { hash: hasher.finish(), this_keyword: true }
-        },
+            NameHash {
+                hash: hasher.finish(),
+                this_keyword: true,
+            }
+        }
         None => {
             string.hash(&mut hasher);
-            NameHash { hash: hasher.finish(), this_keyword: false }
+            NameHash {
+                hash: hasher.finish(),
+                this_keyword: false,
+            }
         }
     };
     name_hash
@@ -145,4 +172,3 @@ pub fn hash(string: &str) -> NameHash {
 pub fn main_hash() -> NameHash {
     hash("main")
 }
-
