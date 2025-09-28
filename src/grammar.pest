@@ -73,7 +73,7 @@ class_decl = {
 class_new = { "new" ~ ident ~ call_param_list }
 
 class_function = {
-    class_ident ~ "=" ~ "function" ~ decl_param_list ~ end_line
+    class_ident ~ "=" ~ "function" ~ decl_param_list ~ allow_end_line
     ~ "{" ~ end_line
     ~ stmt*
     ~ "}" ~ end_line

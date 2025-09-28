@@ -1,9 +1,10 @@
 use crate::ast::AST;
 use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Diagnostic, ErrorType, Expr, ExprNode, Operator, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, Operator, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 use std::collections::VecDeque;
+use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {

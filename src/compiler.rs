@@ -8,6 +8,10 @@ use crate::ast::AST;
 #[grammar = "grammar.pest"]
 struct DSLParser;
 
+const COLLECTION: &str = "native_classes/Collection";
+const STACK: &str = "native_classes/Stack";
+const QUEUE: &str = "native_classes/Queue";
+
 pub fn compile(code: &str) -> AST {
     let includes = load_includes();
 
@@ -23,13 +27,6 @@ pub fn compile(code: &str) -> AST {
     ast.build_ast(parsed);
     ast
 }
-
-
-
-const COLLECTION: &str = "native_classes/Collection";
-const STACK: &str = "native_classes/Stack";
-const QUEUE: &str = "native_classes/Queue";
-
 
 fn load_includes() -> String {
     let include_paths: Vec<&str> = vec![COLLECTION, STACK, QUEUE];

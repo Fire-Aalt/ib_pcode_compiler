@@ -1,12 +1,13 @@
 use crate::ast::AST;
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{Expr, ExprNode, Line, Operator, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, Operator, UnaryOp};
 use crate::data::Value;
 use pest::iterators::Pair;
+use crate::data::diagnostic::LineInfo;
 
-fn expr_node(line: Line, expr: Expr) -> ExprNode {
-    ExprNode { line, expr }
+fn expr_node(line: LineInfo, expr: Expr) -> ExprNode {
+    ExprNode { line_info: line, expr }
 }
 
 impl AST {

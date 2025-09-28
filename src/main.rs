@@ -6,11 +6,13 @@ fn main() {
 
 Class GG()
 
+this.show = function() {
 
+}
 
 end Class
 
-output new GG().Show()
+output new GG().show()
 
     "#;
 

@@ -1,57 +1,41 @@
+use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Value};
 use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct StmtNode {
-    pub line: Line,
+    pub line_info: LineInfo,
     pub stmt: Stmt,
 }
 
 #[derive(Debug)]
 pub struct ExprNode {
-    pub line: Line,
+    pub line_info: LineInfo,
     pub expr: Expr,
 }
 
-#[derive(Debug)]
-pub struct Diagnostic {
-    pub error_type: ErrorType,
-    pub line: Line,
-    pub message: String,
-}
-
-#[derive(Debug)]
-pub enum ErrorType {
-    NoReturn,
-    OutOfBounds,
-    InvalidType,
-    Uninitialized,
-}
-
 impl StmtNode {
-    //noinspection DuplicatedCode
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
-        Err(Diagnostic { error_type, line: self.line.clone(), message: message.to_string() })
+        Err(Diagnostic {
+            error_type,
+            line_info: self.line_info.clone(),
+            message: message.to_string(),
+        })
     }
 }
 
 impl ExprNode {
-    //noinspection DuplicatedCode
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
         Err(self.diagnostic(error_type, message))
     }
 
     pub fn diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
-        Diagnostic { error_type, line: self.line.clone(), message: message.to_string() }
+        Diagnostic {
+            error_type,
+            line_info: self.line_info.clone(),
+            message: message.to_string(),
+        }
     }
-}
-
-#[derive(Debug, Clone)]
-pub struct Line {
-    pub start_line: i32,
-    pub end_line: i32,
-    pub start_pos: u16,
-    pub end_pos: u16,
 }
 
 #[derive(Debug)]
@@ -78,12 +62,6 @@ pub enum Stmt {
     EOI,
 }
 
-/*impl Stmt {
-    pub fn to_node(self, pair: &Pair<Rule>) -> AstNode {
-        AstNode { line: pair.as_span().as_str().to_string(), stmt: self }
-    }
-}*/
-
 #[derive(Debug)]
 pub enum Expr {
     Ident(NameHash),
@@ -92,18 +70,26 @@ pub enum Expr {
     Unary(UnaryOp, Box<ExprNode>),
     BinOp(Box<ExprNode>, Operator, Box<ExprNode>),
     MethodCall(NameHash, Vec<ExprNode>),
-    SubstringCall { expr: Box<ExprNode>, start: Box<ExprNode>, end: Box<ExprNode> },
+    SubstringCall {
+        expr: Box<ExprNode>,
+        start: Box<ExprNode>,
+        end: Box<ExprNode>,
+    },
     ClassNew(NameHash, Vec<ExprNode>),
-    Call { expr: Box<ExprNode>, fn_name: NameHash, params: Vec<ExprNode> },
+    Call {
+        expr: Box<ExprNode>,
+        fn_name: NameHash,
+        params: Vec<ExprNode>,
+    },
     Index(Box<ExprNode>, Box<ExprNode>),
     Input(Box<ExprNode>),
-    Div(Box<ExprNode>, Box<ExprNode>)
+    Div(Box<ExprNode>, Box<ExprNode>),
 }
 
 #[derive(Debug)]
 pub enum AssignTarget {
     Ident(NameHash),
-    Array(ExprNode, ExprNode)
+    Array(ExprNode, ExprNode),
 }
 
 #[derive(Debug)]

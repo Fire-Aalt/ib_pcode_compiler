@@ -2,7 +2,7 @@ extern crate core;
 
 use crate::ast::AST;
 use crate::compiler::compile;
-use crate::data::ast_nodes::{Diagnostic, Line};
+use crate::data::diagnostic::Diagnostic;
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
 
@@ -11,6 +11,9 @@ pub mod env;
 pub mod ast;
 pub mod data;
 pub mod compiler;
+
+const RED: &str = "\x1b[31m";
+const RESET: &str = "\x1b[0m";
 
 pub fn compile_and_run(code: &str) {
     let ast = compile(code);
@@ -34,24 +37,25 @@ pub fn run(ast: &AST, env: &mut Env) {
 }
 
 pub fn print_diagnostic(ast: &AST, diagnostic: Diagnostic) {
-    let start_line = (ast.start_line as i32 + diagnostic.line.start_line) as usize;
-    let end_line = (ast.start_line as i32 + diagnostic.line.end_line) as usize;
-    let start_col = diagnostic.line.start_pos as usize;
-    let end_col = diagnostic.line.end_pos as usize;
+    let start_line = (ast.start_line as i32 + diagnostic.line_info.start_line) as usize;
+    let end_line = (ast.start_line as i32 + diagnostic.line_info.end_line) as usize;
+    let start_col = diagnostic.line_info.start_pos as usize;
+    let end_col = diagnostic.line_info.end_pos as usize;
 
     let lines: Vec<&str> = ast.source.lines().collect();
 
+    eprintln!("{}", RED);
     eprintln!("Runtime {:?} error: {}", diagnostic.error_type, diagnostic.message);
 
-    if diagnostic.line.end_line != diagnostic.line.start_line {
-        eprint!("At lines: {}-{}", diagnostic.line.start_line, diagnostic.line.end_line);
+    if diagnostic.line_info.end_line != diagnostic.line_info.start_line {
+        eprint!("At lines: {}-{}", diagnostic.line_info.start_line, diagnostic.line_info.end_line);
     } else {
-        eprint!("At line: {}", diagnostic.line.start_line);
+        eprint!("At line: {}", diagnostic.line_info.start_line);
     }
 
     eprint!(", ");
 
-    if diagnostic.line.end_pos - 1 != diagnostic.line.start_pos {
+    if diagnostic.line_info.end_pos - 1 != diagnostic.line_info.start_pos {
         eprint!("characters: {}-{}", start_col, end_col);
     } else {
         eprint!("character: {}", start_col);
@@ -90,4 +94,5 @@ pub fn print_diagnostic(ast: &AST, diagnostic: Diagnostic) {
             eprintln!("{}", underline);
         }
     }
+    eprintln!("{}", RESET);
 }

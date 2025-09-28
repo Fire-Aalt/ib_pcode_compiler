@@ -1,9 +1,10 @@
 use crate::ast::AST;
-use crate::data::ast_nodes::{Diagnostic, ExprNode, Function, StmtNode};
+use crate::data::ast_nodes::{ExprNode, Function, StmtNode};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
 use std::io::Write;
+use crate::data::diagnostic::Diagnostic;
 
 mod exec_stmt;
 mod eval_expr;

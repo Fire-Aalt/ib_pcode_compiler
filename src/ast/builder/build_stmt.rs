@@ -163,6 +163,6 @@ impl AST {
             Rule::EOI => Stmt::EOI,
             _ => unreachable!(),
         };
-        StmtNode { line, stmt }
+        StmtNode { line_info: line, stmt }
     }
 }

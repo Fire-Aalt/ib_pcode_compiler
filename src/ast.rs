@@ -1,5 +1,5 @@
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{Class, Constructor, Function, Line, StmtNode};
+use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
 use crate::env::Env;
@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
+use crate::data::diagnostic::LineInfo;
 
 pub mod builder;
 pub mod evaluator;
@@ -108,20 +109,20 @@ impl AST {
         }
     }
 
-    pub fn as_line(&self, pair: &Pair<Rule>) -> Line {
+    pub fn as_line(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
         let (line, col) = pair.line_col();
         let (end_line, end_col) = span.end_pos().line_col();
 
-        Line { start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
+        LineInfo { start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
     }
 
-    pub fn as_sub_line(&self, pair: &Pair<Rule>) -> Line {
+    pub fn as_sub_line(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
         let (start_line, start_pos) = pair.line_col();
         let (end_line, end_col) = span.end_pos().line_col();
 
-        Line { start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
+        LineInfo { start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
     }
 }
 
