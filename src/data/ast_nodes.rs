@@ -1,5 +1,17 @@
-use std::collections::HashMap;
 use crate::data::{NameHash, Value};
+use std::collections::HashMap;
+
+#[derive(Debug)]
+pub struct AstNode {
+    pub line: Line,
+    pub stmt: Stmt,
+}
+
+#[derive(Debug)]
+pub struct Line {
+    pub string: String,
+    pub line: i32
+}
 
 #[derive(Debug)]
 pub enum Stmt {
@@ -8,13 +20,13 @@ pub enum Stmt {
     Decrement(AssignTarget),
     If {
         cond: Expr,
-        then_branch: Vec<Stmt>,
-        elifs: Vec<(Expr, Vec<Stmt>)>,
-        else_branch: Option<Vec<Stmt>>,
+        then_branch: Vec<AstNode>,
+        elifs: Vec<(Expr, Vec<AstNode>)>,
+        else_branch: Option<Vec<AstNode>>,
     },
-    While(Expr, Vec<Stmt>),
-    For(NameHash, Expr, Expr, Vec<Stmt>),
-    Until(Expr, Vec<Stmt>),
+    While(Expr, Vec<AstNode>),
+    For(NameHash, Expr, Expr, Vec<AstNode>),
+    Until(Expr, Vec<AstNode>),
     Input(NameHash),
     Output(Vec<Expr>),
     Assert(Expr, Expr),
@@ -24,6 +36,12 @@ pub enum Stmt {
     MethodReturn(Expr),
     EOI,
 }
+
+/*impl Stmt {
+    pub fn to_node(self, pair: &Pair<Rule>) -> AstNode {
+        AstNode { line: pair.as_span().as_str().to_string(), stmt: self }
+    }
+}*/
 
 #[derive(Debug)]
 pub enum Expr {
@@ -84,7 +102,7 @@ pub enum AssignOperator {
 #[derive(Debug)]
 pub struct Function {
     pub args: Vec<NameHash>,
-    pub body: Vec<Stmt>,
+    pub body: Vec<AstNode>,
 }
 
 #[derive(Debug)]

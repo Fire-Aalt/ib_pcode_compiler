@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::data::ast_nodes::{Expr, Function, Stmt};
+use crate::data::ast_nodes::{AstNode, Expr, Function};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
@@ -10,8 +10,8 @@ mod eval_expr;
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) {
-        for stmt in &self.statements {
-            self.exec_stmt(stmt, env);
+        for stmt in &self.nodes {
+            self.exec_stmt(&stmt.stmt, env);
         }
     }
 
@@ -34,9 +34,9 @@ impl AST {
         }
     }
 
-    fn exec_body(&self, body: &Vec<Stmt>, env: &mut Env) -> Option<Value> {
+    fn exec_body(&self, body: &Vec<AstNode>, env: &mut Env) -> Option<Value> {
         for stmt in body {
-            if let Some(returned_val) = self.exec_stmt(stmt, env) {
+            if let Some(returned_val) = self.exec_stmt(&stmt.stmt, env) {
                 return Some(returned_val)
             }
         }

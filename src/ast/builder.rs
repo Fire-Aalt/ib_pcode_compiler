@@ -1,6 +1,6 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignTarget, Expr, Function, Stmt};
+use crate::data::ast_nodes::{AssignTarget, AstNode, Expr, Function};
 use crate::data::NameHash;
 use pest::iterators::{Pair, Pairs};
 
@@ -11,7 +11,7 @@ impl AST {
     pub fn build_ast(&mut self, pair: Pair<Rule>) {
         assert_eq!(pair.as_rule(), Rule::program);
 
-        self.statements = pair
+        self.nodes = pair
             .into_inner()
             .map(|inner| self.build_stmt(inner))
             .collect();
@@ -23,7 +23,7 @@ impl AST {
         let fn_name = inner.next().unwrap().as_str();
         let fn_args = self.build_args(&mut inner);
 
-        let fn_body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
+        let fn_body: Vec<AstNode> = inner.map(|inner| self.build_stmt(inner)).collect();
         (self.hash(fn_name), Function { args: fn_args, body: fn_body } )
     }
 

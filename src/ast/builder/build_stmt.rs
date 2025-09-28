@@ -1,13 +1,14 @@
-use std::collections::HashMap;
-use pest::iterators::Pair;
-use crate::ast::AST;
 use crate::ast::builder::get_assign_target;
+use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Expr, Stmt};
+use crate::data::ast_nodes::{AssignOperator, AstNode, Class, Constructor, Expr, Stmt};
+use pest::iterators::Pair;
+use std::collections::HashMap;
 
 impl AST {
-    pub fn build_stmt(&mut self, pair: Pair<Rule>) -> Stmt {
-        match pair.as_rule() {
+    pub fn build_stmt(&mut self, pair: Pair<Rule>) -> AstNode {
+        let line = self.as_line(&pair);
+        let stmt = match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
 
@@ -41,9 +42,9 @@ impl AST {
                 let mut inner = pair.into_inner();
                 let cond = self.build_expr(inner.next().unwrap());
 
-                let mut then_branch: Vec<Stmt> = Vec::new();
-                let mut elifs: Vec<(Expr, Vec<Stmt>)> = Vec::new();
-                let mut else_branch: Option<Vec<Stmt>> = None;
+                let mut then_branch = Vec::new();
+                let mut elifs = Vec::new();
+                let mut else_branch = None;
 
                 for p in inner {
                     match p.as_rule() {
@@ -77,7 +78,7 @@ impl AST {
             Rule::while_loop_stmt => {
                 let mut inner = pair.into_inner();
                 let cond = self.build_expr(inner.next().unwrap());
-                let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner)).collect();
                 Stmt::While(cond, body)
             }
             Rule::for_loop_stmt => {
@@ -85,13 +86,13 @@ impl AST {
                 let ident = inner.next().unwrap().as_str();
                 let start_num = self.build_expr(inner.next().unwrap());
                 let end_num = self.build_expr(inner.next().unwrap());
-                let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner)).collect();
                 Stmt::For(self.hash(ident), start_num, end_num, body)
             }
             Rule::loop_until_stmt => {
                 let mut inner = pair.into_inner();
                 let expr = self.build_expr(inner.next().unwrap());
-                let body: Vec<Stmt> = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner)).collect();
                 Stmt::Until(expr, body)
             }
             Rule::input_stmt => {
@@ -161,6 +162,7 @@ impl AST {
             }
             Rule::EOI => Stmt::EOI,
             _ => unreachable!(),
-        }
+        };
+        AstNode { line, stmt }
     }
 }

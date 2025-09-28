@@ -1,32 +1,35 @@
-use crate::data::ast_nodes::{Class, Constructor, Function, Stmt};
+use crate::compiler::Rule;
+use crate::data::ast_nodes::{AstNode, Class, Constructor, Function, Line};
 use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
 use crate::env::Env;
+use pest::iterators::Pair;
 use std::collections::HashMap;
+use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
-use std::fmt;
 
 pub mod builder;
 pub mod evaluator;
 
 pub struct AST {
-    pub statements: Vec<Stmt>,
+    pub nodes: Vec<AstNode>,
+    pub hash_to_name_map: HashMap<NameHash, String>,
     class_map: HashMap<NameHash, Class>,
-    pub hash_to_name_map: HashMap<NameHash, String>
+    start_line: usize,
 }
 
 impl Display for AST {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         with_name_map(&self.hash_to_name_map, || {
-            write!(f, "{:#?}\n{:#?}", self.class_map, self.statements)
+            write!(f, "{:#?}\n{:#?}", self.class_map, self.nodes)
         })
     }
 }
 
 impl AST {
-    pub fn new() -> Self {
-        let mut ast = Self { statements: Vec::new(), class_map: HashMap::new(), hash_to_name_map: HashMap::new() };
+    pub fn new(start_line: usize) -> Self {
+        let mut ast = Self { nodes: Vec::new(), class_map: HashMap::new(), hash_to_name_map: HashMap::new(), start_line };
         let main = ast.main_hash();
         ast.add_class(main, Class { functions: HashMap::new(), constructor: Constructor::default() });
         ast
@@ -102,6 +105,13 @@ impl AST {
                 output.push(']');
             },
         }
+    }
+
+    pub fn as_line(&self, pair: &Pair<Rule>) -> Line {
+        let span = pair.as_span();
+        let string = span.lines().next().unwrap_or("").trim().to_string();
+        let (line, _) = pair.line_col();
+        Line { string, line: line as i32 - self.start_line as i32 }
     }
 }
 

@@ -1,5 +1,5 @@
 use std::fs;
-use std::ops::{Add, AddAssign};
+use std::ops::{AddAssign};
 use pest::Parser;
 use pest_derive::Parser;
 use crate::ast::AST;
@@ -10,14 +10,16 @@ struct DSLParser;
 
 pub fn compile(code: &str) -> AST {
     let includes = load_includes();
-    let program = includes.add(code);
+
+    let mut program = includes.clone();
+    program.add_assign(code);
 
     let parsed = DSLParser::parse(Rule::program, program.as_str())
         .expect("parse failed")
         .next()
         .unwrap();
 
-    let mut ast = AST::new();
+    let mut ast = AST::new(includes.lines().count());
     ast.build_ast(parsed);
     ast
 }
