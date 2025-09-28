@@ -1,6 +1,6 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignTarget, AstNode, Expr, Function};
+use crate::data::ast_nodes::{AssignTarget, StmtNode, Expr, Function, ExprNode};
 use crate::data::NameHash;
 use pest::iterators::{Pair, Pairs};
 
@@ -23,7 +23,7 @@ impl AST {
         let fn_name = inner.next().unwrap().as_str();
         let fn_args = self.build_args(&mut inner);
 
-        let fn_body: Vec<AstNode> = inner.map(|inner| self.build_stmt(inner)).collect();
+        let fn_body: Vec<StmtNode> = inner.map(|inner| self.build_stmt(inner)).collect();
         (self.hash(fn_name), Function { args: fn_args, body: fn_body } )
     }
 
@@ -43,8 +43,8 @@ impl AST {
     }
 }
 
-fn get_assign_target(assignee: Expr) -> AssignTarget {
-    match assignee {
+fn get_assign_target(assignee: ExprNode) -> AssignTarget {
+    match assignee.expr {
         Expr::Ident(name) => {
             AssignTarget::Ident(name)
         }

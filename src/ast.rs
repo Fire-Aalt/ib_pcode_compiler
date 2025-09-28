@@ -1,5 +1,5 @@
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AstNode, Class, Constructor, Function, Line};
+use crate::data::ast_nodes::{StmtNode, Class, Constructor, Function, Line};
 use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
 use crate::env::Env;
@@ -13,7 +13,7 @@ pub mod builder;
 pub mod evaluator;
 
 pub struct AST {
-    pub nodes: Vec<AstNode>,
+    pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
     class_map: HashMap<NameHash, Class>,
     start_line: usize,
@@ -109,9 +109,20 @@ impl AST {
 
     pub fn as_line(&self, pair: &Pair<Rule>) -> Line {
         let span = pair.as_span();
+        let (line, col) = pair.line_col();
+        let (end_line, end_col) = span.end_pos().line_col();
+
         let string = span.lines().next().unwrap_or("").trim().to_string();
-        let (line, _) = pair.line_col();
-        Line { string, line: line as i32 - self.start_line as i32 }
+        Line { string, start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
+    }
+
+    pub fn as_sub_line(&self, pair: &Pair<Rule>) -> Line {
+        let span = pair.as_span();
+        let (start_line, start_pos) = pair.line_col();
+        let (end_line, end_col) = span.end_pos().line_col();
+
+        let string = pair.as_str().to_string();
+        Line { string, start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
     }
 }
 

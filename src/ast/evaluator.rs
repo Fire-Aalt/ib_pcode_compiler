@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::data::ast_nodes::{AstNode, Expr, Function};
+use crate::data::ast_nodes::{StmtNode, Expr, Function, ExprNode};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
@@ -24,7 +24,7 @@ impl AST {
         returned
     }
 
-    fn is_true(&self, cond: &Expr, env: &mut Env) -> bool {
+    fn is_true(&self, cond: &ExprNode, env: &mut Env) -> bool {
         self.eval_expr(cond, env).as_bool()
     }
 
@@ -34,7 +34,7 @@ impl AST {
         }
     }
 
-    fn exec_body(&self, body: &Vec<AstNode>, env: &mut Env) -> Option<Value> {
+    fn exec_body(&self, body: &Vec<StmtNode>, env: &mut Env) -> Option<Value> {
         for stmt in body {
             if let Some(returned_val) = self.exec_stmt(&stmt.stmt, env) {
                 return Some(returned_val)

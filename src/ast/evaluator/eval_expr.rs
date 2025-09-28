@@ -1,13 +1,19 @@
 use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Expr, Operator, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, Line, Operator, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 
+#[derive(Debug)]
+pub struct Diagnostic<'a> {
+    pub line: &'a Line,
+    pub message: String,
+}
+
 impl AST {
-    pub fn eval_expr(&self, expr: &Expr, env: &mut Env) -> Value {
-        match expr {
+    pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Value {
+        match &expr_node.expr {
             Expr::Ident(name) => {
                 //println!("{}", name);
                 //println!("{:?}", env);

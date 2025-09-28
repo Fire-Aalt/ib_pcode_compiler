@@ -2,38 +2,47 @@ use crate::data::{NameHash, Value};
 use std::collections::HashMap;
 
 #[derive(Debug)]
-pub struct AstNode {
+pub struct StmtNode {
     pub line: Line,
     pub stmt: Stmt,
 }
 
 #[derive(Debug)]
+pub struct ExprNode {
+    pub line: Line,
+    pub expr: Expr,
+}
+
+#[derive(Debug)]
 pub struct Line {
     pub string: String,
-    pub line: i32
+    pub start_line: i32,
+    pub end_line: i32,
+    pub start_pos: u16,
+    pub end_pos: u16,
 }
 
 #[derive(Debug)]
 pub enum Stmt {
-    Assign(AssignTarget, AssignOperator, Expr),
+    Assign(AssignTarget, AssignOperator, ExprNode),
     Increment(AssignTarget),
     Decrement(AssignTarget),
     If {
-        cond: Expr,
-        then_branch: Vec<AstNode>,
-        elifs: Vec<(Expr, Vec<AstNode>)>,
-        else_branch: Option<Vec<AstNode>>,
+        cond: ExprNode,
+        then_branch: Vec<StmtNode>,
+        elifs: Vec<(ExprNode, Vec<StmtNode>)>,
+        else_branch: Option<Vec<StmtNode>>,
     },
-    While(Expr, Vec<AstNode>),
-    For(NameHash, Expr, Expr, Vec<AstNode>),
-    Until(Expr, Vec<AstNode>),
+    While(ExprNode, Vec<StmtNode>),
+    For(NameHash, ExprNode, ExprNode, Vec<StmtNode>),
+    Until(ExprNode, Vec<StmtNode>),
     Input(NameHash),
-    Output(Vec<Expr>),
-    Assert(Expr, Expr),
+    Output(Vec<ExprNode>),
+    Assert(ExprNode, ExprNode),
     FunctionDeclaration(NameHash),
     ClassDeclaration(NameHash),
-    Expr(Expr),
-    MethodReturn(Expr),
+    Expr(ExprNode),
+    MethodReturn(ExprNode),
     EOI,
 }
 
@@ -47,22 +56,22 @@ pub enum Stmt {
 pub enum Expr {
     Ident(NameHash),
     Data(Value),
-    Array(Vec<Expr>),
-    Unary(UnaryOp, Box<Expr>),
-    BinOp(Box<Expr>, Operator, Box<Expr>),
-    MethodCall(NameHash, Vec<Expr>),
-    SubstringCall { expr: Box<Expr>, start: Box<Expr>, end: Box<Expr> },
-    ClassNew(NameHash, Vec<Expr>),
-    Call { expr: Box<Expr>, fn_name: NameHash, params: Vec<Expr> },
-    Index(Box<Expr>, Box<Expr>),
-    Input(Box<Expr>),
-    Div(Box<Expr>, Box<Expr>)
+    Array(Vec<ExprNode>),
+    Unary(UnaryOp, Box<ExprNode>),
+    BinOp(Box<ExprNode>, Operator, Box<ExprNode>),
+    MethodCall(NameHash, Vec<ExprNode>),
+    SubstringCall { expr: Box<ExprNode>, start: Box<ExprNode>, end: Box<ExprNode> },
+    ClassNew(NameHash, Vec<ExprNode>),
+    Call { expr: Box<ExprNode>, fn_name: NameHash, params: Vec<ExprNode> },
+    Index(Box<ExprNode>, Box<ExprNode>),
+    Input(Box<ExprNode>),
+    Div(Box<ExprNode>, Box<ExprNode>)
 }
 
 #[derive(Debug)]
 pub enum AssignTarget {
     Ident(NameHash),
-    Array(Expr, Expr)
+    Array(ExprNode, ExprNode)
 }
 
 #[derive(Debug)]
@@ -102,7 +111,7 @@ pub enum AssignOperator {
 #[derive(Debug)]
 pub struct Function {
     pub args: Vec<NameHash>,
-    pub body: Vec<AstNode>,
+    pub body: Vec<StmtNode>,
 }
 
 #[derive(Debug)]
@@ -113,6 +122,6 @@ pub struct Class {
 
 #[derive(Debug, Default)]
 pub struct Constructor {
-    pub constructors: Vec<(NameHash, Expr)>,
+    pub constructors: Vec<(NameHash, ExprNode)>,
     pub args: Vec<NameHash>,
 }

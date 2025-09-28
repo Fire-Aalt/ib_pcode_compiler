@@ -1,12 +1,12 @@
 use crate::ast::builder::get_assign_target;
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignOperator, AstNode, Class, Constructor, Expr, Stmt};
+use crate::data::ast_nodes::{AssignOperator, StmtNode, Class, Constructor, Expr, Stmt};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
 impl AST {
-    pub fn build_stmt(&mut self, pair: Pair<Rule>) -> AstNode {
+    pub fn build_stmt(&mut self, pair: Pair<Rule>) -> StmtNode {
         let line = self.as_line(&pair);
         let stmt = match pair.as_rule() {
             Rule::assign_stmt => {
@@ -102,7 +102,7 @@ impl AST {
             }
             Rule::output_stmt => {
                 let inner = pair.into_inner();
-                let body: Vec<Expr> = inner.map(|inner| self.build_expr(inner)).collect();
+                let body = inner.map(|inner| self.build_expr(inner)).collect();
                 Stmt::Output(body)
             }
             Rule::assert_stmt => {
@@ -163,6 +163,6 @@ impl AST {
             Rule::EOI => Stmt::EOI,
             _ => unreachable!(),
         };
-        AstNode { line, stmt }
+        StmtNode { line, stmt }
     }
 }
