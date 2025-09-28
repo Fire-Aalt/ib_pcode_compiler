@@ -1,7 +1,7 @@
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::{fmt, ptr};
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone)]
 #[derive(Eq, Hash, PartialEq)]
@@ -10,13 +10,25 @@ pub struct NameHash {
     pub this_keyword: bool
 }
 
-impl Debug for NameHash {
+impl NameHash {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         if let Some(name) = lookup_name(self) {
             write!(f, "{}", name)
         } else {
             write!(f, "NameHash({})", self.hash)
         }
+    }
+}
+
+impl Display for NameHash {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.fmt(f)
+    }
+}
+
+impl Debug for NameHash {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        self.fmt(f)
     }
 }
 

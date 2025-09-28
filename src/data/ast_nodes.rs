@@ -14,8 +14,25 @@ pub struct ExprNode {
 }
 
 #[derive(Debug)]
+pub struct Diagnostic {
+    pub line: Line,
+    pub message: String,
+}
+
+impl StmtNode {
+    pub fn error(&self, message: &str) -> Result<Option<Value>, Diagnostic> {
+        Err(Diagnostic { line: self.line.clone(), message: message.to_string() })
+    }
+}
+
+impl ExprNode {
+    pub fn error(&self, message: &str) -> Result<Value, Diagnostic> {
+        Err(Diagnostic { line: self.line.clone(), message: message.to_string() })
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Line {
-    pub string: String,
     pub start_line: i32,
     pub end_line: i32,
     pub start_pos: u16,

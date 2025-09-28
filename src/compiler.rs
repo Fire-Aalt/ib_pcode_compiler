@@ -19,7 +19,7 @@ pub fn compile(code: &str) -> AST {
         .next()
         .unwrap();
 
-    let mut ast = AST::new(includes.lines().count());
+    let mut ast = AST::new(program.as_str(), includes.lines().count());
     ast.build_ast(parsed);
     ast
 }

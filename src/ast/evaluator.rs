@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::data::ast_nodes::{StmtNode, Expr, Function, ExprNode};
+use crate::data::ast_nodes::{Diagnostic, ExprNode, Function, StmtNode};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
@@ -9,23 +9,24 @@ mod exec_stmt;
 mod eval_expr;
 
 impl AST {
-    pub fn traverse(&self, env: &mut Env) {
-        for stmt in &self.nodes {
-            self.exec_stmt(&stmt.stmt, env);
+    pub fn traverse(&self, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+        for stmt_node in &self.nodes {
+            self.exec_stmt(stmt_node, env)?;
         }
+        Ok(None)
     }
 
-    fn exec_fn(&self, def: &Function, params: &[Value], env: &mut Env) -> Option<Value> {
+    fn exec_fn(&self, def: &Function, params: &[Value], env: &mut Env) -> Result<Option<Value>, Diagnostic> {
         env.push_scope();
         self.define_method_params(def, params, env);
-        let returned = self.exec_body(&def.body, env);
+        let returned = self.exec_body(&def.body, env)?;
         env.pop_scope();
 
-        returned
+        Ok(returned)
     }
 
-    fn is_true(&self, cond: &ExprNode, env: &mut Env) -> bool {
-        self.eval_expr(cond, env).as_bool()
+    fn is_true(&self, cond: &ExprNode, env: &mut Env) -> Result<bool, Diagnostic> {
+        Ok(self.eval_expr(cond, env)?.as_bool())
     }
 
     fn define_method_params(&self, method_def: &Function, params: &[Value], env: &mut Env) {
@@ -34,13 +35,13 @@ impl AST {
         }
     }
 
-    fn exec_body(&self, body: &Vec<StmtNode>, env: &mut Env) -> Option<Value> {
+    fn exec_body(&self, body: &Vec<StmtNode>, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
         for stmt in body {
-            if let Some(returned_val) = self.exec_stmt(&stmt.stmt, env) {
-                return Some(returned_val)
+            if let Some(returned_val) = self.exec_stmt(stmt, env)? {
+                return Ok(Some(returned_val))
             }
         }
-        None
+        Ok(None)
     }
 
     fn exec_input(&self, ask_string: &str, env: &mut Env) -> Value {

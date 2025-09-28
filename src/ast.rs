@@ -1,5 +1,5 @@
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{StmtNode, Class, Constructor, Function, Line};
+use crate::data::ast_nodes::{Class, Constructor, Function, Line, StmtNode};
 use crate::data::name_hash::{with_name_map, NameHash};
 use crate::data::Value;
 use crate::env::Env;
@@ -13,10 +13,11 @@ pub mod builder;
 pub mod evaluator;
 
 pub struct AST {
+    pub source: String,
     pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
     class_map: HashMap<NameHash, Class>,
-    start_line: usize,
+    pub start_line: usize,
 }
 
 impl Display for AST {
@@ -28,8 +29,8 @@ impl Display for AST {
 }
 
 impl AST {
-    pub fn new(start_line: usize) -> Self {
-        let mut ast = Self { nodes: Vec::new(), class_map: HashMap::new(), hash_to_name_map: HashMap::new(), start_line };
+    pub fn new(source: &str, start_line: usize) -> Self {
+        let mut ast = Self { source: source.to_string(), nodes: Vec::new(), class_map: HashMap::new(), hash_to_name_map: HashMap::new(), start_line };
         let main = ast.main_hash();
         ast.add_class(main, Class { functions: HashMap::new(), constructor: Constructor::default() });
         ast
@@ -112,8 +113,7 @@ impl AST {
         let (line, col) = pair.line_col();
         let (end_line, end_col) = span.end_pos().line_col();
 
-        let string = span.lines().next().unwrap_or("").trim().to_string();
-        Line { string, start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
+        Line { start_line: line as i32 - self.start_line as i32, start_pos: col as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16  }
     }
 
     pub fn as_sub_line(&self, pair: &Pair<Rule>) -> Line {
@@ -121,8 +121,7 @@ impl AST {
         let (start_line, start_pos) = pair.line_col();
         let (end_line, end_col) = span.end_pos().line_col();
 
-        let string = pair.as_str().to_string();
-        Line { string, start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
+        Line { start_line: start_line as i32 - self.start_line as i32, start_pos: start_pos as u16, end_line: end_line as i32 - self.start_line as i32, end_pos: end_col as u16 }
     }
 }
 

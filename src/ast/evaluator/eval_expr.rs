@@ -1,47 +1,44 @@
 use std::collections::VecDeque;
 use crate::ast::AST;
 use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Expr, ExprNode, Line, Operator, UnaryOp};
+use crate::data::ast_nodes::{Diagnostic, Expr, ExprNode, Line, Operator, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 
-#[derive(Debug)]
-pub struct Diagnostic<'a> {
-    pub line: &'a Line,
-    pub message: String,
-}
-
 impl AST {
-    pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Value {
+    pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
         match &expr_node.expr {
             Expr::Ident(name) => {
                 //println!("{}", name);
                 //println!("{:?}", env);
-                env.get(name).unwrap()
+                match env.get(name) {
+                    Some(val) => Ok(val),
+                    None => expr_node.error("Not initialized variable")
+                }
             },
-            Expr::Data(n) => n.clone(),
+            Expr::Data(n) => Ok(n.clone()),
             Expr::Array(data) => {
                 let mut array = VecDeque::new();
 
                 for expr in data {
-                    array.push_back(self.eval_expr(expr, env))
+                    array.push_back(self.eval_expr(expr, env)?)
                 }
 
                 let id = env.create_array(array);
-                Value::Array(id)
+                Ok(Value::Array(id))
             }
             Expr::Unary(op, expr) => {
-                let value = self.eval_expr(expr, env);
-                match op {
+                let value = self.eval_expr(expr, env)?;
+                Ok(match op {
                     UnaryOp::Neg => -value,
                     UnaryOp::Not => !value,
-                }
+                })
             }
             Expr::BinOp(left, op, right) => {
-                let l = self.eval_expr(left, env);
-                let r = self.eval_expr(right, env);
+                let l = self.eval_expr(left, env)?;
+                let r = self.eval_expr(right, env)?;
 
-                match l {
+                Ok(match l {
                     Value::Number(l_num) => match r {
                         Value::Number(_) => num_op(l, op, r),
                         Value::Bool(_) => num_op(l, op, r),
@@ -73,45 +70,53 @@ impl AST {
                         _ => Value::String(String::from("Nan"))
                     },
                     _ => Value::String(String::from("Nan"))
-                }
+                })
             }
-            Expr::Input(text) => self.exec_input(&self.eval_expr(text, env).to_string(), env),
+            Expr::Input(text) => {
+                let text = self.eval_expr(text, env)?;
+                Ok(self.exec_input(&text.to_string(), env))
+            },
             Expr::Div(left, right) => {
-                let left = self.eval_expr(left, env).as_num();
-                let right = self.eval_expr(right, env).as_num();
+                let left = self.eval_expr(left, env)?.as_num();
+                let right = self.eval_expr(right, env)?.as_num();
 
-                Value::Number((left as i64 / right as i64) as f64)
+                Ok(Value::Number((left as i64 / right as i64) as f64))
             }
             Expr::MethodCall(name, params) => {
                 let class_name = &env.get_local_env().class_name;
 
                 let fn_def = self.get_function(class_name, name);
 
-                let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
-                self.exec_fn(fn_def, &params, env).unwrap_or(Value::String(String::from("No return")))
+                let mut resolved_params = Vec::new();
+                for param in params {
+                    resolved_params.push(self.eval_expr(param, env)?);
+                }
+
+                let returned = self.exec_fn(fn_def, &resolved_params, env)?;
+                Ok(returned.unwrap_or(Value::Number(0.0)))
             }
             Expr::SubstringCall { expr, start, end } => {
-                if let Value::String(s) = self.eval_expr(expr, env) {
-                    let start = self.eval_expr(start, env).as_num() as usize;
-                    let end = self.eval_expr(end, env).as_num() as usize;
+                if let Value::String(s) = self.eval_expr(expr, env)? {
+                    let start = self.eval_expr(start, env)?.as_num() as usize;
+                    let end = self.eval_expr(end, env)?.as_num() as usize;
 
-                    Value::String(s[start..end].to_string())
+                    Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    panic!("Substring call expression is not string");
+                    expr_node.error("Substring used not on a string")
                 }
             }
             Expr::Index(left, index) => {
-                if let Value::Array(id) = self.eval_expr(left, env) {
-                    let index = self.eval_expr(index, env).as_num() as i64;
+                if let Value::Array(id) = self.eval_expr(left, env)? {
+                    let index = self.eval_expr(index, env)?.as_num() as i64;
                     let array = env.get_array_mut(&id);
 
                     if index < 0 || index >= array.len() as i64 {
-                        return Value::String("undefined".to_string())
+                        return expr_node.error(format!("Index {} is out of bounds {}", index, array.len()).as_str());
                     }
 
-                    return array[index as usize].clone()
+                    return Ok(array[index as usize].clone())
                 }
-                panic!("Invalid index expression");
+                expr_node.error("Invalid index expression")
             }
             Expr::ClassNew(class_name_hash, params) => {
                 let class_def = self.get_class(class_name_hash);
@@ -121,14 +126,13 @@ impl AST {
                 // Define temp arg values
                 for (i, param) in params.iter().enumerate() {
                     let arg_name_hash = &class_def.constructor.args[i];
-                    let val = self.eval_expr(param, env);
-
+                    let val = self.eval_expr(param, env)?;
                     env.define(arg_name_hash, val);
                 }
 
                 // Constructor
                 for (name_hash, expr) in &class_def.constructor.constructors {
-                    let val = self.eval_expr(expr, env);
+                    let val = self.eval_expr(expr, env)?;
                     env.define(name_hash, val);
                 }
 
@@ -138,22 +142,26 @@ impl AST {
                 }
                 env.pop_local_env();
 
-                Value::Instance(id)
+                Ok(Value::Instance(id))
             }
             Expr::Call { expr, fn_name, params } => {
-                if let Value::Instance(id) = self.eval_expr(expr, env) {
+                let val = self.eval_expr(expr, env)?;
+                if let Value::Instance(id) = val {
                     let class_name_hash = env.get_class_name_hash(&id);
                     let fn_def = self.get_function(class_name_hash, fn_name);
 
-                    let params = params.iter().map(|p| self.eval_expr(p, env)).collect::<Vec<_>>();
+                    let mut resolved_params = Vec::new();
+                    for param in params {
+                        resolved_params.push(self.eval_expr(param, env)?);
+                    }
 
                     env.push_local_env(id);
-                    let returned = self.exec_fn(fn_def, &params, env);
+                    let returned = self.exec_fn(fn_def, &resolved_params, env)?;
                     env.pop_local_env();
 
-                    return returned.unwrap_or(Value::Number(0.0));
+                    return Ok(returned.unwrap_or(Value::Number(0.0)));
                 }
-                panic!("Invalid call expression");
+                expr_node.error(format!("Tried invoking a method {} not on an instance of a class: {}", fn_name, val).as_str())
             }
         }
     }
