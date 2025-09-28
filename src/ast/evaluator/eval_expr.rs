@@ -117,24 +117,46 @@ impl AST {
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    expr_node.error(ErrorType::InvalidType, "Substring used not on a string")
+                    expr_node.error(ErrorType::InvalidType, ".substring(start, end) used not on a string")
+                }
+            }
+            Expr::LengthCall(expr) => {
+                let val = self.eval_expr(expr, env)?;
+                match val {
+                    Value::String(s) => Ok(Value::Number(s.len() as f64)),
+                    Value::Array(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
+                    _ => expr_node.error(ErrorType::InvalidType, format!(".length used on {}. Only strings and arrays are supported", val).as_str()),
                 }
             }
             Expr::Index(left, index) => {
-                if let Value::Array(id) = self.eval_expr(left, env)? {
-                    let index = self.eval_expr(index, env)?.as_num() as i64;
-                    let array = env.get_array_mut(&id);
+                let index = self.eval_expr(index, env)?.as_num() as i64;
 
-                    if index < 0 || index >= array.len() as i64 {
-                        return expr_node.error(
-                            ErrorType::OutOfBounds,
-                            format!("Index {} is out of bounds {}", index, array.len()).as_str(),
-                        );
+                match self.eval_expr(left, env)? {
+                    Value::String(s) => {
+                        let length = s.chars().count();
+
+                        if index < 0 || index >= length as i64 {
+                            return expr_node.error(
+                                ErrorType::OutOfBounds,
+                                format!("Index {} is out of bounds {}", index, length).as_str(),
+                            );
+                        }
+                        Ok(Value::String(s.chars().nth(index as usize).unwrap().to_string()))
+                    },
+                    Value::Array(id) => {
+                        let array = env.get_array_mut(&id);
+
+                        if index < 0 || index >= array.len() as i64 {
+                            return expr_node.error(
+                                ErrorType::OutOfBounds,
+                                format!("Index {} is out of bounds {}", index, array.len()).as_str(),
+                            );
+                        }
+
+                        Ok(array[index as usize].clone())
                     }
-
-                    return Ok(array[index as usize].clone());
+                    _ => expr_node.error(ErrorType::InvalidType, "Invalid index expression"),
                 }
-                expr_node.error(ErrorType::InvalidType, "Invalid index expression")
             }
             Expr::ClassNew(class_name_hash, params) => {
                 let class_def = self.get_class(class_name_hash).ok_or_else(|| {

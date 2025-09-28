@@ -1,7 +1,4 @@
-input X
 
-if X == 1 then
-    output Y
-else
-    output "No error"
-end if
+
+NAMES = [4, 5, 7]
+output NAMES[2].length

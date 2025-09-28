@@ -75,6 +75,7 @@ pub enum Expr {
         start: Box<ExprNode>,
         end: Box<ExprNode>,
     },
+    LengthCall(Box<ExprNode>),
     ClassNew(NameHash, Vec<ExprNode>),
     Call {
         expr: Box<ExprNode>,

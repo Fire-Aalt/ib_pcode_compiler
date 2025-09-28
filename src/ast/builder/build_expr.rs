@@ -164,6 +164,9 @@ impl AST {
                         end: Box::new(end),
                     });
                 }
+                Rule::length_call => {
+                    node = expr_node(line, Expr::LengthCall(Box::new(node)));
+                }
                 Rule::call => {
                     let mut inner = post.into_inner();
 

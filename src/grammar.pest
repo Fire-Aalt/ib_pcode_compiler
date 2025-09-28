@@ -114,6 +114,7 @@ unary = { (not | subtract)* ~ term }
 input_call = { "input" ~ "(" ~ expr? ~ ")" }
 div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 substring_call = { "." ~ "substring" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
+length_call = { "." ~ "length" }
 input_stmt = { "input" ~ any_ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
@@ -124,7 +125,7 @@ call_param_list = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 term = { primary ~ postfix* }
 primary = { number | string | bool | array | class_new | input_call | div_call | method_call | any_ident |  "(" ~ expr ~ ")" }
-postfix = { substring_call | call | index }
+postfix = { substring_call | length_call | call | index }
 call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
 
