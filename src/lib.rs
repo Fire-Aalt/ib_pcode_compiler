@@ -17,14 +17,15 @@ const RESET: &str = "\x1b[0m";
 
 pub fn compile_and_run(code: &str) {
     let ast = compile(code);
-    println!("{}", ast);
+    //println!("{}", ast);
 
     let mut env = Env::release();
 
     run(&ast, &mut env);
-    with_name_map(&ast.hash_to_name_map, || {
+
+/*    with_name_map(&ast.hash_to_name_map, || {
         println!("Final env: {}", env);
-    });
+    });*/
 }
 
 pub fn run(ast: &AST, env: &mut Env) {

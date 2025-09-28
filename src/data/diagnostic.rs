@@ -7,7 +7,6 @@ pub struct Diagnostic {
     pub message: String,
 }
 
-#[derive(Debug)]
 pub enum ErrorType {
     NoReturn,
     OutOfBounds,
@@ -21,6 +20,18 @@ pub struct LineInfo {
     pub end_line: i32,
     pub start_pos: u16,
     pub end_pos: u16,
+}
+
+impl Debug for ErrorType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let raw = match self {
+            ErrorType::NoReturn     => "No Return",
+            ErrorType::OutOfBounds  => "Out Of Bounds",
+            ErrorType::InvalidType  => "Invalid Type",
+            ErrorType::Uninitialized => "Uninitialized",
+        };
+        write!(f, "{}", raw)
+    }
 }
 
 impl Debug for LineInfo {

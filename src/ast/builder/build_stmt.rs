@@ -1,7 +1,7 @@
 use crate::ast::builder::get_assign_target;
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignOperator, StmtNode, Class, Constructor, Expr, Stmt};
+use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Stmt, StmtNode};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
