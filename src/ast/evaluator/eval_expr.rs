@@ -11,7 +11,7 @@ impl AST {
         match &expr_node.expr {
             Expr::Ident(name) => match env.get(name) {
                 Some(val) => Ok(val),
-                None => expr_node.error(
+                None => expr_node.runtime_error(
                     ErrorType::Uninitialized,
                     format!("Variable {} was not initialized", name).as_str(),
                 ),
@@ -86,7 +86,7 @@ impl AST {
                 let class_name = &env.get_local_env().class_name.clone();
                 
                 let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
-                    expr_node.diagnostic(
+                    expr_node.runtime_diagnostic(
                         ErrorType::Uninitialized,
                         format!("Undefined function in class {}", class_name).as_str())
                 })?;
@@ -99,7 +99,7 @@ impl AST {
                 let returned = self.exec_fn(fn_def, &resolved_params, env)?;
                 match returned {
                     Some(val) => Ok(val),
-                    None => expr_node.error(
+                    None => expr_node.runtime_error(
                         ErrorType::NoReturn,
                         format!(
                             "No return found for function {} in class {}",
@@ -117,7 +117,7 @@ impl AST {
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    expr_node.error(ErrorType::InvalidType, format!(".substring(start, end) used on {}. Only strings are supported", val).as_str())
+                    expr_node.runtime_error(ErrorType::InvalidType, format!(".substring(start, end) used on {}. Only strings are supported", val).as_str())
                 }
             }
             Expr::LengthCall(expr) => {
@@ -125,7 +125,7 @@ impl AST {
                 match val {
                     Value::String(s) => Ok(Value::Number(s.len() as f64)),
                     Value::Array(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
-                    _ => expr_node.error(ErrorType::InvalidType, format!(".length used on {}. Only strings and arrays are supported", val).as_str()),
+                    _ => expr_node.runtime_error(ErrorType::InvalidType, format!(".length used on {}. Only strings and arrays are supported", val).as_str()),
                 }
             }
             Expr::Index(left, index) => {
@@ -136,7 +136,7 @@ impl AST {
                         let length = s.chars().count();
 
                         if index < 0 || index >= length as i64 {
-                            return expr_node.error(
+                            return expr_node.runtime_error(
                                 ErrorType::OutOfBounds,
                                 format!("Index {} is out of bounds {}", index, length).as_str(),
                             );
@@ -147,7 +147,7 @@ impl AST {
                         let array = env.get_array_mut(&id);
 
                         if index < 0 || index >= array.len() as i64 {
-                            return expr_node.error(
+                            return expr_node.runtime_error(
                                 ErrorType::OutOfBounds,
                                 format!("Index {} is out of bounds {}", index, array.len()).as_str(),
                             );
@@ -155,12 +155,12 @@ impl AST {
 
                         Ok(array[index as usize].clone())
                     }
-                    _ => expr_node.error(ErrorType::InvalidType, "Invalid index expression"),
+                    _ => expr_node.runtime_error(ErrorType::InvalidType, "Invalid index expression"),
                 }
             }
             Expr::ClassNew(class_name_hash, params) => {
                 let class_def = self.get_class(class_name_hash).ok_or_else(|| {
-                    expr_node.diagnostic(
+                    expr_node.runtime_diagnostic(
                         ErrorType::Uninitialized,
                         "Undefined class",
                     )
@@ -198,7 +198,7 @@ impl AST {
                 if let Value::Instance(id) = val {
                     let class_name_hash = &env.get_class_name_hash(&id).clone();
                     let fn_def = self.get_function(class_name_hash, fn_name).ok_or_else(|| {
-                        expr_node.diagnostic(
+                        expr_node.runtime_diagnostic(
                             ErrorType::Uninitialized,
                             format!("Undefined function in class {}", class_name_hash).as_str(),
                         )
@@ -215,7 +215,7 @@ impl AST {
 
                     return match returned {
                         Some(val) => Ok(val),
-                        None => expr_node.error(
+                        None => expr_node.runtime_error(
                             ErrorType::NoReturn,
                             format!(
                                 "No return found for function {} in class {}",
@@ -225,7 +225,7 @@ impl AST {
                         ),
                     };
                 }
-                expr_node.error(
+                expr_node.runtime_error(
                     ErrorType::InvalidType,
                     format!(
                         "Tried invoking a method {} not on an instance of a class: {}",

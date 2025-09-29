@@ -17,30 +17,29 @@ pub struct ExprNode {
 
 impl StmtNode {
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
-        self.line_info.option_error(error_type, message)
+        self.line_info.runtime_option_error(error_type, message)
     }
 }
 
 impl ExprNode {
-    pub fn valid_error(&self, error_type: ErrorType, message: &str, validator: &mut Validator) -> Result<(), Diagnostic> {
-        let err = self.line_info.diagnostic(error_type, message);
+    pub fn compile_error(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Result<(), Diagnostic> {
+        let err = self.line_info.diagnostic(error_type, message, note);
         validator.errors.push(err.clone());
         Err(err)
     }
 
-    pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
-        self.line_info.error(error_type, message)
-    }
-
-    pub fn diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
-        let err = self.line_info.diagnostic(error_type, message);
-        err
-    }
-
-    pub fn compile_diagnostic(&self, error_type: ErrorType, message: &str, validator: &mut Validator) -> Diagnostic {
-        let err = self.line_info.diagnostic(error_type, message);
+    pub fn compile_diagnostic(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Diagnostic {
+        let err = self.line_info.diagnostic(error_type, message, note);
         validator.errors.push(err.clone());
         err
+    }
+
+    pub fn runtime_error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
+        self.line_info.runtime_error(error_type, message)
+    }
+
+    pub fn runtime_diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
+        self.line_info.diagnostic(error_type, message, "")
     }
 }
 

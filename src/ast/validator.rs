@@ -1,5 +1,5 @@
-mod valid_expr;
-mod valid_stmt;
+mod validate_expr;
+mod validate_stmt;
 
 use crate::ast::{main_hash, AST};
 use crate::data::ast_nodes::Function;
@@ -80,17 +80,19 @@ impl AST {
     }
 
     pub fn validate_fn_call(&self, line_info: &LineInfo, class_name: &NameHash, fn_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
-        self.get_function(class_name, fn_name).ok_or_else(|| line_info.valid_error(
+        self.get_function(class_name, fn_name).ok_or_else(|| line_info.compile_error(
             ErrorType::Uninitialized,
-            format!("Undefined function in class {}", class_name).as_str(),
+            format!("cannot find function `{}` in this scope", fn_name).as_str(),
+            "not found in this scope",
             validator
         )).err().unwrap_or(Ok(()))
     }
 
     pub fn validate_class_call(&self, line_info: &LineInfo, class_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
-        self.get_class(class_name).ok_or_else(|| line_info.valid_error(
+        self.get_class(class_name).ok_or_else(|| line_info.compile_error(
             ErrorType::Uninitialized,
-            format!("Undefined function in class {}", class_name).as_str(),
+            format!("cannot find class `{}`", class_name).as_str(),
+            "class is not defined",
             validator
         )).err().unwrap_or(Ok(()))
     }

@@ -10,9 +10,10 @@ impl AST {
             Expr::Ident(name) =>  {
                 let _ = match env.get(name) {
                     Some(_) => Ok(()),
-                    None => expr_node.valid_error(
+                    None => expr_node.compile_error(
                         ErrorType::Uninitialized,
-                        format!("Cannot find variable `{}` in this scope", name).as_str(),
+                        format!("cannot find variable `{}` in this scope", name).as_str(),
+                        "not found in this scope",
                         validator
                     ),
                 };
@@ -49,12 +50,13 @@ impl AST {
                 }
 
                 if !self.class_map[class_name].functions[fn_name].returns {
-                    return expr_node.valid_error(
+                    return expr_node.compile_error(
                         ErrorType::NoReturn,
                         format!(
-                            "Not all code paths return for function {} in class {}",
+                            "Not all code paths return for function `{}` in class `{}`",
                             fn_name, class_name
                         ).as_str(),
+                        "expected to return a value",
                         validator
                     )
                 }

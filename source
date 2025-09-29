@@ -20,7 +20,7 @@ Class hhh()
     }
 end Class
 
-
+new SDds()
 output Show()
 
 // TODO: better check for unvisited methods
