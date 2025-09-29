@@ -1,19 +1,18 @@
 mod valid_expr;
 mod valid_stmt;
 
-use std::collections::{HashMap, HashSet};
 use crate::ast::{main_hash, AST};
 use crate::data::ast_nodes::Function;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 use crate::env::Env;
-
+use std::collections::HashMap;
 
 
 impl AST {
     pub fn validate(&self, env: &mut Env) -> Vec<Diagnostic> {
         let mut validator = Validator { validated_functions: HashMap::new(), errors: Vec::new() };
-        
+
         // Classes are encapsulated, so they can be checked fully first
         let _ = self.validate_class_definitions(env, &mut validator);
 
@@ -49,7 +48,7 @@ impl AST {
             }
 
             for (arg, expr_node) in &class.constructor.constructors {
-                let _ = self.valid_expr(expr_node, env, validator);
+                let _ = self.validate_expr(expr_node, env, validator);
                 env.define(arg, Value::Number(0.0))
             }
 
@@ -80,7 +79,7 @@ impl AST {
         Ok(())
     }
 
-    pub fn valid_fn_call(&self, line_info: &LineInfo, class_name: &NameHash, fn_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
+    pub fn validate_fn_call(&self, line_info: &LineInfo, class_name: &NameHash, fn_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
         self.get_function(class_name, fn_name).ok_or_else(|| line_info.valid_error(
             ErrorType::Uninitialized,
             format!("Undefined function in class {}", class_name).as_str(),
@@ -88,7 +87,7 @@ impl AST {
         )).err().unwrap_or(Ok(()))
     }
 
-    pub fn valid_class_call(&self, line_info: &LineInfo, class_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
+    pub fn validate_class_call(&self, line_info: &LineInfo, class_name: &NameHash, validator: &mut Validator) -> Result<(), Diagnostic> {
         self.get_class(class_name).ok_or_else(|| line_info.valid_error(
             ErrorType::Uninitialized,
             format!("Undefined function in class {}", class_name).as_str(),

@@ -75,7 +75,7 @@ pub enum Expr {
     Array(Vec<ExprNode>),
     Unary(UnaryOp, Box<ExprNode>),
     BinOp(Box<ExprNode>, Operator, Box<ExprNode>),
-    MethodCall(NameHash, Vec<ExprNode>),
+    LocalMethodCall(NameHash, Vec<ExprNode>),
     SubstringCall {
         expr: Box<ExprNode>,
         start: Box<ExprNode>,
@@ -83,7 +83,7 @@ pub enum Expr {
     },
     LengthCall(Box<ExprNode>),
     ClassNew(NameHash, Vec<ExprNode>),
-    Call {
+    ClassMethodCall {
         expr: Box<ExprNode>,
         fn_name: NameHash,
         params: Vec<ExprNode>,

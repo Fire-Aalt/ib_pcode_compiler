@@ -13,6 +13,13 @@ method Show()
 end method
 
 
+Class hhh()
+    this.gg = function()
+    {
+        output Show()
+    }
+end Class
+
 
 output Show()
 

@@ -1,11 +1,11 @@
 use crate::compiler::Rule;
-use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{NameHash, with_name_map};
+use crate::data::name_hash::{with_name_map, NameHash};
+use crate::data::Value;
 use crate::env::Env;
 use pest::iterators::Pair;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};

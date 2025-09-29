@@ -27,8 +27,7 @@ pub fn compile_and_run(code: &str) {
 
 pub fn run(ast: &AST, env: &mut Env) {
     with_name_map(&ast.hash_to_name_map, || {
-        let mut compile_errors = ast.validate(env);
-
+        let compile_errors = ast.validate(env);
 
         for error in &compile_errors {
             print_diagnostic_error(ast,"Compilation", error.clone());

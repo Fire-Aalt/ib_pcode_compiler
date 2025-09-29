@@ -1,6 +1,6 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignTarget, StmtNode, Expr, Function, ExprNode, Stmt};
+use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
 use crate::data::NameHash;
 use pest::iterators::{Pair, Pairs};
 

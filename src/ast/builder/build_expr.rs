@@ -120,7 +120,7 @@ impl AST {
                     .into_inner()
                     .map(|inner| self.build_expr(inner))
                     .collect();
-                expr_node(line, Expr::MethodCall(self.hash(method_name), args))
+                expr_node(line, Expr::LocalMethodCall(self.hash(method_name), args))
             }
             Rule::input_call => {
                 let mut inner = first.into_inner();
@@ -181,7 +181,7 @@ impl AST {
                     let mut fn_name_hash = self.hash(fn_name);
                     fn_name_hash.this_keyword = true;
 
-                    node = expr_node(line, Expr::Call {
+                    node = expr_node(line, Expr::ClassMethodCall {
                         expr: Box::new(node),
                         fn_name: fn_name_hash,
                         params,

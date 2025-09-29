@@ -82,9 +82,9 @@ impl AST {
 
                 Ok(Value::Number((left as i64 / right as i64) as f64))
             }
-            Expr::MethodCall(fn_name, params) => {
+            Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
-
+                
                 let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
                     expr_node.diagnostic(
                         ErrorType::Uninitialized,
@@ -189,7 +189,7 @@ impl AST {
 
                 Ok(Value::Instance(id))
             }
-            Expr::Call {
+            Expr::ClassMethodCall {
                 expr,
                 fn_name,
                 params,
