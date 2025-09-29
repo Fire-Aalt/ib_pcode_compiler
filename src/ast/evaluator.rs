@@ -37,11 +37,14 @@ impl AST {
     }
 
     fn exec_body(&self, body: &Vec<StmtNode>, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+        env.push_scope();
         for stmt in body {
             if let Some(returned_val) = self.exec_stmt(stmt, env)? {
+                env.pop_scope();
                 return Ok(Some(returned_val))
             }
         }
+        env.pop_scope();
         Ok(None)
     }
 

@@ -12,7 +12,7 @@ impl AST {
                     Some(_) => Ok(()),
                     None => expr_node.valid_error(
                         ErrorType::Uninitialized,
-                        format!("Variable {} was not initialized", name).as_str(),
+                        format!("Cannot find variable `{}` in this scope", name).as_str(),
                         validator
                     ),
                 };
@@ -57,7 +57,7 @@ impl AST {
                     return expr_node.valid_error(
                         ErrorType::NoReturn,
                         format!(
-                            "No return found for function {} in class {}",
+                            "Not all code paths return for function {} in class {}",
                             fn_name, class_name
                         ).as_str(),
                         validator

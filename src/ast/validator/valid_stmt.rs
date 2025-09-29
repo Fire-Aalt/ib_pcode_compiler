@@ -20,6 +20,14 @@ impl AST {
         }
     }
 
+    fn validate_body(&self, body: &Vec<StmtNode>, env: &mut Env, validator: &mut Validator) {
+        env.push_scope();
+        for stmt_node in body {
+            let _ = self.validate_stmt(stmt_node, env, validator);
+        }
+        env.pop_scope();
+    }
+
     pub fn validate_stmt(&self, stmt_node: &StmtNode, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
         match &stmt_node.stmt {
             Stmt::Assign(target, _, expr) => {
@@ -38,28 +46,22 @@ impl AST {
             Stmt::If { cond, then_branch, elifs, else_branch }  => {
                 let _ = self.valid_expr(cond, env, validator);
 
-                for stmt_node in then_branch {
-                    let _ = self.validate_stmt(stmt_node, env, validator);
-                }
+                self.validate_body(then_branch, env, validator);
+
                 for (cond, stmt_nodes) in elifs {
                     let _ = self.valid_expr(cond, env, validator);
-                    for stmt_node in stmt_nodes {
-                        let _ = self.validate_stmt(stmt_node, env, validator);
-                    }
+
+                    self.validate_body(stmt_nodes, env, validator);
                 }
                 if let Some(else_branch) = else_branch {
-                    for stmt_node in else_branch {
-                        let _ = self.validate_stmt(stmt_node, env, validator);
-                    }
+                    self.validate_body(else_branch, env, validator);
                 }
                 Ok(())
             }
             Stmt::While(cond, body) => {
                 let _ = self.valid_expr(cond, env, validator);
 
-                for stmt_node in body {
-                    let _ = self.validate_stmt(stmt_node, env, validator);
-                }
+                self.validate_body(body, env, validator);
                 Ok(())
             }
             Stmt::For(name_hash, start_num, end_num, body) => {
@@ -67,17 +69,13 @@ impl AST {
                 let _ = self.valid_expr(start_num, env, validator);
                 let _ = self.valid_expr(end_num, env, validator);
 
-                for stmt_node in body {
-                    let _ = self.validate_stmt(stmt_node, env, validator);
-                }
+                self.validate_body(body, env, validator);
                 Ok(())
             }
             Stmt::Until(expr, body) => {
                 let _ = self.valid_expr(expr, env, validator);
 
-                for stmt_node in body {
-                    let _ = self.validate_stmt(stmt_node, env, validator);
-                }
+                self.validate_body(body, env, validator);
                 Ok(())
             }
             Stmt::Input(name_hash) => {
@@ -99,8 +97,13 @@ impl AST {
                 match self.valid_expr(expr_node, env, validator) {
                     Err(e) => {
                         match e.error_type {
-                            ErrorType::NoReturn => Ok(()),
-                            _ => Err(e),
+                            ErrorType::NoReturn =>  {
+                                validator.errors.pop();
+                                Ok(())
+                            },
+                            _ => {
+                                Ok(())
+                            },
                         }
                     },
                     Ok(_) => Ok(()),

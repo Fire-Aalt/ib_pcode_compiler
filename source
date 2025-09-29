@@ -1,13 +1,20 @@
 
 method Show()
-    return R + D + C
+
+
+
+    if false then
+        A = 55
+        return 14
+    end if
+
+    output A
+
 end method
 
-R = 14
-D = 554
 
 
+output Show()
 
-
-// TODO: check that main scope returns in methods
-// TODO: check unvisited methods at the end of compilation
+// TODO: better check for unvisited methods
+// TODO: warn about unused methods
