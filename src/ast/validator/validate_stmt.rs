@@ -6,28 +6,6 @@ use crate::data::Value;
 use crate::env::Env;
 
 impl AST {
-    fn valid_assign_stmt(&self, target: &AssignTarget, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
-        match target {
-            AssignTarget::Ident(name_hash) => {
-                env.assign(name_hash, Value::Number(0.0));
-                Ok(())
-            }
-            AssignTarget::Array(array_expr, index_expr) => {
-                let _ = self.validate_expr(array_expr, env, validator);
-                let _ = self.validate_expr(index_expr, env, validator);
-                Ok(())
-            }
-        }
-    }
-
-    fn validate_body(&self, body: &Vec<StmtNode>, env: &mut Env, validator: &mut Validator) {
-        env.push_scope();
-        for stmt_node in body {
-            let _ = self.validate_stmt(stmt_node, env, validator);
-        }
-        env.pop_scope();
-    }
-
     pub fn validate_stmt(&self, stmt_node: &StmtNode, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
         match &stmt_node.stmt {
             Stmt::Assign(target, _, expr) => {
@@ -94,20 +72,12 @@ impl AST {
                 Ok(())
             }
             Stmt::Expr(expr_node) => {
-                match self.validate_expr(expr_node, env, validator) {
-                    Err(e) => {
-                        match e.error_type {
-                            ErrorType::NoReturn =>  {
-                                validator.errors.pop();
-                                Ok(())
-                            },
-                            _ => {
-                                Ok(())
-                            },
-                        }
-                    },
-                    Ok(_) => Ok(()),
-                }
+                if let Err(e) = self.validate_expr(expr_node, env, validator) {
+                    if let ErrorType::NoReturn = e.error_type {
+                        validator.errors.pop();
+                    }
+                };
+                Ok(())
             }
             Stmt::MethodReturn(expr) => {
                 let _ = self.validate_expr(expr, env, validator);
@@ -117,5 +87,27 @@ impl AST {
             Stmt::ClassDeclaration(_) => Ok(()),
             Stmt::EOI => Ok(()),
         }
+    }
+
+    fn valid_assign_stmt(&self, target: &AssignTarget, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
+        match target {
+            AssignTarget::Ident(name_hash) => {
+                env.assign(name_hash, Value::Number(0.0));
+                Ok(())
+            }
+            AssignTarget::Array(array_expr, index_expr) => {
+                let _ = self.validate_expr(array_expr, env, validator);
+                let _ = self.validate_expr(index_expr, env, validator);
+                Ok(())
+            }
+        }
+    }
+
+    fn validate_body(&self, body: &Vec<StmtNode>, env: &mut Env, validator: &mut Validator) {
+        env.push_scope();
+        for stmt_node in body {
+            let _ = self.validate_stmt(stmt_node, env, validator);
+        }
+        env.pop_scope();
     }
 }

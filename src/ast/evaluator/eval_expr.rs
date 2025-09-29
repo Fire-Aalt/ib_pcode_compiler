@@ -9,13 +9,7 @@ use crate::data::diagnostic::{Diagnostic, ErrorType};
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
         match &expr_node.expr {
-            Expr::Ident(name) => match env.get(name) {
-                Some(val) => Ok(val),
-                None => expr_node.runtime_error(
-                    ErrorType::Uninitialized,
-                    format!("Variable {} was not initialized", name).as_str(),
-                ),
-            },
+            Expr::Ident(name) => Ok(env.get(name).unwrap()),
             Expr::Data(n) => Ok(n.clone()),
             Expr::Array(data) => {
                 let mut array = VecDeque::new();
@@ -84,30 +78,15 @@ impl AST {
             }
             Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
-                
-                let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
-                    expr_node.runtime_diagnostic(
-                        ErrorType::Uninitialized,
-                        format!("Undefined function in class {}", class_name).as_str())
-                })?;
+                let fn_def = self.get_function(class_name, fn_name).unwrap();
 
                 let mut resolved_params = Vec::new();
                 for param in params {
                     resolved_params.push(self.eval_expr(param, env)?);
                 }
 
-                let returned = self.exec_fn(fn_def, &resolved_params, env)?;
-                match returned {
-                    Some(val) => Ok(val),
-                    None => expr_node.runtime_error(
-                        ErrorType::NoReturn,
-                        format!(
-                            "No return found for function {} in class {}",
-                            fn_name, class_name
-                        )
-                        .as_str(),
-                    ),
-                }
+                // Local methods are already validated and no checks are needed
+                Ok(self.exec_fn(fn_def, &resolved_params, env)?.unwrap())
             }
             Expr::SubstringCall { expr, start, end } => {
                 let val = self.eval_expr(expr, env)?;
@@ -159,12 +138,7 @@ impl AST {
                 }
             }
             Expr::ClassNew(class_name_hash, params) => {
-                let class_def = self.get_class(class_name_hash).ok_or_else(|| {
-                    expr_node.runtime_diagnostic(
-                        ErrorType::Uninitialized,
-                        "Undefined class",
-                    )
-                })?;
+                let class_def = self.get_class(class_name_hash).unwrap();
                 let id = env.create_local_env(class_name_hash.clone());
 
                 env.push_local_env(id);

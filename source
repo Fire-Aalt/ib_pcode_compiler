@@ -1,15 +1,11 @@
 
 method Show()
-
-
-
     if false then
         A = 55
         return 14
     end if
 
     output A
-
 end method
 
 
@@ -23,5 +19,6 @@ end Class
 new SDds()
 output Show()
 
+// TODO: put errors into their own methods
 // TODO: better check for unvisited methods
 // TODO: warn about unused methods
