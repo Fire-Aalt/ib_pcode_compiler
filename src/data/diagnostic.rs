@@ -1,14 +1,14 @@
+use crate::data::{Validator, Value};
 use std::fmt::{Debug, Formatter};
-use crate::data::ast_nodes::ExprNode;
-use crate::data::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Diagnostic {
     pub error_type: ErrorType,
     pub line_info: LineInfo,
     pub message: String,
 }
 
+#[derive(Clone)]
 pub enum ErrorType {
     NoReturn,
     OutOfBounds,
@@ -25,8 +25,10 @@ pub struct LineInfo {
 }
 
 impl LineInfo {
-    pub fn valid_error(&self, error_type: ErrorType, message: &str) -> Result<(), Diagnostic> {
-        Err(self.diagnostic(error_type, message))
+    pub fn valid_error(&self, error_type: ErrorType, message: &str, validator: &mut Validator) -> Result<(), Diagnostic> {
+        let err = self.diagnostic(error_type, message);
+        validator.errors.push(err.clone());
+        Err(err)
     }
 
     pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {

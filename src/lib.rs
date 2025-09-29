@@ -27,13 +27,16 @@ pub fn compile_and_run(code: &str) {
 
 pub fn run(ast: &AST, env: &mut Env) {
     with_name_map(&ast.hash_to_name_map, || {
-        match ast.validate(env) {
-            Ok(_) => {}
-            Err(e) =>  {
-                print_diagnostic_error(ast,"Compilation", e);
-                std::process::exit(0)
-            }
-        };
+        let mut compile_errors = ast.validate(env);
+
+
+        for error in &compile_errors {
+            print_diagnostic_error(ast,"Compilation", error.clone());
+        }
+
+        if !compile_errors.is_empty() {
+            std::process::exit(0)
+        }
 
         match ast.traverse(env) {
             Ok(_) => {}

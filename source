@@ -1,22 +1,13 @@
-Class YYY()
-    this.array = new Array()
-    this.index = 0
-    this.head = 0
 
-    this.enqueue = function(item)
-    {
-        this.array[this.index] = item
-        this.index++
-    }
+method Show()
+    return R + D + C
+end method
 
-    this.dequeue = function()
-    {
-    }
+R = 14
+D = 554
 
-    this.isEmpty = function()
-    {
-        NUM = this.dequeue()
-    }
-end Class
 
-output new YYY().dequeue()
+
+
+// TODO: check that main scope returns in methods
+// TODO: check unvisited methods at the end of compilation

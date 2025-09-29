@@ -13,7 +13,7 @@ Class Collection()
     {
         loop I from 0 to this.index - 1
             if this.array[I] == item then
-                this.array[I] = "undefined"
+                //this.array[I] = "undefined"
                 loop J from I to this.index - 2
                     this.array[J] = this.array[J+1]
                 end loop

@@ -88,8 +88,7 @@ impl AST {
                 let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
                     expr_node.diagnostic(
                         ErrorType::Uninitialized,
-                        format!("Undefined function in class {}", class_name).as_str(),
-                    )
+                        format!("Undefined function in class {}", class_name).as_str())
                 })?;
 
                 let mut resolved_params = Vec::new();

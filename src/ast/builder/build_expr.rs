@@ -91,7 +91,7 @@ impl AST {
 
         let mut node = match first.as_rule() {
             Rule::ident => {
-                expr_node(line, Expr::Ident(self.hash(first.as_str()))) //TODO: validate the var was declared
+                expr_node(line, Expr::Ident(self.hash(first.as_str())))
             }
             Rule::number => expr_node(
                 line,
