@@ -19,10 +19,8 @@ end Class
 new SDds()
 
 A = 454
-output Show()
 
 // TODO: put errors into their own methods
-// TODO: better check for unvisited methods
 
-
+// TODO: undefined operands should error
 // TODO: warn about unused methods

@@ -1,10 +1,10 @@
 use crate::ast::AST;
 use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Expr, ExprNode, Operator, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, Operand, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 use std::collections::VecDeque;
-use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error};
+use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error, unsupported_operand_error};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
@@ -33,39 +33,47 @@ impl AST {
                 let l = self.eval_expr(left, env)?;
                 let r = self.eval_expr(right, env)?;
 
-                Ok(match l {
+                let l_val = l.clone();
+                let r_val = r.clone();
+
+                let res = match l {
                     Value::Number(l_num) => match r {
-                        Value::Number(_) => num_op(l, op, r),
-                        Value::Bool(_) => num_op(l, op, r),
-                        Value::String(r_string) => Value::String(match op {
-                            Operator::Add => l_num.to_string() + &*r_string,
-                            _ => String::from("Nan"),
-                        }),
-                        _ => Value::String(String::from("Nan")),
+                        Value::Number(_) => Some(num_op(l, op, r)),
+                        Value::Bool(_) => Some(num_op(l, op, r)),
+                        Value::String(r_string) => match op {
+                            Operand::Add => Some(Value::String(l_num.to_string() + &*r_string)),
+                            _ => None,
+                        },
+                        _ => None,
                     },
                     Value::Bool(l_bool) => match r {
-                        Value::Number(_) => num_op(l, op, r),
-                        Value::Bool(r_bool) => Value::Bool(match op {
-                            Operator::And => l_bool && r_bool,
-                            Operator::Or => l_bool || r_bool,
-                            _ => num_op(l, op, r).as_bool(),
+                        Value::Number(_) => Some(num_op(l, op, r)),
+                        Value::Bool(r_bool) => Some(match op {
+                            Operand::And => Value::Bool(l_bool && r_bool),
+                            Operand::Or => Value::Bool(l_bool || r_bool),
+                            _ => Value::Bool(num_op(l, op, r).as_bool()),
                         }),
                         Value::String(r_string) => {
-                            str_op(l.to_string().as_str(), op, r_string.as_str())
+                            Some(str_op(l.to_string().as_str(), op, r_string.as_str()))
                         }
-                        _ => Value::String(String::from("Nan")),
+                        _ => None,
                     },
                     Value::String(l_string) => match r {
-                        Value::Number(r_num) => Value::String(match op {
-                            Operator::Add => l_string + &r_num.to_string(),
-                            _ => String::from("Nan"),
-                        }),
-                        Value::Bool(_) => str_op(l_string.as_str(), op, r.to_string().as_str()),
-                        Value::String(r_string) => str_op(l_string.as_str(), op, r_string.as_str()),
-                        _ => Value::String(String::from("Nan")),
+                        Value::Number(r_num) => match op {
+                            Operand::Add => Some(Value::String(l_string + &r_num.to_string())),
+                            _ => None,
+                        },
+                        Value::Bool(_) => Some(str_op(l_string.as_str(), op, r.to_string().as_str())),
+                        Value::String(r_string) => Some(str_op(l_string.as_str(), op, r_string.as_str())),
+                        _ => None,
                     },
-                    _ => Value::String(String::from("Nan")),
-                })
+                    _ => None,
+                };
+
+                match res {
+                    Some(val) => Ok(val),
+                    None => runtime_error(&expr_node.line_info, unsupported_operand_error(l_val, op, r_val))
+                }
             }
             Expr::Input(text) => {
                 let text = self.eval_expr(text, env)?;
@@ -85,7 +93,7 @@ impl AST {
                 for param in params {
                     resolved_params.push(self.eval_expr(param, env)?);
                 }
-                
+
                 // Local methods are already validated and no checks are needed
                 let returned = self.exec_fn(fn_def, &resolved_params, env)?.unwrap_or(Value::Number(0.0));
                 Ok(returned)

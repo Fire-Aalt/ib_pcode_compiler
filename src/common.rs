@@ -1,4 +1,4 @@
-use crate::data::ast_nodes::Operator;
+use crate::data::ast_nodes::Operand;
 use crate::data::Value;
 
 pub fn fix_quotes_plain(s: &str) -> String {
@@ -24,40 +24,40 @@ pub fn fix_quotes_plain(s: &str) -> String {
     out
 }
 
-pub fn num_op(l_val: Value, op: &Operator, r_val: Value) -> Value {
+pub fn num_op(l_val: Value, op: &Operand, r_val: Value) -> Value {
     let l= l_val.as_num();
     let r = r_val.as_num();
 
     match op {
-        Operator::Add => l_val + r_val,
-        Operator::Subtract => l_val - r_val,
-        Operator::Multiply => l_val * r_val,
-        Operator::Divide => l_val / r_val,
-        Operator::IntDivide => Value::Number((l_val.as_num() as i64 / r_val.as_num() as i64) as f64),
-        Operator::Power => Value::Number(l.powf(r)),
-        Operator::Modulo => Value::Number(l % r),
-        Operator::Greater => Value::Bool(l > r),
-        Operator::Less => Value::Bool(l < r),
-        Operator::GreaterEqual => Value::Bool(l >= r),
-        Operator::LessEqual => Value::Bool(l <= r),
-        Operator::Equal => Value::Bool(l == r),
-        Operator::NotEqual => Value::Bool(l != r),
-        Operator::And => Value::Bool(to_bool_num(l) && to_bool_num(r)),
-        Operator::Or => Value::Bool(to_bool_num(l) || to_bool_num(r)),
+        Operand::Add => l_val + r_val,
+        Operand::Subtract => l_val - r_val,
+        Operand::Multiply => l_val * r_val,
+        Operand::Divide => l_val / r_val,
+        Operand::IntDivide => Value::Number((l_val.as_num() as i64 / r_val.as_num() as i64) as f64),
+        Operand::Power => Value::Number(l.powf(r)),
+        Operand::Modulo => Value::Number(l % r),
+        Operand::Greater => Value::Bool(l > r),
+        Operand::Less => Value::Bool(l < r),
+        Operand::GreaterEqual => Value::Bool(l >= r),
+        Operand::LessEqual => Value::Bool(l <= r),
+        Operand::Equal => Value::Bool(l == r),
+        Operand::NotEqual => Value::Bool(l != r),
+        Operand::And => Value::Bool(to_bool_num(l) && to_bool_num(r)),
+        Operand::Or => Value::Bool(to_bool_num(l) || to_bool_num(r)),
     }
 }
 
-pub fn str_op(l: &str, op: &Operator, r: &str) -> Value {
+pub fn str_op(l: &str, op: &Operand, r: &str) -> Value {
     match op {
-        Operator::Add => Value::String(String::from(l) + r),
-        Operator::Greater => Value::Bool(l > r),
-        Operator::Less => Value::Bool(l < r),
-        Operator::GreaterEqual => Value::Bool(l >= r),
-        Operator::LessEqual => Value::Bool(l <= r),
-        Operator::Equal => Value::Bool(l == r),
-        Operator::NotEqual => Value::Bool(l != r),
-        Operator::And => Value::Bool(to_bool_str(l) && to_bool_str(r)),
-        Operator::Or => Value::Bool(to_bool_str(l) || to_bool_str(r)),
+        Operand::Add => Value::String(String::from(l) + r),
+        Operand::Greater => Value::Bool(l > r),
+        Operand::Less => Value::Bool(l < r),
+        Operand::GreaterEqual => Value::Bool(l >= r),
+        Operand::LessEqual => Value::Bool(l <= r),
+        Operand::Equal => Value::Bool(l == r),
+        Operand::NotEqual => Value::Bool(l != r),
+        Operand::And => Value::Bool(to_bool_str(l) && to_bool_str(r)),
+        Operand::Or => Value::Bool(to_bool_str(l) || to_bool_str(r)),
         _ => Value::String(String::from("Nan")),
     }
 }

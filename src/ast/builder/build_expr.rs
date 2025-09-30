@@ -1,7 +1,7 @@
 use crate::ast::AST;
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{Expr, ExprNode, Operator, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, Operand, UnaryOp};
 use crate::data::Value;
 use pest::iterators::Pair;
 use crate::data::diagnostic::LineInfo;
@@ -27,21 +27,21 @@ impl AST {
 
                     let right = self.build_expr(inner.next().unwrap());
                     let op = match op_pair.as_rule() {
-                        Rule::add => Operator::Add,
-                        Rule::subtract => Operator::Subtract,
-                        Rule::multiply => Operator::Multiply,
-                        Rule::divide => Operator::Divide,
-                        Rule::int_divide => Operator::IntDivide,
-                        Rule::power => Operator::Power,
-                        Rule::modulo => Operator::Modulo,
-                        Rule::greater => Operator::Greater,
-                        Rule::less => Operator::Less,
-                        Rule::greater_equal => Operator::GreaterEqual,
-                        Rule::less_equal => Operator::LessEqual,
-                        Rule::equal => Operator::Equal,
-                        Rule::not_equal => Operator::NotEqual,
-                        Rule::and => Operator::And,
-                        Rule::or => Operator::Or,
+                        Rule::add => Operand::Add,
+                        Rule::subtract => Operand::Subtract,
+                        Rule::multiply => Operand::Multiply,
+                        Rule::divide => Operand::Divide,
+                        Rule::int_divide => Operand::IntDivide,
+                        Rule::power => Operand::Power,
+                        Rule::modulo => Operand::Modulo,
+                        Rule::greater => Operand::Greater,
+                        Rule::less => Operand::Less,
+                        Rule::greater_equal => Operand::GreaterEqual,
+                        Rule::less_equal => Operand::LessEqual,
+                        Rule::equal => Operand::Equal,
+                        Rule::not_equal => Operand::NotEqual,
+                        Rule::and => Operand::And,
+                        Rule::or => Operand::Or,
                         _ => unreachable!(),
                     };
                     left = expr_node(line, Expr::BinOp(Box::new(left), op, Box::new(right)));
@@ -57,7 +57,7 @@ impl AST {
 
                     expr_node(
                         line,
-                        Expr::BinOp(Box::new(left), Operator::Power, Box::new(right)),
+                        Expr::BinOp(Box::new(left), Operand::Power, Box::new(right)),
                     )
                 } else {
                     left

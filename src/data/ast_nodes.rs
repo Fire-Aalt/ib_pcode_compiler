@@ -73,7 +73,7 @@ pub enum Expr {
     Data(Value),
     Array(Vec<ExprNode>),
     Unary(UnaryOp, Box<ExprNode>),
-    BinOp(Box<ExprNode>, Operator, Box<ExprNode>),
+    BinOp(Box<ExprNode>, Operand, Box<ExprNode>),
     LocalMethodCall(NameHash, Vec<ExprNode>),
     SubstringCall {
         expr: Box<ExprNode>,
@@ -99,7 +99,7 @@ pub enum AssignTarget {
 }
 
 #[derive(Debug, Clone)]
-pub enum Operator {
+pub enum Operand {
     Add,
     Subtract,
     Multiply,
@@ -115,6 +115,29 @@ pub enum Operator {
     NotEqual,
     And,
     Or,
+}
+
+impl Operand {
+    pub fn fmt(&self) -> String {
+        let str = match self {
+            Operand::Add => "add",
+            Operand::Subtract => "subtract",
+            Operand::Multiply => "multiply",
+            Operand::Divide => "divide",
+            Operand::IntDivide => "integer divide",
+            Operand::Modulo => "modulo",
+            Operand::Power => "power",
+            Operand::Greater => "greater",
+            Operand::Less => "less",
+            Operand::GreaterEqual => "greater equal",
+            Operand::LessEqual => "less equal",
+            Operand::Equal => "equal",
+            Operand::NotEqual => "not equal",
+            Operand::And => "and",
+            Operand::Or => "or",
+        };
+        String::from(str)
+    }
 }
 
 #[derive(Debug, Clone)]

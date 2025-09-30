@@ -13,6 +13,16 @@ pub enum Value {
 }
 
 impl Value {
+    pub fn type_name(&self) -> String {
+        match self {
+            Value::Number(n) => format!("Number({})", n),
+            Value::Bool(b) => format!("Boolean({})", b),
+            Value::String(s) => format!("String({})", s),
+            Value::Array(_) => "Array(...)".to_string(),
+            Value::Instance(_) => "ClassInstance(...)".to_string(),
+        }
+    }
+
     pub fn as_num(&self) -> f64 {
         match self {
             Value::Number(n) => *n,

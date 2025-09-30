@@ -1,4 +1,5 @@
 use crate::data::{NameHash, Validator, Value};
+use crate::data::ast_nodes::Operand;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 
 pub fn compile_error(line_info: &LineInfo, mut diagnostic: Diagnostic, validator: &mut Validator) -> Result<(), Diagnostic> {
@@ -37,7 +38,16 @@ pub fn out_of_bounds_error(index: i64, length: usize) -> Diagnostic {
     Diagnostic {
         line_info: LineInfo::default(),
         error_type: ErrorType::OutOfBounds,
-        message: format!("Index {} is out of bounds {}", index, length),
-        note: "".to_string(),
+        message: format!("index `{}` is out of bounds `{}`", index, length),
+        note: "tries to access invalid memory".to_string(),
+    }
+}
+
+pub fn unsupported_operand_error(left: Value, op: &Operand, right: Value) -> Diagnostic {
+    Diagnostic {
+        line_info: LineInfo::default(),
+        error_type: ErrorType::OutOfBounds,
+        message: format!("unsupported operand `{}` for types `{}` and `{}`", op.fmt(), left.type_name(), right.type_name()),
+        note: "results in undefined behavior".to_string(),
     }
 }
