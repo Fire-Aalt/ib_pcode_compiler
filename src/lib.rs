@@ -27,19 +27,6 @@ pub fn compile_release_and_run(code: &str) {
 
 pub fn run(ast: &AST, env: &mut Env) {
     with_name_map(&ast.hash_to_name_map, || {
-        let compile_errors = ast.validate(env);
-
-        for error in &compile_errors {
-            print_diagnostic_error(ast,"Compilation", error.clone());
-        }
-
-        if !compile_errors.is_empty() {
-            match env.mode {
-                EnvMode::Release => std::process::exit(0),
-                EnvMode::Test { .. } => panic!()
-            }
-        }
-
         match ast.traverse(env) {
             Ok(_) => {}
             Err(e) => {

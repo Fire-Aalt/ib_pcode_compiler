@@ -21,11 +21,15 @@ impl AST {
             let _ = self.validate_stmt(stmt_node, env, &mut validator);
         }
 
-        // Check not invoked methods in the main program
+        // Check unused methods in the main program
         let main = &main_hash();
+        let id = env.create_local_env(main.clone());
+        env.push_local_env(id);
+
         for (fn_name, function) in &self.class_map[main].functions {
             let _ = self.validate_fn_definition(main, fn_name, function, env, &mut validator);
         }
+        env.pop_local_env();
 
         // Sort by first line, as some errors might be caught later
         validator.errors.sort_by(|left, right | {

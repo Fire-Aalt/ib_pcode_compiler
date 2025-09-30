@@ -32,9 +32,6 @@ impl AST {
             }
             fn_body.push(stmt_node);
         }
-
-
-
         (self.hash(fn_name), Function { args: fn_args, body: fn_body, returns: fn_returns } )
     }
 
