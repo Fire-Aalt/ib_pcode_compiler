@@ -22,10 +22,10 @@ impl StmtNode {
 }
 
 impl ExprNode {
-    pub fn compile_error(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Result<(), Diagnostic> {
-        let err = self.line_info.diagnostic(error_type, message, note);
-        validator.errors.push(err.clone());
-        Err(err)
+    pub fn compile_error(&self, mut diagnostic: Diagnostic, validator: &mut Validator) -> Result<(), Diagnostic> {
+        diagnostic.line_info = self.line_info.clone();
+        validator.errors.push(diagnostic.clone());
+        Err(diagnostic)
     }
 
     pub fn compile_diagnostic(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Diagnostic {

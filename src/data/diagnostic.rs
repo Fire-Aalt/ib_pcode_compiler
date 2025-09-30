@@ -17,7 +17,7 @@ pub enum ErrorType {
     Uninitialized,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct LineInfo {
     pub start_line: u32,
     pub end_line: u32,

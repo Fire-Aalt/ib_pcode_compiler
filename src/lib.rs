@@ -2,7 +2,7 @@ extern crate core;
 
 use crate::ast::AST;
 use crate::compiler::compile;
-use crate::compiler::errors::print_diagnostic_error;
+use crate::compiler::error_print::print_diagnostic_error;
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
 

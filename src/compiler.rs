@@ -3,8 +3,9 @@ use pest::Parser;
 use pest_derive::Parser;
 use std::fs;
 use std::ops::AddAssign;
-use crate::compiler::errors::print_parsing_error;
+use crate::compiler::error_print::print_parsing_error;
 
+pub mod error_print;
 pub mod errors;
 
 #[derive(Parser)]

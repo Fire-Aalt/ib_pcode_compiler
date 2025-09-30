@@ -1,7 +1,8 @@
-use crate::ast::{AST, main_hash};
-use crate::data::Validator;
+use crate::ast::{main_hash, AST};
+use crate::compiler::errors::{compile_error, no_return_error, uninitialized_var_error};
 use crate::data::ast_nodes::{Expr, ExprNode};
-use crate::data::diagnostic::{Diagnostic, ErrorType};
+use crate::data::diagnostic::Diagnostic;
+use crate::data::Validator;
 use crate::env::Env;
 
 impl AST {
@@ -13,12 +14,9 @@ impl AST {
     ) -> Result<(), Diagnostic> {
         match &expr_node.expr {
             Expr::Ident(name) => {
-                let _ = env.get(name).ok_or_else(|| expr_node.compile_error(
-                    ErrorType::Uninitialized,
-                    format!("cannot find variable `{}` in this scope", name).as_str(),
-                    "not found in this scope",
-                    validator,
-                ));
+                let _ = env.get(name).ok_or_else(|| {
+                    compile_error(&expr_node.line_info, uninitialized_var_error(name), validator)
+                });
                 Ok(())
             }
             Expr::Data(_) => Ok(()),
@@ -53,16 +51,7 @@ impl AST {
                 }
 
                 if !fn_def.returns {
-                    expr_node.compile_error(
-                        ErrorType::NoReturn,
-                        format!(
-                            "not all code paths return for function `{}` in class `{}`",
-                            fn_name, class_name
-                        )
-                        .as_str(),
-                        "expected to return a value",
-                        validator,
-                    )?
+                    compile_error(&expr_node.line_info, no_return_error(fn_name, class_name), validator)?
                 }
                 Ok(())
             }

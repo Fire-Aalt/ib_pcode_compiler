@@ -4,6 +4,7 @@ use crate::data::ast_nodes::{Expr, ExprNode, Operator, UnaryOp};
 use crate::data::Value;
 use crate::env::Env;
 use std::collections::VecDeque;
+use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
@@ -115,10 +116,7 @@ impl AST {
                         let length = s.chars().count();
 
                         if index < 0 || index >= length as i64 {
-                            return expr_node.runtime_error(
-                                ErrorType::OutOfBounds,
-                                format!("Index {} is out of bounds {}", index, length).as_str(),
-                            );
+                            return runtime_error(&expr_node.line_info, out_of_bounds_error(index, length));
                         }
                         Ok(Value::String(s.chars().nth(index as usize).unwrap().to_string()))
                     },
@@ -126,10 +124,7 @@ impl AST {
                         let array = env.get_array_mut(&id);
 
                         if index < 0 || index >= array.len() as i64 {
-                            return expr_node.runtime_error(
-                                ErrorType::OutOfBounds,
-                                format!("Index {} is out of bounds {}", index, array.len()).as_str(),
-                            );
+                            return runtime_error(&expr_node.line_info, out_of_bounds_error(index, array.len()));
                         }
 
                         Ok(array[index as usize].clone())
@@ -170,11 +165,11 @@ impl AST {
             } => {
                 let val = self.eval_expr(expr, env)?;
                 if let Value::Instance(id) = val {
-                    let class_name_hash = &env.get_class_name_hash(&id).clone();
-                    let fn_def = self.get_function(class_name_hash, fn_name).ok_or_else(|| {
+                    let class_name = &env.get_class_name_hash(&id).clone();
+                    let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
                         expr_node.runtime_diagnostic(
                             ErrorType::Uninitialized,
-                            format!("Undefined function in class {}", class_name_hash).as_str(),
+                            format!("Undefined function in class {}", class_name).as_str(),
                         )
                     })?;
 
@@ -189,14 +184,7 @@ impl AST {
 
                     return match returned {
                         Some(val) => Ok(val),
-                        None => expr_node.runtime_error(
-                            ErrorType::NoReturn,
-                            format!(
-                                "No return found for function {} in class {}",
-                                fn_name, class_name_hash
-                            )
-                            .as_str(),
-                        ),
+                        None => runtime_error(&expr_node.line_info, no_return_error(fn_name, class_name)),
                     };
                 }
                 expr_node.runtime_error(
