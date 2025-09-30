@@ -1,6 +1,6 @@
 use std::fs;
 use std::ops::AddAssign;
-use ib_pseudocompiler::compile_and_run;
+use ib_pseudocompiler::compile_release_and_run;
 
 const SOURCE: &str = "source";
 
@@ -9,5 +9,5 @@ fn main() {
         .expect("Should have been able to read the file");
     contents.add_assign("\n");
     
-    compile_and_run(contents.as_str());
+    compile_release_and_run(contents.as_str());
 }

@@ -16,7 +16,7 @@ const COLLECTION: &str = "native_classes/Collection";
 const STACK: &str = "native_classes/Stack";
 const QUEUE: &str = "native_classes/Queue";
 
-pub fn compile(code: &str) -> AST {
+pub fn compile(code: &str, should_panic: bool) -> AST {
     let includes = load_includes();
     let user_code_start_line = includes.lines().count() as u32;
 
@@ -27,7 +27,12 @@ pub fn compile(code: &str) -> AST {
         Ok(parsed) => parsed,
         Err(err) => {
             print_parsing_error(&program, user_code_start_line, err);
-            std::process::exit(0)
+
+            if should_panic {
+                panic!()
+            } else {
+                std::process::exit(0)
+            }
         }
     }.next().unwrap();
 
@@ -35,8 +40,6 @@ pub fn compile(code: &str) -> AST {
     ast.build_ast(parsed);
     ast
 }
-
-
 
 fn load_includes() -> String {
     let include_paths: Vec<&str> = vec![COLLECTION, STACK, QUEUE];

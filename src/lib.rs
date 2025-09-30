@@ -4,7 +4,7 @@ use crate::ast::AST;
 use crate::compiler::compile;
 use crate::compiler::error_print::print_diagnostic_error;
 use crate::data::name_hash::with_name_map;
-use crate::env::Env;
+use crate::env::{Env, EnvMode};
 
 pub mod common;
 pub mod env;
@@ -12,8 +12,8 @@ pub mod ast;
 pub mod data;
 pub mod compiler;
 
-pub fn compile_and_run(code: &str) {
-    let ast = compile(code);
+pub fn compile_release_and_run(code: &str) {
+    let ast = compile(code, false);
     //println!("{}", ast);
 
     let mut env = Env::release();
@@ -34,14 +34,20 @@ pub fn run(ast: &AST, env: &mut Env) {
         }
 
         if !compile_errors.is_empty() {
-            std::process::exit(0)
+            match env.mode {
+                EnvMode::Release => std::process::exit(0),
+                EnvMode::Test { .. } => panic!()
+            }
         }
 
         match ast.traverse(env) {
             Ok(_) => {}
             Err(e) => {
                 print_diagnostic_error(ast, "Runtime", e);
-                std::process::exit(0)
+                match env.mode {
+                    EnvMode::Release => std::process::exit(0),
+                    EnvMode::Test { .. } => panic!()
+                }
             }
         };
     });

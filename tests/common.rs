@@ -4,8 +4,12 @@ use ib_pseudocompiler::compiler::compile;
 use ib_pseudocompiler::env::{EnvMode, Env};
 use ib_pseudocompiler::run;
 
+pub fn compile_test(code: &str) -> AST {
+    compile(code, true)
+}
+
 pub fn compile_run_check_logs(code: &str, mock_inputs: &str, logs: &str) -> Env {
-    let ast = compile(code);
+    let ast = compile_test(code);
     run_check_logs(&ast, mock_inputs, logs)
 }
 

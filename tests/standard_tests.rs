@@ -1,5 +1,4 @@
-use crate::common::{compile_run_check_logs, run_check_logs};
-use ib_pseudocompiler::compiler::compile;
+use crate::common::{compile_run_check_logs, run_check_logs, compile_test};
 
 mod common;
 
@@ -164,7 +163,7 @@ fn if_then() {
   end if
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,
@@ -218,7 +217,7 @@ fn password_logic() {
  end if
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,
@@ -279,6 +278,7 @@ WRONG
 fn discount_logic() {
     let code = r#"
 QUANTITY = input("How many hamburgers do you want?")
+PRICE = 0
 
 if  QUANTITY >= 10  then
 PRICE = 2.59
@@ -292,7 +292,7 @@ output "That costs " , PRICE , " per burger"
 output "Total cost = " , PRICE * QUANTITY , " for " , QUANTITY , " burgers"
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,
@@ -516,6 +516,7 @@ output NUM
 fn translate_strings() {
     let code = r#"
 input ENGLISH
+GERMAN = ""
 
 if ENGLISH = "hello" then
  GERMAN = "guten Tag"
@@ -531,7 +532,7 @@ output "English = " , ENGLISH
 output "German = " , GERMAN
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,
@@ -586,7 +587,7 @@ else
 end if
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,
@@ -621,6 +622,7 @@ input YEAR
 
 output MONTH , "/" , DAY , "/" , YEAR
 
+FEBMAX = 0
 if YEAR mod 4 = 0 then
    FEBMAX = 29
 else
@@ -643,7 +645,7 @@ else
 end if
    "#;
 
-    let ast = compile(code);
+    let ast = compile_test(code);
 
     run_check_logs(
         &ast,

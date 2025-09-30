@@ -85,9 +85,10 @@ impl AST {
                 for param in params {
                     resolved_params.push(self.eval_expr(param, env)?);
                 }
-
+                
                 // Local methods are already validated and no checks are needed
-                Ok(self.exec_fn(fn_def, &resolved_params, env)?.unwrap())
+                let returned = self.exec_fn(fn_def, &resolved_params, env)?.unwrap_or(Value::Number(0.0));
+                Ok(returned)
             }
             Expr::SubstringCall { expr, start, end } => {
                 let val = self.eval_expr(expr, env)?;
