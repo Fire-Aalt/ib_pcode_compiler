@@ -105,21 +105,19 @@ impl AST {
             }
             Value::String(s) => output.push_str(s.trim()),
             Value::Bool(b) => output.push_str(&b.to_string()),
-            Value::Array(id) => {
+            Value::ArrayId(id) => {
                 for (i, array_val) in env.get_array(id).iter().enumerate() {
                     if i > 0 {
                         output.push(',');
                     }
 
-                    let mut val_output = String::new();
-                    self.format_val(array_val, &mut val_output, env);
-
-                    if val_output != "undefined" {
-                        output.push_str(&val_output);
+                    match array_val {
+                        Value::Undefined => {},
+                        _ => self.format_val(array_val, output, env)
                     }
                 }
             }
-            Value::Instance(id) => {
+            Value::InstanceId(id) => {
                 let local = env.get_local_env_at(id);
 
                 output.push_str(self.get_name(&local.class_name));
@@ -136,6 +134,7 @@ impl AST {
                 }
                 output.push(']');
             }
+            Value::Undefined => output.push_str("Undefined"),
         }
     }
 

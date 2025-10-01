@@ -136,7 +136,7 @@ impl AST {
                 Ok(None)
             }
             AssignTarget::Array(array_expr, index_expr) => {
-                if let Value::Array(id) = self.eval_expr(array_expr, env)? {
+                if let Value::ArrayId(id) = self.eval_expr(array_expr, env)? {
                     let index = self.eval_expr(index_expr, env)?.as_num(&index_expr.line_info)? as i64;
                     let array = env.get_array_mut(&id);
 
@@ -152,9 +152,8 @@ impl AST {
                         array.reserve(target_capacity - array.capacity());
                     }
 
-                    let undefined = Value::String("undefined".to_string());
                     if array.len() < needed {
-                        array.resize(needed, undefined);
+                        array.resize(needed, Value::Undefined);
                     }
 
                     let res = match op {

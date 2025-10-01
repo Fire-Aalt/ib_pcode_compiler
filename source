@@ -36,9 +36,8 @@ end loop
 
 A = new Array()
 
-A[5] = 565
+A[8888888] = 565
 
-output A
 output A[4]
 
 

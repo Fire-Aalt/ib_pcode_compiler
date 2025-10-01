@@ -10,8 +10,9 @@ pub enum Value {
     Number(f64),
     Bool(bool),
     String(String),
-    Array(usize),
-    Instance(usize),
+    ArrayId(usize),
+    InstanceId(usize),
+    Undefined
 }
 
 impl Value {
@@ -21,8 +22,9 @@ impl Value {
             Value::Number(n) => format!("Number({})", n),
             Value::Bool(b) => format!("Boolean({})", b),
             Value::String(s) => format!("String({})", s),
-            Value::Array(_) => "Array(...)".to_string(),
-            Value::Instance(_) => "ClassInstance(...)".to_string(),
+            Value::ArrayId(_) => "Array(...)".to_string(),
+            Value::InstanceId(_) => "ClassInstance(...)".to_string(),
+            Value::Undefined => "Undefined".to_string(),
         }
     }
 
@@ -31,8 +33,9 @@ impl Value {
             Value::Number(n) => format!("{}", n),
             Value::Bool(b) => format!("{}", b),
             Value::String(s) => s.to_string(),
-            Value::Array(_) => "Array(...)".to_string(),
-            Value::Instance(_) => "ClassInstance(...)".to_string(),
+            Value::ArrayId(_) => "Array(...)".to_string(),
+            Value::InstanceId(_) => "ClassInstance(...)".to_string(),
+            Value::Undefined => "Undefined".to_string(),
         }
     }
 
@@ -137,8 +140,9 @@ impl Display for Value {
             Value::Number(f) => write!(formatter, "Number({})", f),
             Value::String(s) => write!(formatter, "String(\"{}\")", s),
             Value::Bool(b) => write!(formatter, "Bool({})", b),
-            Value::Array(id) => write!(formatter, "Array(Id: {})", id),
-            Value::Instance(id) => write!(formatter, "Instance(Id: {})", id),
+            Value::ArrayId(id) => write!(formatter, "Array(Id: {})", id),
+            Value::InstanceId(id) => write!(formatter, "Instance(Id: {})", id),
+            Value::Undefined => write!(formatter, "Undefined"),
         }
     }
 }

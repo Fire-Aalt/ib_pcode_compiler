@@ -20,7 +20,7 @@ impl AST {
                 }
 
                 let id = env.create_array(array);
-                Ok(Value::Array(id))
+                Ok(Value::ArrayId(id))
             }
             Expr::Unary(op, expr) => {
                 let value = self.eval_expr(expr, env)?;
@@ -114,7 +114,7 @@ impl AST {
                 let val = self.eval_expr(expr, env)?;
                 match val {
                     Value::String(s) => Ok(Value::Number(s.len() as f64)),
-                    Value::Array(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
+                    Value::ArrayId(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
                     _ => expr_node.runtime_error(ErrorType::InvalidType, format!(".length used on {}. Only strings and arrays are supported", val).as_str()),
                 }
             }
@@ -130,7 +130,7 @@ impl AST {
                         }
                         Ok(Value::String(s.chars().nth(index as usize).unwrap().to_string()))
                     },
-                    Value::Array(id) => {
+                    Value::ArrayId(id) => {
                         let array = env.get_array_mut(&id);
 
                         if index < 0 || index >= array.len() as i64 {
@@ -166,7 +166,7 @@ impl AST {
                 }
                 env.pop_local_env();
 
-                Ok(Value::Instance(id))
+                Ok(Value::InstanceId(id))
             }
             Expr::ClassMethodCall {
                 expr,
@@ -174,7 +174,7 @@ impl AST {
                 params,
             } => {
                 let val = self.eval_expr(expr, env)?;
-                if let Value::Instance(id) = val {
+                if let Value::InstanceId(id) = val {
                     let class_name = &env.get_class_name_hash(&id).clone();
                     let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
                         expr_node.runtime_diagnostic(
