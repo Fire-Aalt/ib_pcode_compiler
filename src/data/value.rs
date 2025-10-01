@@ -26,6 +26,16 @@ impl Value {
         }
     }
 
+    pub fn fmt(&self) -> String {
+        match self {
+            Value::Number(n) => format!("{}", n),
+            Value::Bool(b) => format!("{}", b),
+            Value::String(s) => s.to_string(),
+            Value::Array(_) => "Array(...)".to_string(),
+            Value::Instance(_) => "ClassInstance(...)".to_string(),
+        }
+    }
+
     pub fn neg(self, line_info: &LineInfo) -> Result<Value, Diagnostic> {
         match self {
             Value::Number(f) => Ok(Value::Number(-f)),
@@ -44,9 +54,9 @@ impl Value {
 
     pub fn add(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
         match self {
-            Value::String(lhs) => Ok(Value::String(format!("{}{}", lhs, rhs))),
+            Value::String(lhs) => Ok(Value::String(format!("{}{}", lhs, rhs.fmt()))),
             _ => match rhs {
-                Value::String(rhs) => Ok(Value::String(format!("{}{}", self, rhs))),
+                Value::String(rhs) => Ok(Value::String(format!("{}{}", self.fmt(), rhs))),
                 _ => Ok(Value::Number(self.as_num(line_info)? + rhs.as_num(line_info)?)),
             },
         }

@@ -118,7 +118,7 @@ pub enum Operand {
 }
 
 impl Operand {
-    pub fn fmt(&self) -> String {
+    pub fn error_fmt(&self) -> String {
         let str = match self {
             Operand::Add => "add",
             Operand::Subtract => "subtract",

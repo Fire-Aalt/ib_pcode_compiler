@@ -3,6 +3,7 @@ use crate::data::ast_nodes::{AssignOperator, AssignTarget, Stmt, StmtNode};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::cmp::max;
+use crate::compiler::errors::diagnostic;
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
@@ -57,8 +58,10 @@ impl AST {
                     control = env.get(ident).unwrap();
 
 
+                    // if let Err(e) = control.as_num(&stmt_node.line_info) {
+                    //     return Err(diagnostic(&stmt_node.line_info, ErrorType::InvalidType, format!("for loop requires that the control variable `{}` persists to be a number. Found", ident)));
+                    // }
 
-                    control.as_num(&stmt_node.line_info)?;
                     control = control.add(&stmt_node.line_info, Value::Number(1.0))?;
                     env.assign(ident, control.clone());
                 }
@@ -145,7 +148,7 @@ impl AST {
                     while array.len() <= index {
                         array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
                     }
-                    array.resize(index + 1, Value::String("undefined".to_string()));
+                    //array.resize(index + 1, Value::String("undefined".to_string())); TODO: either fix it by printing up to last defined element or resize it properly
 
                     let res = match op {
                         AssignOperator::Assign => val,

@@ -56,7 +56,7 @@ pub fn unsupported_operand_error(line_info: &LineInfo, left: Value, op: &Operand
     Diagnostic {
         line_info: line_info.clone(),
         error_type: ErrorType::Unsupported,
-        message: format!("unsupported operand `{}` for types `{}` and `{}`", op.fmt(), left.error_fmt(), right.error_fmt()),
+        message: format!("unsupported operand `{}` for types `{}` and `{}`", op.error_fmt(), left.error_fmt(), right.error_fmt()),
         note: "results in undefined behavior".to_string(),
     }
 }

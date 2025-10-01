@@ -111,7 +111,12 @@ impl AST {
                         output.push(',');
                     }
 
-                    self.format_val(array_val, output, env);
+                    let mut val_output = String::new();
+                    self.format_val(array_val, &mut val_output, env);
+
+                    if val_output != "undefined" {
+                        output.push_str(&val_output);
+                    }
                 }
             }
             Value::Instance(id) => {
