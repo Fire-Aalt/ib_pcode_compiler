@@ -1,3 +1,4 @@
+use std::cmp::max;
 use crate::ast::AST;
 use crate::compiler::Rule;
 use crate::data::diagnostic::Diagnostic;
@@ -8,22 +9,17 @@ const RESET: &str = "\x1b[0m";
 
 struct ErrorLine {
     pub user_start_line: isize,
-    pub user_end_line: isize,
     pub start_line: usize,
-    pub end_line: usize,
     pub start_col: usize,
     pub end_col: usize,
 }
 
 pub fn print_diagnostic_error(ast: &AST, error_category: &str, diagnostic: Diagnostic) {
     let start_line = diagnostic.line_info.start_line as usize;
-    let end_line = diagnostic.line_info.end_line as usize;
 
     let error_line = ErrorLine {
         user_start_line: start_line as isize - ast.user_code_start_line as isize,
-        user_end_line: end_line as isize - ast.user_code_start_line as isize,
         start_line,
-        end_line,
         start_col: diagnostic.line_info.start_col as usize,
         end_col: diagnostic.line_info.end_col as usize,
     };
@@ -57,7 +53,7 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
     };
 
     let (start_line, start_col) = line_col_of(start_byte);
-    let (end_line, end_col) = line_col_of(end_byte);
+    let (_end_line, end_col) = line_col_of(end_byte);
 
     let positives = match &err.variant {
         ErrorVariant::ParsingError { positives, negatives: _ } => positives.clone(),
@@ -65,13 +61,10 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
     };
 
     let user_start_line = start_line as isize - user_code_start_line as isize;
-    let user_end_line = end_line as isize - user_code_start_line as isize;
 
     let error_line = ErrorLine {
         user_start_line,
-        user_end_line,
         start_line: start_line - 1,
-        end_line: end_line - 1,
         start_col,
         end_col: end_col + 1,
     };
@@ -103,11 +96,7 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
             underline.push(' ');
         }
 
-        let width = if info.start_line == info.end_line {
-            std::cmp::max(1, info.end_col.saturating_sub(info.start_col))
-        } else {
-            line_text.chars().count().saturating_sub(info.start_col - 1)
-        };
+        let width = max(1, info.end_col.saturating_sub(info.start_col));
 
         eprint!("{} | ", ident);
         for _ in 0..width {

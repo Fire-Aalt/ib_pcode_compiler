@@ -141,12 +141,11 @@ impl AST {
     pub fn as_line_info(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
         let (start_line, start_col) = pair.line_col();
-        let (end_line, end_col) = span.end_pos().line_col();
+        let (_end_line, end_col) = span.end_pos().line_col();
 
         LineInfo {
             start_line: start_line as u32,
             start_col: start_col as u16,
-            end_line: end_line as u32,
             end_col: end_col as u16,
         }
     }

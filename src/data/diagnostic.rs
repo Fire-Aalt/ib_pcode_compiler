@@ -21,7 +21,6 @@ pub enum ErrorType {
 #[derive(Clone, Default)]
 pub struct LineInfo {
     pub start_line: u32,
-    pub end_line: u32,
     pub start_col: u16,
     pub end_col: u16,
 }

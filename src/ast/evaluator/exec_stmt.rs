@@ -1,10 +1,9 @@
 use crate::ast::AST;
+use crate::compiler::errors::diagnostic;
 use crate::data::ast_nodes::{AssignOperator, AssignTarget, Stmt, StmtNode};
+use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
-use std::cmp::max;
-use crate::compiler::errors::diagnostic;
-use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
     pub fn exec_stmt(&self, stmt_node: &StmtNode, env: &mut Env) -> Result<Option<Value>, Diagnostic> {

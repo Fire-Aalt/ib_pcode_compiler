@@ -124,7 +124,7 @@ decl_param_list = { "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" }
 call_param_list = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 term = { primary ~ postfix* }
-primary = { number | string | bool | array | class_new | input_call | div_call | method_call | any_ident |  "(" ~ expr ~ ")" }
+primary = { number | string | bool | undefined | array | class_new | input_call | div_call | method_call | any_ident |  "(" ~ expr ~ ")" }
 postfix = { substring_call | length_call | call | index }
 call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
@@ -133,6 +133,7 @@ number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
 bool = { "true" | "false" }
+undefined = { "undefined" }
 array = { ("[" ~ allow_end_line ~ (expr ~ (allow_end_line ~ "," ~ allow_end_line ~ expr)*)? ~ allow_end_line ~ "]") | ("new" ~ "Array" ~ "()") }
 
 ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
@@ -155,4 +156,7 @@ reserved_keyword = { "Class" ~ bw
          | "assert" ~ bw
          | "new" ~ bw
          | "this" ~ bw
+         | "true" ~ bw
+         | "false" ~ bw
+         | "undefined" ~ bw
 }

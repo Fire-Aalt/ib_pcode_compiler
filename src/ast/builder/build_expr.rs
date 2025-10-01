@@ -105,6 +105,10 @@ impl AST {
                 line,
                 Expr::Data(Value::Bool(first.as_str().parse().unwrap())),
             ),
+            Rule::undefined => expr_node(
+                line,
+                Expr::Data(Value::Undefined),
+            ),
             Rule::array => {
                 let inner = first.into_inner();
                 let data = inner.map(|inner| self.build_expr(inner)).collect();

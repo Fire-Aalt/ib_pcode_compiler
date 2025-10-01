@@ -13,12 +13,11 @@ Class Collection()
     {
         loop I from 0 to this.index - 1
             if this.array[I] == item then
-                //this.array[I] = "undefined"
                 loop J from I to this.index - 2
                     this.array[J] = this.array[J+1]
                 end loop
 
-                this.array[this.index-1] = "undefined"
+                this.array[this.index-1] = undefined
                 this.index--
 
                 return true
@@ -46,10 +45,7 @@ Class Collection()
 
     this.hasNext = function()
     {
-        if this.next >= this.array.length then
-            return false
-        end if
-        return this.array[this.next] != "undefined"
+        return this.next < this.array.length
     }
 
     this.getNext = function()
