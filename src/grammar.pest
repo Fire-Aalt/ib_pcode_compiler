@@ -66,7 +66,7 @@ method_return = { "return" ~ expr }
 
 // CLASS
 class_decl = {
-    "Class" ~ ident ~ decl_param_list ~ end_line
+    static_keyword? ~ "Class" ~ ident ~ decl_param_list ~ end_line
     ~ (class_function | class_constructor_stmt)*
     ~ "end" ~ "Class"
 }
@@ -141,6 +141,8 @@ ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 class_ident = { "this" ~ "." ~ ident }
 any_ident = _{ class_ident | ident }
 
+static_keyword = { "static" }
+
 bw = _{ !(ASCII_ALPHANUMERIC | "_") }
 reserved_keyword = { "Class" ~ bw
          | "method" ~ bw
@@ -160,4 +162,6 @@ reserved_keyword = { "Class" ~ bw
          | "true" ~ bw
          | "false" ~ bw
          | "undefined" ~ bw
+         | static_keyword ~ bw
+         | "main" ~ bw
 }

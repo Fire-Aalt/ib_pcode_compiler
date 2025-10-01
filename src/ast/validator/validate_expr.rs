@@ -14,7 +14,7 @@ impl AST {
     ) -> Result<(), Diagnostic> {
         match &expr_node.expr {
             Expr::Ident(name) => {
-                let _ = env.get(name).ok_or_else(|| {
+                let _ = env.get(self, name).ok_or_else(|| {
                     compile_error(
                         diagnostic(
                             &expr_node.line_info,

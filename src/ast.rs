@@ -5,10 +5,11 @@ use crate::data::diagnostic::LineInfo;
 use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
+use crate::compiler::errors::diagnostic;
 
 pub mod builder;
 pub mod evaluator;
@@ -19,6 +20,7 @@ pub struct AST {
     pub user_code_start_line: u32,
     pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
+    pub statics: HashSet<NameHash>,
     class_map: HashMap<NameHash, Class>,
 }
 
@@ -38,6 +40,7 @@ impl AST {
             nodes: Vec::new(),
             class_map: HashMap::new(),
             hash_to_name_map: HashMap::new(),
+            statics: HashSet::new(),
         };
         let main = ast.main_hash();
         ast.add_class(
@@ -45,6 +48,7 @@ impl AST {
             Class {
                 functions: HashMap::new(),
                 constructor: Constructor::default(),
+                is_static: false,
             },
         );
         ast
@@ -89,8 +93,14 @@ impl AST {
 
     pub fn hash(&mut self, string: &str) -> NameHash {
         let name_hash = hash(string);
-        self.hash_to_name_map
-            .insert(name_hash.clone(), string.to_string());
+        self.hash_to_name_map.insert(name_hash.clone(), string.to_string());
+        name_hash
+    }
+
+    pub fn hash_static(&mut self, string: &str) -> NameHash {
+        let name_hash = hash(string);
+        self.hash_to_name_map.insert(name_hash.clone(), string.to_string());
+        self.statics.insert(name_hash.clone());
         name_hash
     }
 
@@ -135,6 +145,7 @@ impl AST {
                 output.push(']');
             }
             Value::Undefined => output.push_str("Undefined"),
+            Value::Static(s) => output.push_str("Static"),
         }
     }
 
@@ -159,14 +170,14 @@ pub fn hash(string: &str) -> NameHash {
             stripped.hash(&mut hasher);
             NameHash {
                 hash: hasher.finish(),
-                this_keyword: true,
+                this_keyword: true
             }
         }
         None => {
             string.hash(&mut hasher);
             NameHash {
                 hash: hasher.finish(),
-                this_keyword: false,
+                this_keyword: false
             }
         }
     };

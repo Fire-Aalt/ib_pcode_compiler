@@ -120,7 +120,16 @@ impl AST {
             Rule::class_decl => {
                 let mut inner = pair.into_inner();
 
-                let class_name_hash = self.hash(inner.next().unwrap().as_str());
+                let class_name;
+                let mut is_static = false;
+                if let Rule::static_keyword = inner.peek().unwrap().as_rule() {
+                    inner.next();
+                    is_static = true;
+                    class_name = self.hash_static(inner.next().unwrap().as_str());
+                } else {
+                    class_name = self.hash(inner.next().unwrap().as_str());
+                }
+
                 let args = self.build_args(&mut inner);
 
                 let mut constructors = Vec::new();
@@ -145,14 +154,15 @@ impl AST {
                 }
 
                 self.add_class(
-                    class_name_hash.clone(),
+                    class_name.clone(),
                     Class {
                         functions,
                         constructor: Constructor { constructors, args },
+                        is_static
                     },
                 );
 
-                Stmt::ClassDeclaration(class_name_hash)
+                Stmt::ClassDeclaration(class_name)
             }
             Rule::expr_stmt => {
                 let mut inner = pair.into_inner();

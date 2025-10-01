@@ -154,6 +154,7 @@ pub struct Function {
 pub struct Class {
     pub functions: HashMap<NameHash, Function>,
     pub constructor: Constructor,
+    pub is_static: bool,
 }
 
 #[derive(Debug, Default, Clone)]

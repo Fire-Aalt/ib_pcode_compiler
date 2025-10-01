@@ -6,7 +6,7 @@ use std::{fmt, ptr};
 #[derive(Clone, Eq, Hash, PartialEq)]
 pub struct NameHash {
     pub hash: u64,
-    pub this_keyword: bool,
+    pub this_keyword: bool
 }
 
 impl NameHash {

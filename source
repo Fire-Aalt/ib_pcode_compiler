@@ -1,5 +1,11 @@
 
+static Class Math()
 
+    this.floor = function(A)
+    {
+        return A + 985
+    }
+end Class
 
 //Class hhh()
   // this.gg = function()
@@ -37,7 +43,7 @@ end loop
 A = "sss"
 A++
 
-output Math.random()
+output Math.floor(4)
 
 
 // TODO: put errors into their own methods

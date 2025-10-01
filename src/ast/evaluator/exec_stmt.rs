@@ -77,7 +77,7 @@ impl AST {
                         return Ok(Some(returned_val));
                     }
 
-                    control = env.get(ident).unwrap();
+                    control = env.get(self, ident).unwrap();
 
                     if control.as_num(&stmt_node.line_info).is_err() {
                         return Err(diagnostic(
@@ -161,16 +161,16 @@ impl AST {
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
                     AssignOperator::AssignAdd => {
-                        env.assign(name, env.get(name).unwrap().add(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(self, name).unwrap().add(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignSubtract => {
-                        env.assign(name, env.get(name).unwrap().sub(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(self, name).unwrap().sub(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignMultiply => {
-                        env.assign(name, env.get(name).unwrap().mul(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(self, name).unwrap().mul(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignDivide => {
-                        env.assign(name, env.get(name).unwrap().div(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(self, name).unwrap().div(&stmt_node.line_info, val)?)
                     }
                 }
                 Ok(None)
