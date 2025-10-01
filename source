@@ -40,5 +40,4 @@ A++
 output 1 <> true
 
 
-// TODO: generalize operand operations
 // TODO: put errors into their own methods

@@ -1,8 +1,8 @@
-use std::collections::VecDeque;
 use ib_pseudocompiler::ast::AST;
 use ib_pseudocompiler::compiler::compile;
-use ib_pseudocompiler::env::{EnvMode, Env};
+use ib_pseudocompiler::env::{Env, EnvMode};
 use ib_pseudocompiler::run;
+use std::collections::VecDeque;
 
 pub fn compile_test(code: &str) -> AST {
     compile(code, true)
@@ -30,11 +30,14 @@ pub fn run_check_logs(ast: &AST, mock_inputs: &str, logs: &str) -> Env {
 pub fn assert_logs(env: &mut Env, expected_logs: &str) {
     match &mut env.mode {
         EnvMode::Release => panic!("Expected mode to be Test mode"),
-        EnvMode::Test { mock_inputs: _, logs } => {
+        EnvMode::Test {
+            mock_inputs: _,
+            logs,
+        } => {
             for (i, line) in expected_logs.trim().lines().enumerate() {
                 let log = match logs.pop_front() {
                     Some(log) => log,
-                    None => panic!("Expected log at line {}", i)
+                    None => panic!("Expected log at line {}", i),
                 };
 
                 assert_eq!(line, log);

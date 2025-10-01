@@ -1,13 +1,16 @@
 use crate::ast::AST;
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{Expr, ExprNode, Operand, UnaryOp};
 use crate::data::Value;
-use pest::iterators::Pair;
+use crate::data::ast_nodes::{Expr, ExprNode, Operand, UnaryOp};
 use crate::data::diagnostic::LineInfo;
+use pest::iterators::Pair;
 
 fn expr_node(line: LineInfo, expr: Expr) -> ExprNode {
-    ExprNode { line_info: line, expr }
+    ExprNode {
+        line_info: line,
+        expr,
+    }
 }
 
 impl AST {
@@ -90,9 +93,7 @@ impl AST {
         let line = self.as_line_info(&first);
 
         let mut node = match first.as_rule() {
-            Rule::ident => {
-                expr_node(line, Expr::Ident(self.hash(first.as_str())))
-            }
+            Rule::ident => expr_node(line, Expr::Ident(self.hash(first.as_str()))),
             Rule::number => expr_node(
                 line,
                 Expr::Data(Value::Number(first.as_str().parse().unwrap())),
@@ -105,10 +106,7 @@ impl AST {
                 line,
                 Expr::Data(Value::Bool(first.as_str().parse().unwrap())),
             ),
-            Rule::undefined => expr_node(
-                line,
-                Expr::Data(Value::Undefined),
-            ),
+            Rule::undefined => expr_node(line, Expr::Data(Value::Undefined)),
             Rule::array => {
                 let inner = first.into_inner();
                 let data = inner.map(|inner| self.build_expr(inner)).collect();
@@ -162,11 +160,14 @@ impl AST {
                     let mut inner = post.into_inner();
                     let start = self.build_expr(inner.next().unwrap());
                     let end = self.build_expr(inner.next().unwrap());
-                    node = expr_node(line, Expr::SubstringCall {
-                        expr: Box::new(node),
-                        start: Box::new(start),
-                        end: Box::new(end),
-                    });
+                    node = expr_node(
+                        line,
+                        Expr::SubstringCall {
+                            expr: Box::new(node),
+                            start: Box::new(start),
+                            end: Box::new(end),
+                        },
+                    );
                 }
                 Rule::length_call => {
                     node = expr_node(line, Expr::LengthCall(Box::new(node)));
@@ -185,11 +186,14 @@ impl AST {
                     let mut fn_name_hash = self.hash(fn_name);
                     fn_name_hash.this_keyword = true;
 
-                    node = expr_node(line, Expr::ClassMethodCall {
-                        expr: Box::new(node),
-                        fn_name: fn_name_hash,
-                        params,
-                    });
+                    node = expr_node(
+                        line,
+                        Expr::ClassMethodCall {
+                            expr: Box::new(node),
+                            fn_name: fn_name_hash,
+                            params,
+                        },
+                    );
                 }
                 Rule::index => {
                     let idx_pair = post.into_inner().next().unwrap();

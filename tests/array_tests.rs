@@ -371,7 +371,6 @@ quit
     );
 }
 
-
 #[test]
 fn find_duplicates() {
     let code = r#"
@@ -506,5 +505,6 @@ output "Entire square is " , OK
 3 5 7
 4 9 2
 Entire square is correct
-"#);
+"#,
+    );
 }

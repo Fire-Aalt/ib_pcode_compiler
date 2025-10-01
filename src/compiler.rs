@@ -1,12 +1,12 @@
 use crate::ast::AST;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
+use crate::data::name_hash::with_name_map;
 use crate::env::Env;
-use pest::iterators::Pair;
 use pest::Parser;
+use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::fs;
 use std::ops::AddAssign;
-use crate::data::name_hash::with_name_map;
 
 pub mod error_print;
 pub mod errors;
@@ -47,16 +47,13 @@ fn load_includes() -> String {
     let mut output = "".to_string();
 
     for path in include_paths {
-        let contents = fs::read_to_string(path)
-            .expect("Should have been able to read the file");
+        let contents = fs::read_to_string(path).expect("Should have been able to read the file");
 
         output.add_assign(contents.as_str());
         output.add_assign("\n");
     }
     output
 }
-
-
 
 fn parse(program: &str, user_code_start_line: u32, should_panic: bool) -> Pair<Rule> {
     match DSLParser::parse(Rule::program, program) {
@@ -70,9 +67,10 @@ fn parse(program: &str, user_code_start_line: u32, should_panic: bool) -> Pair<R
                 std::process::exit(0)
             }
         }
-    }.next().unwrap()
+    }
+    .next()
+    .unwrap()
 }
-
 
 fn build_ast(program: &str, user_code_start_line: u32, parsed_result: Pair<Rule>) -> AST {
     let mut ast = AST::new(program.to_string(), user_code_start_line);
@@ -86,7 +84,7 @@ fn validate_ast(ast: &AST, should_panic: bool) {
 
     if !compile_errors.is_empty() {
         for error in &compile_errors {
-            print_diagnostic_error(ast,"Compilation", error.clone());
+            print_diagnostic_error(ast, "Compilation", error.clone());
         }
 
         if should_panic {
@@ -96,4 +94,3 @@ fn validate_ast(ast: &AST, should_panic: bool) {
         }
     }
 }
-

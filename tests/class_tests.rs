@@ -126,7 +126,6 @@ Alex
     );
 }
 
-
 #[test]
 fn queues_merge() {
     let code = r#"
@@ -257,4 +256,3 @@ Pat 259.37424601
 "#,
     );
 }
-

@@ -1,4 +1,4 @@
-use crate::common::{compile_run_check_logs, run_check_logs, compile_test};
+use crate::common::{compile_run_check_logs, compile_test, run_check_logs};
 
 mod common;
 

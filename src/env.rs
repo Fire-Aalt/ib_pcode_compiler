@@ -3,8 +3,8 @@ use crate::data::{NameHash, Value};
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
 use std::collections::VecDeque;
-use std::fmt::{Display, Formatter};
 use std::fmt;
+use std::fmt::{Display, Formatter};
 
 mod allocated_lookup_map;
 mod local_env;
@@ -47,7 +47,12 @@ impl Env {
     }
 
     pub fn new(mode: EnvMode) -> Self {
-        let mut e = Self { arrays: AllocatedLookupMap::new(), locals: AllocatedLookupMap::new(), local_ids_stack: Vec::new(), mode };
+        let mut e = Self {
+            arrays: AllocatedLookupMap::new(),
+            locals: AllocatedLookupMap::new(),
+            local_ids_stack: Vec::new(),
+            mode,
+        };
         e.create_local_env(main_hash()); // global env
         e.push_local_env(0);
         e
@@ -114,10 +119,14 @@ impl Env {
     }
 
     pub fn get_local_env(&self) -> &LocalEnv {
-        self.locals.get(self.local_ids_stack.last().unwrap()).unwrap()
+        self.locals
+            .get(self.local_ids_stack.last().unwrap())
+            .unwrap()
     }
 
     fn get_local_env_mut(&mut self) -> &mut LocalEnv {
-        self.locals.get_mut(self.local_ids_stack.last().unwrap()).unwrap()
+        self.locals
+            .get_mut(self.local_ids_stack.last().unwrap())
+            .unwrap()
     }
 }

@@ -1,9 +1,8 @@
-use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
-use crate::data::{NameHash, Value};
-use std::collections::HashMap;
 use crate::ast::AST;
-use crate::data::validator::Validator;
+use crate::data::diagnostic::{Diagnostic, LineInfo};
+use crate::data::{NameHash, Value};
 use crate::env::Env;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct StmtNode {
@@ -17,12 +16,6 @@ pub struct ExprNode {
     pub expr: Expr,
 }
 
-impl StmtNode {
-    pub fn error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
-        self.line_info.runtime_option_error(error_type, message)
-    }
-}
-
 impl ExprNode {
     pub fn eval_as_num(&self, ast: &AST, env: &mut Env) -> Result<f64, Diagnostic> {
         ast.eval_expr(self, env)?.as_num(&self.line_info)
@@ -34,26 +27,6 @@ impl ExprNode {
 
     pub fn eval_as_str(&self, ast: &AST, env: &mut Env) -> Result<String, Diagnostic> {
         Ok(ast.eval_expr(self, env)?.as_string())
-    }
-
-    pub fn compile_error(&self, mut diagnostic: Diagnostic, validator: &mut Validator) -> Result<(), Diagnostic> {
-        diagnostic.line_info = self.line_info.clone();
-        validator.errors.push(diagnostic.clone());
-        Err(diagnostic)
-    }
-
-    pub fn compile_diagnostic(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Diagnostic {
-        let err = self.line_info.diagnostic(error_type, message, note);
-        validator.errors.push(err.clone());
-        err
-    }
-
-    pub fn runtime_error(&self, error_type: ErrorType, message: &str) -> Result<Value, Diagnostic> {
-        self.line_info.runtime_error(error_type, message)
-    }
-
-    pub fn runtime_diagnostic(&self, error_type: ErrorType, message: &str) -> Diagnostic {
-        self.line_info.diagnostic(error_type, message, "")
     }
 }
 
@@ -173,7 +146,7 @@ pub enum AssignOperator {
 pub struct Function {
     pub args: Vec<NameHash>,
     pub body: Vec<StmtNode>,
-    pub returns: bool
+    pub returns: bool,
 }
 
 #[derive(Debug, Clone)]

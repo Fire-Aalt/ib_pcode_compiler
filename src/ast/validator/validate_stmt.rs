@@ -1,12 +1,17 @@
-use crate::ast::validator::Validator;
 use crate::ast::AST;
+use crate::ast::validator::Validator;
+use crate::data::Value;
 use crate::data::ast_nodes::{AssignTarget, Stmt, StmtNode};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
-use crate::data::Value;
 use crate::env::Env;
 
 impl AST {
-    pub fn validate_stmt(&self, stmt_node: &StmtNode, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
+    pub fn validate_stmt(
+        &self,
+        stmt_node: &StmtNode,
+        env: &mut Env,
+        validator: &mut Validator,
+    ) -> Result<(), Diagnostic> {
         match &stmt_node.stmt {
             Stmt::Assign(target, _, expr) => {
                 let _ = self.valid_assign_stmt(target, env, validator);
@@ -21,7 +26,12 @@ impl AST {
                 let _ = self.valid_assign_stmt(target, env, validator);
                 Ok(())
             }
-            Stmt::If { cond, then_branch, elifs, else_branch }  => {
+            Stmt::If {
+                cond,
+                then_branch,
+                elifs,
+                else_branch,
+            } => {
                 let _ = self.validate_expr(cond, env, validator);
 
                 self.validate_body(then_branch, env, validator);
@@ -82,14 +92,19 @@ impl AST {
             Stmt::MethodReturn(expr) => {
                 let _ = self.validate_expr(expr, env, validator);
                 Ok(())
-            },
+            }
             Stmt::FunctionDeclaration(_) => Ok(()),
             Stmt::ClassDeclaration(_) => Ok(()),
             Stmt::EOI => Ok(()),
         }
     }
 
-    fn valid_assign_stmt(&self, target: &AssignTarget, env: &mut Env, validator: &mut Validator) -> Result<(), Diagnostic> {
+    fn valid_assign_stmt(
+        &self,
+        target: &AssignTarget,
+        env: &mut Env,
+        validator: &mut Validator,
+    ) -> Result<(), Diagnostic> {
         match target {
             AssignTarget::Ident(name_hash) => {
                 env.assign(name_hash, Value::Number(0.0));

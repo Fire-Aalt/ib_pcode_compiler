@@ -1,10 +1,10 @@
+use crate::common::{to_bool_num, to_bool_str};
 use crate::compiler::errors::{diagnostic, unsupported_operand_error};
 use crate::data::ast_nodes::Operand;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use std::cmp::Ordering;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::common::{to_bool_num, to_bool_str};
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -98,13 +98,16 @@ impl Value {
         op: fn(f64, f64) -> f64,
     ) -> Result<Value, Diagnostic> {
         if !matches!(self, Value::Number(_) | Value::Bool(_)) {
-            return Err(unsupported_operand_error(line_info, self, &operand, rhs));
+            return Err(unsupported_operand_error(line_info, &self, &operand, &rhs));
         }
         if !matches!(rhs, Value::Number(_) | Value::Bool(_)) {
-            return Err(unsupported_operand_error(line_info, self, &operand, rhs));
+            return Err(unsupported_operand_error(line_info, &self, &operand, &rhs));
         }
 
-        Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?)))
+        Ok(Value::Number(op(
+            self.as_num(line_info)?,
+            rhs.as_num(line_info)?,
+        )))
     }
 
     pub fn as_num(&self, line_info: &LineInfo) -> Result<f64, Diagnostic> {

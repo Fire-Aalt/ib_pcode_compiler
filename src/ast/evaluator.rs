@@ -1,13 +1,13 @@
 use crate::ast::AST;
+use crate::data::Value;
 use crate::data::ast_nodes::{ExprNode, Function, Operand, StmtNode};
 use crate::data::diagnostic::Diagnostic;
-use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
 use std::io::Write;
 
-mod exec_stmt;
 mod eval_expr;
+mod exec_stmt;
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) -> Result<(), Diagnostic> {
@@ -17,7 +17,12 @@ impl AST {
         Ok(())
     }
 
-    fn exec_fn(&self, def: &Function, params: &[Value], env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+    fn exec_fn(
+        &self,
+        def: &Function,
+        params: &[Value],
+        env: &mut Env,
+    ) -> Result<Option<Value>, Diagnostic> {
         env.push_scope();
         self.define_method_params(def, params, env);
         let returned = self.exec_body(&def.body, env)?;
@@ -41,7 +46,7 @@ impl AST {
         for stmt in body {
             if let Some(returned_val) = self.exec_stmt(stmt, env)? {
                 env.pop_scope();
-                return Ok(Some(returned_val))
+                return Ok(Some(returned_val));
             }
         }
         env.pop_scope();
@@ -59,7 +64,10 @@ impl AST {
                 input = String::new();
                 io::stdin().read_line(&mut input).unwrap();
             }
-            EnvMode::Test { mock_inputs, logs: _ } => {
+            EnvMode::Test {
+                mock_inputs,
+                logs: _,
+            } => {
                 input = mock_inputs.pop_front().unwrap();
             }
         }
@@ -71,11 +79,21 @@ impl AST {
         }
     }
 
-    fn and_or_op(&self, l_val: &Value, op: &Operand, r_expr: &ExprNode, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+    fn and_or_op(
+        &self,
+        l_val: &Value,
+        op: &Operand,
+        r_expr: &ExprNode,
+        env: &mut Env,
+    ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
         match op {
-            Operand::And => Ok(Some(Value::Bool(l_val.as_bool_unsafe() && r_expr.eval_as_bool_unsafe(self, env)?))),
-            Operand::Or => Ok(Some(Value::Bool(l_val.as_bool_unsafe() || r_expr.eval_as_bool_unsafe(self, env)?))),
+            Operand::And => Ok(Some(Value::Bool(
+                l_val.as_bool_unsafe() && r_expr.eval_as_bool_unsafe(self, env)?,
+            ))),
+            Operand::Or => Ok(Some(Value::Bool(
+                l_val.as_bool_unsafe() || r_expr.eval_as_bool_unsafe(self, env)?,
+            ))),
             _ => Ok(None),
         }
     }
@@ -90,7 +108,7 @@ impl AST {
     }
 
     fn num_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
-        let l= l_val.as_num_unsafe();
+        let l = l_val.as_num_unsafe();
         let r = r_val.as_num_unsafe();
 
         let res = match op {
@@ -114,7 +132,7 @@ impl AST {
     }
 
     fn str_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
-        let l= l_val.as_string();
+        let l = l_val.as_string();
         let r = r_val.as_string();
 
         let res = match op {

@@ -1,8 +1,8 @@
-use crate::ast::{main_hash, AST};
-use crate::compiler::errors::{compile_error, no_return_error, uninitialized_var_error};
-use crate::data::ast_nodes::{Expr, ExprNode};
-use crate::data::diagnostic::Diagnostic;
+use crate::ast::{AST, main_hash};
+use crate::compiler::errors::{compile_error, diagnostic, no_return_error};
 use crate::data::Validator;
+use crate::data::ast_nodes::{Expr, ExprNode};
+use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::env::Env;
 
 impl AST {
@@ -15,7 +15,15 @@ impl AST {
         match &expr_node.expr {
             Expr::Ident(name) => {
                 let _ = env.get(name).ok_or_else(|| {
-                    compile_error(&expr_node.line_info, uninitialized_var_error(name), validator)
+                    compile_error(
+                        diagnostic(
+                            &expr_node.line_info,
+                            ErrorType::Uninitialized,
+                            format!("cannot find variable `{}` in this scope", name),
+                            "not found in this scope",
+                        ),
+                        validator,
+                    )
                 });
                 Ok(())
             }
@@ -51,7 +59,10 @@ impl AST {
                 }
 
                 if !fn_def.returns {
-                    compile_error(&expr_node.line_info, no_return_error(fn_name, class_name), validator)?
+                    compile_error(
+                        no_return_error(&expr_node.line_info, fn_name, class_name),
+                        validator,
+                    )?
                 }
                 Ok(())
             }

@@ -1,5 +1,5 @@
-use crate::ast::builder::get_assign_target;
 use crate::ast::AST;
+use crate::ast::builder::get_assign_target;
 use crate::compiler::Rule;
 use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Stmt, StmtNode};
 use pest::iterators::Pair;
@@ -144,10 +144,13 @@ impl AST {
                     }
                 }
 
-                self.add_class(class_name_hash.clone(), Class {
-                    functions,
-                    constructor: Constructor { constructors, args },
-                });
+                self.add_class(
+                    class_name_hash.clone(),
+                    Class {
+                        functions,
+                        constructor: Constructor { constructors, args },
+                    },
+                );
 
                 Stmt::ClassDeclaration(class_name_hash)
             }
@@ -163,6 +166,9 @@ impl AST {
             Rule::EOI => Stmt::EOI,
             _ => unreachable!(),
         };
-        StmtNode { line_info: line, stmt }
+        StmtNode {
+            line_info: line,
+            stmt,
+        }
     }
 }

@@ -15,7 +15,7 @@ pub enum ErrorType {
     OutOfBounds,
     InvalidType,
     Uninitialized,
-    Unsupported
+    Unsupported,
 }
 
 #[derive(Clone, Default)]
@@ -26,7 +26,13 @@ pub struct LineInfo {
 }
 
 impl LineInfo {
-    pub fn compile_error(&self, error_type: ErrorType, message: &str, note: &str, validator: &mut Validator) -> Result<(), Diagnostic> {
+    pub fn compile_error(
+        &self,
+        error_type: ErrorType,
+        message: &str,
+        note: &str,
+        validator: &mut Validator,
+    ) -> Result<(), Diagnostic> {
         let err = self.diagnostic(error_type, message, note);
         validator.errors.push(err.clone());
         Err(err)
@@ -36,7 +42,11 @@ impl LineInfo {
         Err(self.diagnostic(error_type, message, ""))
     }
 
-    pub fn runtime_option_error(&self, error_type: ErrorType, message: &str) -> Result<Option<Value>, Diagnostic> {
+    pub fn runtime_option_error(
+        &self,
+        error_type: ErrorType,
+        message: &str,
+    ) -> Result<Option<Value>, Diagnostic> {
         Err(self.diagnostic(error_type, message, ""))
     }
 
@@ -57,7 +67,7 @@ impl Debug for ErrorType {
             ErrorType::OutOfBounds => "Out Of Bounds",
             ErrorType::InvalidType => "Invalid Type",
             ErrorType::Uninitialized => "Uninitialized",
-           ErrorType::Unsupported => "Unsupported",
+            ErrorType::Unsupported => "Unsupported",
         };
         write!(f, "{}", raw)
     }

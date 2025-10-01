@@ -27,4 +27,3 @@ pub fn to_bool_str(string: &str) -> bool {
 pub fn to_bool_num(num: f64) -> bool {
     num != 0.0
 }
-

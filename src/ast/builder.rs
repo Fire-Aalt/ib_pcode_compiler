@@ -1,11 +1,11 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
 use crate::data::NameHash;
+use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
 use pest::iterators::{Pair, Pairs};
 
-mod build_stmt;
 mod build_expr;
+mod build_stmt;
 
 impl AST {
     pub fn build_ast(&mut self, pair: Pair<Rule>) {
@@ -32,7 +32,14 @@ impl AST {
             }
             fn_body.push(stmt_node);
         }
-        (self.hash(fn_name), Function { args: fn_args, body: fn_body, returns: fn_returns } )
+        (
+            self.hash(fn_name),
+            Function {
+                args: fn_args,
+                body: fn_body,
+                returns: fn_returns,
+            },
+        )
     }
 
     fn build_args(&mut self, inner: &mut Pairs<Rule>) -> Vec<NameHash> {
@@ -53,16 +60,8 @@ impl AST {
 
 fn get_assign_target(assignee: ExprNode) -> AssignTarget {
     match assignee.expr {
-        Expr::Ident(name) => {
-            AssignTarget::Ident(name)
-        }
-        Expr::Index(array, index) => {
-            AssignTarget::Array(*array, *index)
-        }
+        Expr::Ident(name) => AssignTarget::Ident(name),
+        Expr::Index(array, index) => AssignTarget::Array(*array, *index),
         _ => unreachable!(),
     }
 }
-
-
-
-

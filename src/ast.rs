@@ -1,8 +1,8 @@
 use crate::compiler::Rule;
+use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{with_name_map, NameHash};
-use crate::data::Value;
+use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::HashMap;
@@ -112,8 +112,8 @@ impl AST {
                     }
 
                     match array_val {
-                        Value::Undefined => {},
-                        _ => self.format_val(array_val, output, env)
+                        Value::Undefined => {}
+                        _ => self.format_val(array_val, output, env),
                     }
                 }
             }

@@ -1,8 +1,11 @@
 use crate::ast::AST;
-use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error, unsupported_operand_error};
+use crate::compiler::errors::{
+    diagnostic, invalid_type_call_error, no_return_error, out_of_bounds_error,
+    unsupported_operand_error,
+};
+use crate::data::Value;
 use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
-use crate::data::Value;
 use crate::env::Env;
 use std::collections::VecDeque;
 
@@ -50,7 +53,7 @@ impl AST {
 
                         match res {
                             Some(val) => Ok(val),
-                            None => runtime_error(&expr_node.line_info, unsupported_operand_error(&expr_node.line_info, l.clone(), op, r.clone()))
+                            None => Err(unsupported_operand_error(&expr_node.line_info, l, op, r)),
                         }
                     }
                 }
@@ -75,50 +78,74 @@ impl AST {
                 }
 
                 // Local methods are already validated and no checks are needed
-                let returned = self.exec_fn(fn_def, &resolved_params, env)?.unwrap_or(Value::Number(0.0));
+                let returned = self
+                    .exec_fn(fn_def, &resolved_params, env)?
+                    .unwrap_or(Value::Number(0.0));
                 Ok(returned)
             }
             Expr::SubstringCall { expr, start, end } => {
-                let val = self.eval_expr(expr, env)?;
+                let val = &self.eval_expr(expr, env)?;
                 if let Value::String(s) = val {
                     let start = self.eval_expr(start, env)?.as_num(&start.line_info)? as usize;
                     let end = self.eval_expr(end, env)?.as_num(&end.line_info)? as usize;
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
-                    expr_node.runtime_error(ErrorType::InvalidType, format!(".substring(start, end) used on {}. Only strings are supported", val).as_str())
+                    Err(invalid_type_call_error(
+                        &expr.line_info,
+                        "`.substring(start, end)`",
+                        val,
+                        "strings",
+                    ))
                 }
             }
             Expr::LengthCall(expr) => {
-                let val = self.eval_expr(expr, env)?;
+                let val = &self.eval_expr(expr, env)?;
                 match val {
                     Value::String(s) => Ok(Value::Number(s.len() as f64)),
                     Value::ArrayId(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
-                    _ => expr_node.runtime_error(ErrorType::InvalidType, format!(".length used on {}. Only strings and arrays are supported", val).as_str()),
+                    _ => Err(invalid_type_call_error(
+                        &expr.line_info,
+                        "`.length`",
+                        val,
+                        "strings and arrays",
+                    )),
                 }
             }
             Expr::Index(left, index) => {
                 let index = self.eval_expr(index, env)?.as_num(&index.line_info)? as i64;
 
-                match self.eval_expr(left, env)? {
+                let val = &self.eval_expr(left, env)?;
+                match val {
                     Value::String(s) => {
                         let length = s.chars().count();
 
                         if index < 0 || index >= length as i64 {
-                            return runtime_error(&expr_node.line_info, out_of_bounds_error(index, length));
+                            return Err(out_of_bounds_error(&expr_node.line_info, index, length));
                         }
-                        Ok(Value::String(s.chars().nth(index as usize).unwrap().to_string()))
-                    },
+                        Ok(Value::String(
+                            s.chars().nth(index as usize).unwrap().to_string(),
+                        ))
+                    }
                     Value::ArrayId(id) => {
-                        let array = env.get_array_mut(&id);
+                        let array = env.get_array_mut(id);
 
                         if index < 0 || index >= array.len() as i64 {
-                            return runtime_error(&expr_node.line_info, out_of_bounds_error(index, array.len()));
+                            return Err(out_of_bounds_error(
+                                &expr_node.line_info,
+                                index,
+                                array.len(),
+                            ));
                         }
 
                         Ok(array[index as usize].clone())
                     }
-                    _ => expr_node.runtime_error(ErrorType::InvalidType, "Invalid index expression"),
+                    _ => Err(invalid_type_call_error(
+                        &expr_node.line_info,
+                        "index expression",
+                        val,
+                        "strings and arrays",
+                    )),
                 }
             }
             Expr::ClassNew(class_name_hash, params) => {
@@ -156,9 +183,11 @@ impl AST {
                 if let Value::InstanceId(id) = val {
                     let class_name = &env.get_class_name_hash(&id).clone();
                     let fn_def = self.get_function(class_name, fn_name).ok_or_else(|| {
-                        expr_node.runtime_diagnostic(
+                        diagnostic(
+                            &expr_node.line_info,
                             ErrorType::Uninitialized,
-                            format!("Undefined function in class {}", class_name).as_str(),
+                            format!("undefined function `{}` in class `{}`", fn_name, class_name),
+                            "uninitialized function",
                         )
                     })?;
 
@@ -173,17 +202,18 @@ impl AST {
 
                     return match returned {
                         Some(val) => Ok(val),
-                        None => runtime_error(&expr_node.line_info, no_return_error(fn_name, class_name)),
+                        None => Err(no_return_error(&expr_node.line_info, fn_name, class_name)),
                     };
                 }
-                expr_node.runtime_error(
+                Err(diagnostic(
+                    &expr_node.line_info,
                     ErrorType::InvalidType,
                     format!(
-                        "Tried invoking a method {} not on an instance of a class: {}",
+                        "tried invoking a method `{}` not on an instance of a class: `{}`",
                         fn_name, val
-                    )
-                    .as_str(),
-                )
+                    ),
+                    "",
+                ))
             }
         }
     }

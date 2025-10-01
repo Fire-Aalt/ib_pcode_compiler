@@ -1,8 +1,8 @@
-use std::cmp::max;
 use crate::ast::AST;
 use crate::compiler::Rule;
 use crate::data::diagnostic::Diagnostic;
 use pest::error::{Error, ErrorVariant, InputLocation};
+use std::cmp::max;
 
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
@@ -56,7 +56,10 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
     let (_end_line, end_col) = line_col_of(end_byte);
 
     let positives = match &err.variant {
-        ErrorVariant::ParsingError { positives, negatives: _ } => positives.clone(),
+        ErrorVariant::ParsingError {
+            positives,
+            negatives: _,
+        } => positives.clone(),
         _ => Vec::new(),
     };
 
