@@ -37,7 +37,7 @@ end loop
 A = "sss"
 A++
 
-output 1 <> true
+output Math.random()
 
 
 // TODO: put errors into their own methods

@@ -109,6 +109,7 @@ impl AST {
                 let _ = self.validate_expr(right, env, validator);
                 Ok(())
             }
+            Expr::MathRandom => Ok(())
         }
     }
 }

@@ -8,6 +8,7 @@ use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::env::Env;
 use std::collections::VecDeque;
+use rand::Rng;
 
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
@@ -67,6 +68,10 @@ impl AST {
                 let right = self.eval_expr(right, env)?.as_num(&right.line_info)?;
 
                 Ok(Value::Number((left as i64 / right as i64) as f64))
+            }
+            Expr::MathRandom => {
+                let mut rng = rand::rng();
+                Ok(Value::Number(rng.random_range(0.0..1.0)))
             }
             Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();

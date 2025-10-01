@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 pest = "2.8.2"
 pest_derive = "2.8.2"
+rand = "0.10.0-rc.0"
