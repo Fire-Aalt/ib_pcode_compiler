@@ -1,39 +1,45 @@
 
 
 
-Class hhh()
-    this.gg = function()
-    {
-        output Show()
-    }
-end Class
-
-method Show()
-    if true then
-        A = 55
-        return 14
-    end if
-
-    output A
-end method
-
-
-
-
-new SDds()
-
-
-A = 454
-output Show()
-
-
+//Class hhh()
+  // this.gg = function()
+  // {
+  // output Show()
+  // }
+  // end Class
+  //
+  // method Show()
+  // if true then
+  // A = 55
+  // return 14
+  // end if
+  //
+  // output A
+  // end method
+  //
+  //
+  //
+  //
+  // new SDds()
+  //
+  //
+  // A = 454
+  // output Show()
 
 
 
 
+loop I from 0 to 10
 
+    output I
+end loop
 
+A = new Array()
 
+A[5] = 565
+
+output A
+output A[4]
 
 
 

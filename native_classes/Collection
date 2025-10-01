@@ -46,6 +46,9 @@ Class Collection()
 
     this.hasNext = function()
     {
+        if this.next >= this.array.length then
+            return false
+        end if
         return this.array[this.next] != "undefined"
     }
 

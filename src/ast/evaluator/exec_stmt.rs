@@ -57,10 +57,9 @@ impl AST {
 
                     control = env.get(ident).unwrap();
 
-
-                    // if let Err(e) = control.as_num(&stmt_node.line_info) {
-                    //     return Err(diagnostic(&stmt_node.line_info, ErrorType::InvalidType, format!("for loop requires that the control variable `{}` persists to be a number. Found", ident)));
-                    // }
+                    if control.as_num(&stmt_node.line_info).is_err() {
+                        return Err(diagnostic(&stmt_node.line_info, ErrorType::InvalidType, format!("for loop requires that the control variable `{}` persists to be a number. Found `{}`", ident, control), ""))
+                    }
 
                     control = control.add(&stmt_node.line_info, Value::Number(1.0))?;
                     env.assign(ident, control.clone());
@@ -142,13 +141,21 @@ impl AST {
                     let array = env.get_array_mut(&id);
 
                     if index < 0 {
-                        stmt_node.error(ErrorType::OutOfBounds, format!("Negative index: {}", index).as_str())?;
+                        stmt_node.error(ErrorType::OutOfBounds, format!("tried to access a negative index `{}`", index).as_str())?;
                     }
                     let index = index as usize;
-                    while array.len() <= index {
-                        array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
+
+                    let needed = index + 1;
+                    let target_capacity = needed.next_power_of_two().max(1);
+
+                    if array.capacity() < target_capacity {
+                        array.reserve(target_capacity - array.capacity());
                     }
-                    //array.resize(index + 1, Value::String("undefined".to_string())); TODO: either fix it by printing up to last defined element or resize it properly
+
+                    let undefined = Value::String("undefined".to_string());
+                    if array.len() < needed {
+                        array.resize(needed, undefined);
+                    }
 
                     let res = match op {
                         AssignOperator::Assign => val,

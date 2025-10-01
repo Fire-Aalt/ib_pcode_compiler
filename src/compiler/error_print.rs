@@ -7,8 +7,8 @@ const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 
 struct ErrorLine {
-    pub user_start_line: usize,
-    pub user_end_line: usize,
+    pub user_start_line: isize,
+    pub user_end_line: isize,
     pub start_line: usize,
     pub end_line: usize,
     pub start_col: usize,
@@ -20,8 +20,8 @@ pub fn print_diagnostic_error(ast: &AST, error_category: &str, diagnostic: Diagn
     let end_line = diagnostic.line_info.end_line as usize;
 
     let error_line = ErrorLine {
-        user_start_line: start_line - ast.user_code_start_line as usize,
-        user_end_line: end_line - ast.user_code_start_line as usize,
+        user_start_line: start_line as isize - ast.user_code_start_line as isize,
+        user_end_line: end_line as isize - ast.user_code_start_line as isize,
         start_line,
         end_line,
         start_col: diagnostic.line_info.start_col as usize,
@@ -64,8 +64,8 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
         _ => Vec::new(),
     };
 
-    let user_start_line = start_line - user_code_start_line as usize;
-    let user_end_line = end_line - user_code_start_line as usize;
+    let user_start_line = start_line as isize - user_code_start_line as isize;
+    let user_end_line = end_line as isize - user_code_start_line as isize;
 
     let error_line = ErrorLine {
         user_start_line,
@@ -86,12 +86,7 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
 fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
     let lines: Vec<&str> = source.lines().collect();
 
-    if info.user_end_line != info.user_start_line {
-        eprint!("At lines: {}-{}", info.user_start_line, info.user_end_line);
-    } else {
-        eprint!("At line: {}", info.user_start_line);
-    }
-    eprintln!();
+    eprintln!("At line: {}", info.user_start_line);
 
     if let Some(line_text) = lines.get(info.start_line - 1) {
         let indent_len = info.user_start_line.to_string().chars().count();
@@ -119,18 +114,5 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
             underline.push('^');
         }
         eprintln!("{} {}", underline, note);
-    }
-
-    if info.end_line > info.start_line {
-        if let Some(last_line) = lines.get(info.user_end_line - 1) {
-            eprintln!("...");
-            eprintln!("{}", last_line);
-
-            let mut underline = String::new();
-            for _ in 1..=info.end_col {
-                underline.push('^');
-            }
-            eprintln!("{}", underline);
-        }
     }
 }

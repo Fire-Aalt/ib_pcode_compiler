@@ -73,6 +73,7 @@ fn parse(program: &str, user_code_start_line: u32, should_panic: bool) -> Pair<R
     }.next().unwrap()
 }
 
+
 fn build_ast(program: &str, user_code_start_line: u32, parsed_result: Pair<Rule>) -> AST {
     let mut ast = AST::new(program.to_string(), user_code_start_line);
     ast.build_ast(parsed_result);
