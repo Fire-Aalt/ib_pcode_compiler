@@ -4,6 +4,7 @@ use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use std::cmp::Ordering;
 use std::fmt;
 use std::fmt::{Display, Formatter};
+use crate::common::{to_bool_num, to_bool_str};
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -12,7 +13,7 @@ pub enum Value {
     String(String),
     ArrayId(usize),
     InstanceId(usize),
-    Undefined
+    Undefined,
 }
 
 impl Value {
@@ -28,7 +29,7 @@ impl Value {
         }
     }
 
-    pub fn fmt(&self) -> String {
+    fn fmt(&self) -> String {
         match self {
             Value::Number(n) => format!("{}", n),
             Value::Bool(b) => format!("{}", b),
@@ -39,28 +40,40 @@ impl Value {
         }
     }
 
-    pub fn neg(self, line_info: &LineInfo) -> Result<Value, Diagnostic> {
+    pub fn neg(self, line_info: &LineInfo) -> Result<Self, Diagnostic> {
         match self {
             Value::Number(f) => Ok(Value::Number(-f)),
             Value::Bool(b) => Ok(Value::Number(if b { -1.0 } else { 0.0 })),
-            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot apply `negate` operand on `{}`", self.error_fmt()), "")),
+            _ => Err(diagnostic(
+                line_info,
+                ErrorType::InvalidType,
+                format!("cannot apply `negate` operand on `{}`", self.error_fmt()),
+                "",
+            )),
         }
     }
 
-    pub fn not(self, line_info: &LineInfo) -> Result<Value, Diagnostic> {
+    pub fn not(self, line_info: &LineInfo) -> Result<Self, Diagnostic> {
         match self {
             Value::Number(f) => Ok(Value::Bool(f == 0.0)),
             Value::Bool(b) => Ok(Value::Bool(!b)),
-            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot apply `not` operand on `{}`", self.error_fmt()), "")),
+            _ => Err(diagnostic(
+                line_info,
+                ErrorType::InvalidType,
+                format!("cannot apply `not` operand on `{}`", self.error_fmt()),
+                "",
+            )),
         }
     }
 
-    pub fn add(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
+    pub fn add(self, line_info: &LineInfo, rhs: Self) -> Result<Self, Diagnostic> {
         match self {
             Value::String(lhs) => Ok(Value::String(format!("{}{}", lhs, rhs.fmt()))),
             _ => match rhs {
                 Value::String(rhs) => Ok(Value::String(format!("{}{}", self.fmt(), rhs))),
-                _ => Ok(Value::Number(self.as_num(line_info)? + rhs.as_num(line_info)?)),
+                _ => Ok(Value::Number(
+                    self.as_num(line_info)? + rhs.as_num(line_info)?,
+                )),
             },
         }
     }
@@ -77,16 +90,21 @@ impl Value {
         self.only_number_with_number_op(line_info, Operand::Divide, rhs, |lhs, rhs| lhs / rhs)
     }
 
-    pub fn only_number_with_number_op(self, line_info: &LineInfo, operand: Operand, rhs: Value, op: fn(f64, f64) -> f64) -> Result<Value, Diagnostic> {
+    pub fn only_number_with_number_op(
+        self,
+        line_info: &LineInfo,
+        operand: Operand,
+        rhs: Self,
+        op: fn(f64, f64) -> f64,
+    ) -> Result<Value, Diagnostic> {
+        if !matches!(self, Value::Number(_) | Value::Bool(_)) {
+            return Err(unsupported_operand_error(line_info, self, &operand, rhs));
+        }
         if !matches!(rhs, Value::Number(_) | Value::Bool(_)) {
-            return Err(unsupported_operand_error(line_info, self, &operand, rhs))
+            return Err(unsupported_operand_error(line_info, self, &operand, rhs));
         }
 
-        match self {
-            Value::Number(_) => Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?))),
-            Value::Bool(_) => Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?))),
-            _ => Err(unsupported_operand_error(line_info, self, &operand, rhs)),
-        }
+        Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?)))
     }
 
     pub fn as_num(&self, line_info: &LineInfo) -> Result<f64, Diagnostic> {
@@ -99,7 +117,35 @@ impl Value {
                     Ok(0.0)
                 }
             }
-            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot convert `{}` to a number", self.error_fmt()), "")),
+            _ => Err(diagnostic(
+                line_info,
+                ErrorType::InvalidType,
+                format!("cannot convert `{}` to a number", self.error_fmt()),
+                "",
+            )),
+        }
+    }
+
+    pub fn as_num_unsafe(&self) -> f64 {
+        match self {
+            Value::Number(n) => *n,
+            Value::Bool(b) => {
+                if *b {
+                    1.0
+                } else {
+                    0.0
+                }
+            }
+            _ => panic!("{}", self.error_fmt()),
+        }
+    }
+
+    pub fn as_bool_unsafe(&self) -> bool {
+        match self {
+            Value::Number(n) => to_bool_num(*n),
+            Value::Bool(b) => *b,
+            Value::String(s) => to_bool_str(s),
+            _ => panic!("{}", self.error_fmt()),
         }
     }
 
@@ -107,8 +153,17 @@ impl Value {
         match self {
             Value::Number(n) => Ok(*n != 0.0),
             Value::Bool(b) => Ok(*b),
-            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot convert `{}` to a boolean", self.error_fmt()), "")),
+            _ => Err(diagnostic(
+                line_info,
+                ErrorType::InvalidType,
+                format!("cannot convert `{}` to a boolean", self.error_fmt()),
+                "",
+            )),
         }
+    }
+
+    pub fn as_string(&self) -> String {
+        self.fmt()
     }
 }
 

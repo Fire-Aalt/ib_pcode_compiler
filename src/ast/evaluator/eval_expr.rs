@@ -1,11 +1,10 @@
 use crate::ast::AST;
-use crate::common::{num_op, str_op};
-use crate::data::ast_nodes::{Expr, ExprNode, Operand, UnaryOp};
+use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error, unsupported_operand_error};
+use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
+use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::data::Value;
 use crate::env::Env;
 use std::collections::VecDeque;
-use crate::compiler::errors::{no_return_error, out_of_bounds_error, runtime_error, unsupported_operand_error};
-use crate::data::diagnostic::{Diagnostic, ErrorType};
 
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
@@ -30,50 +29,30 @@ impl AST {
                 })
             }
             Expr::BinOp(left, op, right) => {
-                let l = self.eval_expr(left, env)?;
-                let r = self.eval_expr(right, env)?;
+                let l = &self.eval_expr(left, env)?;
 
-                let l_val = l.clone();
-                let r_val = r.clone();
-
-                // TODO: remove all of that and rely on conversions
-                let res = match l {
-                    Value::Number(l_num) => match r {
-                        Value::Number(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
-                        Value::Bool(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
-                        Value::String(r_string) => match op {
-                            Operand::Add => Some(Value::String(l_num.to_string() + &*r_string)),
-                            _ => None,
-                        },
-                        _ => None,
-                    },
-                    Value::Bool(l_bool) => match r {
-                        Value::Number(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
-                        Value::Bool(r_bool) => Some(match op {
-                            Operand::And => Value::Bool(l_bool && r_bool),
-                            Operand::Or => Value::Bool(l_bool || r_bool),
-                            _ => Value::Bool(num_op(&expr_node.line_info, l, op, r)?.as_bool(&expr_node.line_info)?),
-                        }),
-                        Value::String(r_string) => {
-                            Some(str_op(l.to_string().as_str(), op, r_string.as_str()))
-                        }
-                        _ => None,
-                    },
-                    Value::String(l_string) => match r {
-                        Value::Number(r_num) => match op {
-                            Operand::Add => Some(Value::String(l_string + &r_num.to_string())),
-                            _ => None,
-                        },
-                        Value::Bool(_) => Some(str_op(l_string.as_str(), op, r.to_string().as_str())),
-                        Value::String(r_string) => Some(str_op(l_string.as_str(), op, r_string.as_str())),
-                        _ => None,
-                    },
-                    _ => None,
-                };
-
-                match res {
+                match self.and_or_op(l, op, right, env)? {
                     Some(val) => Ok(val),
-                    None => runtime_error(&expr_node.line_info, unsupported_operand_error(&expr_node.line_info, l_val, op, r_val))
+                    None => {
+                        let r = &self.eval_expr(right, env)?;
+
+                        let res = match l {
+                            Value::Number(_) => self.num_operations(l, op, r),
+                            Value::Bool(_) => self.num_operations(l, op, r),
+                            Value::String(_) => match r {
+                                Value::Number(_) => self.str_op(l, op, r),
+                                Value::Bool(_) => self.str_op(l, op, r),
+                                Value::String(_) => self.str_op(l, op, r),
+                                _ => None,
+                            },
+                            _ => None,
+                        };
+
+                        match res {
+                            Some(val) => Ok(val),
+                            None => runtime_error(&expr_node.line_info, unsupported_operand_error(&expr_node.line_info, l.clone(), op, r.clone()))
+                        }
+                    }
                 }
             }
             Expr::Input(text) => {

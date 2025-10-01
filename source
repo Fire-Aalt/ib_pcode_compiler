@@ -36,10 +36,9 @@ end loop
 
 A = "sss"
 A++
-A--
 
-output A
-
+output 1 <> true
 
 
+// TODO: generalize operand operations
 // TODO: put errors into their own methods

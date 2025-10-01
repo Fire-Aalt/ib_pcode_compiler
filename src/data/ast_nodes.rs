@@ -1,7 +1,9 @@
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Value};
 use std::collections::HashMap;
+use crate::ast::AST;
 use crate::data::validator::Validator;
+use crate::env::Env;
 
 #[derive(Debug, Clone)]
 pub struct StmtNode {
@@ -22,6 +24,18 @@ impl StmtNode {
 }
 
 impl ExprNode {
+    pub fn eval_as_num(&self, ast: &AST, env: &mut Env) -> Result<f64, Diagnostic> {
+        ast.eval_expr(self, env)?.as_num(&self.line_info)
+    }
+
+    pub fn eval_as_bool_unsafe(&self, ast: &AST, env: &mut Env) -> Result<bool, Diagnostic> {
+        Ok(ast.eval_expr(self, env)?.as_bool_unsafe())
+    }
+
+    pub fn eval_as_str(&self, ast: &AST, env: &mut Env) -> Result<String, Diagnostic> {
+        Ok(ast.eval_expr(self, env)?.as_string())
+    }
+
     pub fn compile_error(&self, mut diagnostic: Diagnostic, validator: &mut Validator) -> Result<(), Diagnostic> {
         diagnostic.line_info = self.line_info.clone();
         validator.errors.push(diagnostic.clone());
