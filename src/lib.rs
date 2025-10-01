@@ -12,9 +12,10 @@ pub mod ast;
 pub mod data;
 pub mod compiler;
 
+
 pub fn compile_release_and_run(code: &str) {
     let ast = compile(code, false);
-    //println!("{}", ast);
+    println!("{}", ast);
 
     let mut env = Env::release();
 

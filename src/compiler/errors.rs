@@ -13,6 +13,15 @@ pub fn runtime_error(line_info: &LineInfo, mut diagnostic: Diagnostic) -> Result
     Err(diagnostic)
 }
 
+pub fn diagnostic(line_info: &LineInfo, error_type: ErrorType, message: String, note: &str) -> Diagnostic {
+    Diagnostic {
+        line_info: line_info.clone(),
+        error_type,
+        message,
+        note: note.to_string(),
+    }
+}
+
 pub fn no_return_error(fn_name: &NameHash, class_name: &NameHash) -> Diagnostic {
     Diagnostic {
         line_info: LineInfo::default(),
@@ -43,11 +52,11 @@ pub fn out_of_bounds_error(index: i64, length: usize) -> Diagnostic {
     }
 }
 
-pub fn unsupported_operand_error(left: Value, op: &Operand, right: Value) -> Diagnostic {
+pub fn unsupported_operand_error(line_info: &LineInfo, left: Value, op: &Operand, right: Value) -> Diagnostic {
     Diagnostic {
-        line_info: LineInfo::default(),
-        error_type: ErrorType::OutOfBounds,
-        message: format!("unsupported operand `{}` for types `{}` and `{}`", op.fmt(), left.type_name(), right.type_name()),
+        line_info: line_info.clone(),
+        error_type: ErrorType::Unsupported,
+        message: format!("unsupported operand `{}` for types `{}` and `{}`", op.fmt(), left.error_fmt(), right.error_fmt()),
         note: "results in undefined behavior".to_string(),
     }
 }

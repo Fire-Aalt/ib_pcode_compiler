@@ -1,7 +1,9 @@
+use crate::compiler::errors::{diagnostic, unsupported_operand_error};
+use crate::data::ast_nodes::Operand;
+use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use std::cmp::Ordering;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use std::ops::{Add, Div, Mul, Neg, Not, Sub};
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -13,7 +15,8 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn type_name(&self) -> String {
+    pub fn error_fmt(&self) -> String {
+        println!("{}", self);
         match self {
             Value::Number(n) => format!("Number({})", n),
             Value::Bool(b) => format!("Boolean({})", b),
@@ -23,27 +26,75 @@ impl Value {
         }
     }
 
-    pub fn as_num(&self) -> f64 {
+    pub fn neg(self, line_info: &LineInfo) -> Result<Value, Diagnostic> {
         match self {
-            Value::Number(n) => *n,
-            Value::String(_) => 0.0,
-            Value::Bool(b) => {
-                if *b {
-                    1.0
-                } else {
-                    0.0
-                }
-            }
-            _ => panic!("Cannot convert {} to num", self),
+            Value::Number(f) => Ok(Value::Number(-f)),
+            Value::Bool(b) => Ok(Value::Number(if b { -1.0 } else { 0.0 })),
+            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot apply `negate` operand on `{}`", self.error_fmt()), "")),
         }
     }
 
-    pub fn as_bool(&self) -> bool {
+    pub fn not(self, line_info: &LineInfo) -> Result<Value, Diagnostic> {
         match self {
-            Value::Number(n) => *n != 0.0,
-            Value::String(s) => !s.is_empty(),
-            Value::Bool(b) => *b,
-            _ => panic!("Cannot convert {} to bool", self),
+            Value::Number(f) => Ok(Value::Bool(f == 0.0)),
+            Value::Bool(b) => Ok(Value::Bool(!b)),
+            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot apply `not` operand on `{}`", self.error_fmt()), "")),
+        }
+    }
+
+    pub fn add(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
+        match self {
+            Value::String(lhs) => Ok(Value::String(format!("{}{}", lhs, rhs))),
+            _ => match rhs {
+                Value::String(rhs) => Ok(Value::String(format!("{}{}", self, rhs))),
+                _ => Ok(Value::Number(self.as_num(line_info)? + rhs.as_num(line_info)?)),
+            },
+        }
+    }
+
+    pub fn sub(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
+        self.only_number_with_number_op(line_info, Operand::Subtract, rhs, |lhs, rhs| lhs - rhs)
+    }
+
+    pub fn mul(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
+        self.only_number_with_number_op(line_info, Operand::Multiply, rhs, |lhs, rhs| lhs * rhs)
+    }
+
+    pub fn div(self, line_info: &LineInfo, rhs: Self) -> Result<Value, Diagnostic> {
+        self.only_number_with_number_op(line_info, Operand::Divide, rhs, |lhs, rhs| lhs / rhs)
+    }
+
+    pub fn only_number_with_number_op(self, line_info: &LineInfo, operand: Operand, rhs: Value, op: fn(f64, f64) -> f64) -> Result<Value, Diagnostic> {
+        if !matches!(rhs, Value::Number(_) | Value::Bool(_)) {
+            return Err(unsupported_operand_error(line_info, self, &operand, rhs))
+        }
+
+        match self {
+            Value::Number(_) => Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?))),
+            Value::Bool(_) => Ok(Value::Number(op(self.as_num(line_info)?, rhs.as_num(line_info)?))),
+            _ => Err(unsupported_operand_error(line_info, self, &operand, rhs)),
+        }
+    }
+
+    pub fn as_num(&self, line_info: &LineInfo) -> Result<f64, Diagnostic> {
+        match self {
+            Value::Number(n) => Ok(*n),
+            Value::Bool(b) => {
+                if *b {
+                    Ok(1.0)
+                } else {
+                    Ok(0.0)
+                }
+            }
+            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot convert `{}` to a number", self.error_fmt()), "")),
+        }
+    }
+
+    pub fn as_bool(&self, line_info: &LineInfo) -> Result<bool, Diagnostic> {
+        match self {
+            Value::Number(n) => Ok(*n != 0.0),
+            Value::Bool(b) => Ok(*b),
+            _ => Err(diagnostic(line_info, ErrorType::InvalidType, format!("cannot convert `{}` to a boolean", self.error_fmt()), "")),
         }
     }
 }
@@ -67,86 +118,6 @@ impl PartialOrd for Value {
             (Value::String(a), Value::String(b)) => a.partial_cmp(b),
             _ => None,
         }
-    }
-}
-
-impl Neg for Value {
-    type Output = Value;
-
-    fn neg(self) -> Self::Output {
-        match self {
-            Value::Number(f) => Value::Number(-f),
-            Value::Bool(b) => Value::Number(if b { -1.0 } else { 0.0 }),
-            _ => Value::String(String::from("Nan")),
-        }
-    }
-}
-
-impl Not for Value {
-    type Output = Value;
-
-    fn not(self) -> Self::Output {
-        match self {
-            Value::Number(f) => {
-                if f != 0.0 {
-                    Value::Bool(false)
-                } else {
-                    Value::Bool(true)
-                }
-            }
-            Value::Bool(b) => Value::Bool(!b),
-            _ => Value::String(String::from("Nan")),
-        }
-    }
-}
-
-impl Add for Value {
-    type Output = Value;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        match self {
-            Value::String(lhs) => Value::String(format!("{}{}", lhs, rhs)),
-            _ => match rhs {
-                Value::String(rhs) => Value::String(format!("{}{}", self, rhs)),
-                _ => Value::Number(self.as_num() + rhs.as_num()),
-            },
-        }
-    }
-}
-
-impl Sub for Value {
-    type Output = Value;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs - rhs)
-    }
-}
-
-impl Mul for Value {
-    type Output = Value;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs * rhs)
-    }
-}
-
-impl Div for Value {
-    type Output = Value;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        only_number_with_number_op(self, rhs, |lhs, rhs| lhs / rhs)
-    }
-}
-
-fn only_number_with_number_op(lhs: Value, rhs: Value, op: fn(f64, f64) -> f64) -> Value {
-    if let Value::String(_) = rhs {
-        return Value::String(String::from("Nan"));
-    }
-
-    match lhs {
-        Value::Number(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
-        Value::Bool(_) => Value::Number(op(lhs.as_num(), rhs.as_num())),
-        _ => Value::String(String::from("Nan")),
     }
 }
 

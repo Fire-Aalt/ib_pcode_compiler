@@ -1,10 +1,10 @@
 use crate::ast::AST;
 use crate::data::ast_nodes::{ExprNode, Function, StmtNode};
+use crate::data::diagnostic::Diagnostic;
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
 use std::io;
 use std::io::Write;
-use crate::data::diagnostic::Diagnostic;
 
 mod exec_stmt;
 mod eval_expr;
@@ -27,7 +27,7 @@ impl AST {
     }
 
     fn is_true(&self, cond: &ExprNode, env: &mut Env) -> Result<bool, Diagnostic> {
-        Ok(self.eval_expr(cond, env)?.as_bool())
+        Ok(self.eval_expr(cond, env)?.as_bool(&cond.line_info)?)
     }
 
     fn define_method_params(&self, method_def: &Function, params: &[Value], env: &mut Env) {

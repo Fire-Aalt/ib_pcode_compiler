@@ -15,6 +15,7 @@ pub enum ErrorType {
     OutOfBounds,
     InvalidType,
     Uninitialized,
+    Unsupported
 }
 
 #[derive(Clone, Default)]
@@ -53,10 +54,11 @@ impl LineInfo {
 impl Debug for ErrorType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let raw = match self {
-            ErrorType::NoReturn     => "No Return",
-            ErrorType::OutOfBounds  => "Out Of Bounds",
-            ErrorType::InvalidType  => "Invalid Type",
+            ErrorType::NoReturn => "No Return",
+            ErrorType::OutOfBounds => "Out Of Bounds",
+            ErrorType::InvalidType => "Invalid Type",
             ErrorType::Uninitialized => "Uninitialized",
+           ErrorType::Unsupported => "Unsupported",
         };
         write!(f, "{}", raw)
     }

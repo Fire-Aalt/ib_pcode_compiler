@@ -25,8 +25,8 @@ impl AST {
             Expr::Unary(op, expr) => {
                 let value = self.eval_expr(expr, env)?;
                 Ok(match op {
-                    UnaryOp::Neg => -value,
-                    UnaryOp::Not => !value,
+                    UnaryOp::Neg => value.neg(&expr_node.line_info)?,
+                    UnaryOp::Not => value.not(&expr_node.line_info)?,
                 })
             }
             Expr::BinOp(left, op, right) => {
@@ -36,10 +36,11 @@ impl AST {
                 let l_val = l.clone();
                 let r_val = r.clone();
 
+                // TODO: remove all of that and rely on conversions
                 let res = match l {
                     Value::Number(l_num) => match r {
-                        Value::Number(_) => Some(num_op(l, op, r)),
-                        Value::Bool(_) => Some(num_op(l, op, r)),
+                        Value::Number(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
+                        Value::Bool(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
                         Value::String(r_string) => match op {
                             Operand::Add => Some(Value::String(l_num.to_string() + &*r_string)),
                             _ => None,
@@ -47,11 +48,11 @@ impl AST {
                         _ => None,
                     },
                     Value::Bool(l_bool) => match r {
-                        Value::Number(_) => Some(num_op(l, op, r)),
+                        Value::Number(_) => Some(num_op(&expr_node.line_info, l, op, r)?),
                         Value::Bool(r_bool) => Some(match op {
                             Operand::And => Value::Bool(l_bool && r_bool),
                             Operand::Or => Value::Bool(l_bool || r_bool),
-                            _ => Value::Bool(num_op(l, op, r).as_bool()),
+                            _ => Value::Bool(num_op(&expr_node.line_info, l, op, r)?.as_bool(&expr_node.line_info)?),
                         }),
                         Value::String(r_string) => {
                             Some(str_op(l.to_string().as_str(), op, r_string.as_str()))
@@ -72,7 +73,7 @@ impl AST {
 
                 match res {
                     Some(val) => Ok(val),
-                    None => runtime_error(&expr_node.line_info, unsupported_operand_error(l_val, op, r_val))
+                    None => runtime_error(&expr_node.line_info, unsupported_operand_error(&expr_node.line_info, l_val, op, r_val))
                 }
             }
             Expr::Input(text) => {
@@ -80,8 +81,8 @@ impl AST {
                 Ok(self.exec_input(&text.to_string(), env))
             }
             Expr::Div(left, right) => {
-                let left = self.eval_expr(left, env)?.as_num();
-                let right = self.eval_expr(right, env)?.as_num();
+                let left = self.eval_expr(left, env)?.as_num(&left.line_info)?;
+                let right = self.eval_expr(right, env)?.as_num(&right.line_info)?;
 
                 Ok(Value::Number((left as i64 / right as i64) as f64))
             }
@@ -101,8 +102,8 @@ impl AST {
             Expr::SubstringCall { expr, start, end } => {
                 let val = self.eval_expr(expr, env)?;
                 if let Value::String(s) = val {
-                    let start = self.eval_expr(start, env)?.as_num() as usize;
-                    let end = self.eval_expr(end, env)?.as_num() as usize;
+                    let start = self.eval_expr(start, env)?.as_num(&start.line_info)? as usize;
+                    let end = self.eval_expr(end, env)?.as_num(&end.line_info)? as usize;
 
                     Ok(Value::String(s[start..end].to_string()))
                 } else {
@@ -118,7 +119,7 @@ impl AST {
                 }
             }
             Expr::Index(left, index) => {
-                let index = self.eval_expr(index, env)?.as_num() as i64;
+                let index = self.eval_expr(index, env)?.as_num(&index.line_info)? as i64;
 
                 match self.eval_expr(left, env)? {
                     Value::String(s) => {

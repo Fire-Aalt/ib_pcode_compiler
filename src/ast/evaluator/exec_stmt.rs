@@ -49,13 +49,17 @@ impl AST {
                 let mut control = self.eval_expr(start_num, env)?;
                 env.assign(ident, control.clone());
 
-                while control <= self.eval_expr(end_num, env)? {
+                while control.as_num(&start_num.line_info)? <= self.eval_expr(end_num, env)?.as_num(&end_num.line_info)? {
                     if let Some(returned_val) = self.exec_body(body, env)? {
                         return Ok(Some(returned_val))
                     }
 
                     control = env.get(ident).unwrap();
-                    control = control + Value::Number(1.0);
+
+
+
+                    control.as_num(&stmt_node.line_info)?;
+                    control = control.add(&stmt_node.line_info, Value::Number(1.0))?;
                     env.assign(ident, control.clone());
                 }
                 Ok(None)
@@ -113,46 +117,47 @@ impl AST {
         }
     }
 
-    fn exec_assign_stmt(&self, stmt: &StmtNode, target: &AssignTarget, op: &AssignOperator, val: Value, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
+    fn exec_assign_stmt(&self, stmt_node: &StmtNode, target: &AssignTarget, op: &AssignOperator, val: Value, env: &mut Env) -> Result<Option<Value>, Diagnostic> {
         match target {
             AssignTarget::Ident(name) => {
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
-                    AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap() + val),
+                    AssignOperator::AssignAdd => env.assign(name, env.get(name).unwrap().add(&stmt_node.line_info, val)?),
                     AssignOperator::AssignSubtract => {
-                        env.assign(name, env.get(name).unwrap() - val)
+                        env.assign(name, env.get(name).unwrap().sub(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignMultiply => {
-                        env.assign(name, env.get(name).unwrap() * val)
+                        env.assign(name, env.get(name).unwrap().mul(&stmt_node.line_info, val)?)
                     }
-                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap() / val),
+                    AssignOperator::AssignDivide => env.assign(name, env.get(name).unwrap().div(&stmt_node.line_info, val)?),
                 }
                 Ok(None)
             }
             AssignTarget::Array(array_expr, index_expr) => {
                 if let Value::Array(id) = self.eval_expr(array_expr, env)? {
-                    let index = self.eval_expr(index_expr, env)?.as_num() as i64;
+                    let index = self.eval_expr(index_expr, env)?.as_num(&index_expr.line_info)? as i64;
                     let array = env.get_array_mut(&id);
 
                     if index < 0 {
-                        stmt.error(ErrorType::OutOfBounds, format!("Negative index: {}", index).as_str())?;
+                        stmt_node.error(ErrorType::OutOfBounds, format!("Negative index: {}", index).as_str())?;
                     }
                     let index = index as usize;
                     while array.len() <= index {
                         array.resize(max(1, array.len()) * 2, Value::String("undefined".to_string()));
                     }
+                    array.resize(index + 1, Value::String("undefined".to_string()));
 
                     let res = match op {
                         AssignOperator::Assign => val,
-                        AssignOperator::AssignAdd => array[index].clone() + val,
-                        AssignOperator::AssignSubtract => array[index].clone() + val,
-                        AssignOperator::AssignMultiply => array[index].clone() + val,
-                        AssignOperator::AssignDivide => array[index].clone() + val,
+                        AssignOperator::AssignAdd => array[index].clone().add(&stmt_node.line_info, val)?,
+                        AssignOperator::AssignSubtract => array[index].clone().sub(&stmt_node.line_info, val)?,
+                        AssignOperator::AssignMultiply => array[index].clone().mul(&stmt_node.line_info, val)?,
+                        AssignOperator::AssignDivide => array[index].clone().div(&stmt_node.line_info, val)?,
                     };
                     array[index] = res;
                     Ok(None)
                 } else {
-                    stmt.error(ErrorType::InvalidType, "Invalid index expression")
+                    stmt_node.error(ErrorType::InvalidType, "Invalid index expression")
                 }
             }
         }
