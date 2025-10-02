@@ -138,6 +138,51 @@ impl AST {
             Rule::math_random_call => {
                 expr_node(line, Expr::MathRandom)
             }
+            Rule::static_call => {
+                let mut inner = first.into_inner();
+
+                let static_class_name = inner.next().unwrap().as_str();
+                let method_name = inner.next().unwrap().as_str();
+
+                let mut params: Vec<ExprNode> = inner
+                    .next()
+                    .unwrap()
+                    .into_inner()
+                    .map(|inner| self.build_expr(inner))
+                    .collect();
+
+                let mut fn_name_hash = self.hash(method_name);
+                fn_name_hash.this_keyword = true;
+
+                let static_class_hash = self.hash(static_class_name);
+                if !self.statics.contains(&static_class_hash) {
+                    if method_name == "substring" {
+                        assert_eq!(params.len(), 2);
+                        let end = params.pop().unwrap();
+                        let start = params.pop().unwrap();
+
+                        return expr_node(
+                            line.clone(),
+                            Expr::SubstringCall {
+                                expr: Box::new(expr_node(line, Expr::Ident(static_class_hash))),
+                                start: Box::new(start),
+                                end: Box::new(end),
+                            },
+                        );
+                    }
+
+                    return expr_node(
+                        line.clone(),
+                        Expr::ClassMethodCall {
+                            expr: Box::new(expr_node(line, Expr::Ident(static_class_hash))),
+                            fn_name: fn_name_hash,
+                            params,
+                        },
+                    );
+                }
+
+                expr_node(line, Expr::StaticMethodCall(static_class_hash, fn_name_hash, params))
+            }
             Rule::class_new => {
                 let mut inner = first.into_inner();
 
@@ -159,19 +204,6 @@ impl AST {
             let line = self.as_line_info(&post);
 
             match post.as_rule() {
-                Rule::substring_call => {
-                    let mut inner = post.into_inner();
-                    let start = self.build_expr(inner.next().unwrap());
-                    let end = self.build_expr(inner.next().unwrap());
-                    node = expr_node(
-                        line,
-                        Expr::SubstringCall {
-                            expr: Box::new(node),
-                            start: Box::new(start),
-                            end: Box::new(end),
-                        },
-                    );
-                }
                 Rule::length_call => {
                     node = expr_node(line, Expr::LengthCall(Box::new(node)));
                 }
@@ -179,12 +211,27 @@ impl AST {
                     let mut inner = post.into_inner();
 
                     let fn_name = inner.next().unwrap().as_str();
-                    let params = inner
+                    let mut params: Vec<ExprNode> = inner
                         .next()
                         .unwrap()
                         .into_inner()
                         .map(|p| self.build_expr(p))
                         .collect();
+
+                    if fn_name == "substring" {
+                        assert_eq!(params.len(), 2);
+                        let end = params.pop().unwrap();
+                        let start = params.pop().unwrap();
+
+                        return expr_node(
+                            line.clone(),
+                            Expr::SubstringCall {
+                                expr: Box::new(node),
+                                start: Box::new(start),
+                                end: Box::new(end),
+                            },
+                        );
+                    }
 
                     let mut fn_name_hash = self.hash(fn_name);
                     fn_name_hash.this_keyword = true;

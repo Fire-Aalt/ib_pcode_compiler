@@ -62,6 +62,7 @@ pub enum Expr {
     Unary(UnaryOp, Box<ExprNode>),
     BinOp(Box<ExprNode>, Operand, Box<ExprNode>),
     LocalMethodCall(NameHash, Vec<ExprNode>),
+    StaticMethodCall(NameHash, NameHash, Vec<ExprNode>),
     SubstringCall {
         expr: Box<ExprNode>,
         start: Box<ExprNode>,

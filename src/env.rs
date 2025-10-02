@@ -106,10 +106,7 @@ impl Env {
         self.get_local_env_mut().undefine(name_hash);
     }
 
-    pub fn get(&self, ast: &AST, name_hash: &NameHash) -> Option<Value> {
-        if ast.statics.contains(name_hash) {
-            return Some(Value::Static(name_hash.clone()))
-        }
+    pub fn get(&self, name_hash: &NameHash) -> Option<Value> {
         self.get_local_env().get(name_hash)
     }
 

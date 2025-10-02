@@ -45,5 +45,5 @@ A++
 
 output Math.floor(4)
 
-
+// TODO: check if correct number of params was supplied
 // TODO: put errors into their own methods

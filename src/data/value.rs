@@ -5,7 +5,6 @@ use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use std::cmp::Ordering;
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use crate::data::NameHash;
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -14,7 +13,6 @@ pub enum Value {
     String(String),
     ArrayId(usize),
     InstanceId(usize),
-    Static(NameHash),
     Undefined,
 }
 
@@ -28,7 +26,6 @@ impl Value {
             Value::ArrayId(_) => "Array(...)".to_string(),
             Value::InstanceId(_) => "ClassInstance(...)".to_string(),
             Value::Undefined => "Undefined".to_string(),
-            Value::Static(s) => format!("Static({})", s),
         }
     }
 
@@ -40,7 +37,6 @@ impl Value {
             Value::ArrayId(_) => "Array(...)".to_string(),
             Value::InstanceId(_) => "ClassInstance(...)".to_string(),
             Value::Undefined => "Undefined".to_string(),
-            Value::Static(s) => panic!(),
         }
     }
 
@@ -205,7 +201,6 @@ impl Display for Value {
             Value::ArrayId(id) => write!(formatter, "Array(Id: {})", id),
             Value::InstanceId(id) => write!(formatter, "Instance(Id: {})", id),
             Value::Undefined => write!(formatter, "Undefined"),
-            Value::Static(s) => write!(formatter, "Static({})", s),
         }
     }
 }

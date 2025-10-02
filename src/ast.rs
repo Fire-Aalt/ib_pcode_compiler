@@ -1,15 +1,14 @@
 use crate::compiler::Rule;
-use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{NameHash, with_name_map};
+use crate::data::name_hash::{with_name_map, NameHash};
+use crate::data::Value;
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::hash::{DefaultHasher, Hash, Hasher};
-use crate::compiler::errors::diagnostic;
 
 pub mod builder;
 pub mod evaluator;
@@ -145,7 +144,6 @@ impl AST {
                 output.push(']');
             }
             Value::Undefined => output.push_str("Undefined"),
-            Value::Static(s) => output.push_str("Static"),
         }
     }
 

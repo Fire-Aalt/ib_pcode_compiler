@@ -25,7 +25,7 @@ pub fn compile(code: &str, should_panic: bool) -> AST {
     let parsed_result = parse(&program, user_code_start_line, should_panic);
 
     let ast = build_ast(&program, user_code_start_line, parsed_result);
-
+    
     with_name_map(&ast.hash_to_name_map, || {
         validate_ast(&ast, should_panic);
     });

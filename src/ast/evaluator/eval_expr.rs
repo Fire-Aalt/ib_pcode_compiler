@@ -13,7 +13,7 @@ use rand::Rng;
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
         match &expr_node.expr {
-            Expr::Ident(name) => Ok(env.get(self, name).unwrap()),
+            Expr::Ident(name) => Ok(env.get(name).unwrap()),
             Expr::Data(n) => Ok(n.clone()),
             Expr::Array(data) => {
                 let mut array = VecDeque::new();
@@ -83,6 +83,20 @@ impl AST {
                 }
 
                 // Local methods are already validated and no checks are needed
+                let returned = self
+                    .exec_fn(fn_def, &resolved_params, env)?
+                    .unwrap_or(Value::Number(0.0));
+                Ok(returned)
+            }
+            Expr::StaticMethodCall(class_name, fn_name, params) => {
+                let fn_def = self.get_function(class_name, fn_name).unwrap();
+
+                let mut resolved_params = Vec::new();
+                for param in params {
+                    resolved_params.push(self.eval_expr(param, env)?);
+                }
+
+                // Static methods are already validated and no checks are needed
                 let returned = self
                     .exec_fn(fn_def, &resolved_params, env)?
                     .unwrap_or(Value::Number(0.0));
@@ -208,31 +222,6 @@ impl AST {
                     return match returned {
                         Some(val) => Ok(val),
                         None => Err(no_return_error(&expr_node.line_info, fn_name, class_name)),
-                    };
-                }
-                if let Value::Static(class_name) = val {
-                    let fn_def = self.get_function(&class_name, fn_name).ok_or_else(|| {
-                        diagnostic(
-                            &expr_node.line_info,
-                            ErrorType::Uninitialized,
-                            format!("undefined function `{}` in class `{}`", fn_name, class_name),
-                            "uninitialized function",
-                        )
-                    })?;
-
-                    let mut resolved_params = Vec::new();
-                    for param in params {
-                        resolved_params.push(self.eval_expr(param, env)?);
-                    }
-
-                    let id = env.create_local_env(class_name.clone());//TODO: stupid, move into a proper initializer before program runs for statics
-                    env.push_local_env(id);
-                    let returned = self.exec_fn(fn_def, &resolved_params, env)?;
-                    env.pop_local_env();
-
-                    return match returned {
-                        Some(val) => Ok(val),
-                        None => Err(no_return_error(&expr_node.line_info, fn_name, &class_name)),
                     };
                 }
                 Err(diagnostic(

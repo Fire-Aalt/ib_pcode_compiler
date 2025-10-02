@@ -1,5 +1,5 @@
 use crate::ast::AST;
-use crate::compiler::errors::diagnostic;
+use crate::compiler::errors::{diagnostic, invalid_type_call_error};
 use crate::data::Value;
 use crate::data::ast_nodes::{AssignOperator, AssignTarget, Stmt, StmtNode};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
@@ -77,7 +77,7 @@ impl AST {
                         return Ok(Some(returned_val));
                     }
 
-                    control = env.get(self, ident).unwrap();
+                    control = env.get(ident).unwrap();
 
                     if control.as_num(&stmt_node.line_info).is_err() {
                         return Err(diagnostic(
@@ -161,22 +161,23 @@ impl AST {
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
                     AssignOperator::AssignAdd => {
-                        env.assign(name, env.get(self, name).unwrap().add(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().add(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignSubtract => {
-                        env.assign(name, env.get(self, name).unwrap().sub(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().sub(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignMultiply => {
-                        env.assign(name, env.get(self, name).unwrap().mul(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().mul(&stmt_node.line_info, val)?)
                     }
                     AssignOperator::AssignDivide => {
-                        env.assign(name, env.get(self, name).unwrap().div(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().div(&stmt_node.line_info, val)?)
                     }
                 }
                 Ok(None)
             }
             AssignTarget::Array(array_expr, index_expr) => {
-                if let Value::ArrayId(id) = self.eval_expr(array_expr, env)? {
+                let assign_val = self.eval_expr(array_expr, env)?;
+                if let Value::ArrayId(id) = assign_val {
                     let index = self
                         .eval_expr(index_expr, env)?
                         .as_num(&index_expr.line_info)? as i64;
@@ -221,12 +222,7 @@ impl AST {
                     array[index] = res;
                     Ok(None)
                 } else {
-                    Err(diagnostic(
-                        &stmt_node.line_info,
-                        ErrorType::InvalidType,
-                        format!("Invalid index expression"),
-                        "",
-                    ))
+                    Err(invalid_type_call_error(&stmt_node.line_info, "index expression", &assign_val, "arrays"))
                 }
             }
         }
