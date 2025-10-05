@@ -153,6 +153,7 @@ pub struct Function {
 
 #[derive(Debug, Clone)]
 pub struct Class {
+    pub line_info: LineInfo,
     pub functions: HashMap<NameHash, Function>,
     pub constructor: Constructor,
     pub is_static: bool,
@@ -160,6 +161,7 @@ pub struct Class {
 
 #[derive(Debug, Default, Clone)]
 pub struct Constructor {
+    pub line_info: LineInfo,
     pub constructors: Vec<(NameHash, ExprNode)>,
     pub args: Vec<NameHash>,
 }

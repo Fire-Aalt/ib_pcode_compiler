@@ -2,6 +2,7 @@ mod validate_expr;
 mod validate_stmt;
 
 use crate::ast::{AST, main_hash};
+use crate::compiler::errors::{compile_error, diagnostic};
 use crate::data::ast_nodes::Function;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
@@ -19,22 +20,6 @@ impl AST {
         let _ = self.validate_class_definitions(env, &mut validator);
 
         // Main program execution flow check
-        for name in &self.statics {
-            let class_def = &self.class_map[name];
-
-            let id = env.create_local_env(name.clone());
-            env.static_envs.insert(name.clone(), id);
-            env.push_local_env(id);
-
-            // Constructor
-            for (name_hash, expr) in &class_def.constructor.constructors {
-                let _ = self.validate_expr(expr, env, &mut validator);
-                env.define(name_hash, Value::Number(0.0));
-            }
-
-            env.pop_local_env();
-        }
-        
         for stmt_node in &self.nodes {
             let _ = self.validate_stmt(stmt_node, env, &mut validator);
         }
@@ -67,10 +52,23 @@ impl AST {
             }
 
             let id = env.create_local_env(class_name.clone());
-
             env.push_local_env(id);
-            for arg in &class.constructor.args {
-                env.define(arg, Value::Number(0.0))
+
+            if class.is_static {
+                env.static_envs.insert(class_name.clone(), id);
+
+                if !class.constructor.args.is_empty() {
+                    let _ = compile_error(diagnostic(
+                        &class.constructor.line_info,
+                        ErrorType::Unsupported,
+                        format!("constructor parameters found for class `{}`. Static classes cannot have constructor parameters", class_name),
+                        "invalid constructor parameters",
+                    ), validator);
+                }
+            } else {
+                for arg in &class.constructor.args {
+                    env.define(arg, Value::Number(0.0))
+                }
             }
 
             for (arg, expr_node) in &class.constructor.constructors {

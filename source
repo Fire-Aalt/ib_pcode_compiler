@@ -8,12 +8,6 @@ static Class Math()
     }
 end Class
 
-Class how()
-    this.hh = this.gg * 4
-    this.gg = 5
-
-end Class
-
 
 //Class hhh()
   // this.gg = function()
@@ -51,7 +45,7 @@ end loop
 A = "sss"
 A++
 
-output Math.floor(4)
+output Math.floor(4) + "sds" * !""
 
 // TODO: add local env to statics
 // TODO: check if correct number of params was supplied

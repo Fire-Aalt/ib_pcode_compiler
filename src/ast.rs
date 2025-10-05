@@ -45,6 +45,7 @@ impl AST {
         ast.add_class(
             main,
             Class {
+                line_info: LineInfo::default(),
                 functions: HashMap::new(),
                 constructor: Constructor::default(),
                 is_static: false,
@@ -150,7 +151,17 @@ impl AST {
     pub fn as_line_info(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
         let (start_line, start_col) = pair.line_col();
-        let (_end_line, end_col) = span.end_pos().line_col();
+        let (_end_line, mut end_col) = span.end_pos().line_col();
+
+
+        let first_line_end_col = match span.lines().next() {
+            Some(line) => line.chars().count() - 1,
+            None => end_col,
+        };
+
+        if first_line_end_col > end_col {
+            end_col = first_line_end_col;
+        }
 
         LineInfo {
             start_line: start_line as u32,

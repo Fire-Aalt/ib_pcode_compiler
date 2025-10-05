@@ -2,7 +2,7 @@ use crate::ast::main_hash;
 use crate::data::{NameHash, Value};
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 

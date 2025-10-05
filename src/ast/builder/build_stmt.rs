@@ -130,6 +130,7 @@ impl AST {
                     class_name = self.hash(inner.next().unwrap().as_str());
                 }
 
+                let constructor_info = self.as_line_info(&inner.peek().unwrap());
                 let args = self.build_args(&mut inner);
 
                 let mut constructors = Vec::new();
@@ -156,8 +157,13 @@ impl AST {
                 self.add_class(
                     class_name.clone(),
                     Class {
+                        line_info: line.clone(),
                         functions,
-                        constructor: Constructor { constructors, args },
+                        constructor: Constructor {
+                            line_info: constructor_info,
+                            constructors,
+                            args
+                        },
                         is_static
                     },
                 );
