@@ -135,9 +135,7 @@ impl AST {
                 let right = self.build_expr(inner.next().unwrap());
                 expr_node(line, Expr::Div(Box::new(left), Box::new(right)))
             }
-            Rule::math_random_call => {
-                expr_node(line, Expr::MathRandom)
-            }
+            Rule::math_random_call => expr_node(line, Expr::MathRandom),
             Rule::static_call => {
                 let mut inner = first.into_inner();
 
@@ -181,7 +179,10 @@ impl AST {
                     );
                 }
 
-                expr_node(line, Expr::StaticMethodCall(static_class_hash, fn_name_hash, params))
+                expr_node(
+                    line,
+                    Expr::StaticMethodCall(static_class_hash, fn_name_hash, params),
+                )
             }
             Rule::class_new => {
                 let mut inner = first.into_inner();

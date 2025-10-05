@@ -1,8 +1,10 @@
 use crate::ast::{AST, main_hash};
-use crate::compiler::errors::{compile_error, diagnostic, no_return_error};
-use crate::data::Validator;
-use crate::data::ast_nodes::{Expr, ExprNode};
-use crate::data::diagnostic::{Diagnostic, ErrorType};
+use crate::compiler::errors::{
+    compile_error, diagnostic, invalid_number_of_params_error, no_return_error,
+};
+use crate::data::ast_nodes::{Expr, ExprNode, Function};
+use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
+use crate::data::{NameHash, Validator};
 use crate::env::Env;
 
 impl AST {
@@ -45,42 +47,50 @@ impl AST {
             }
             Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
-
-                self.validate_fn_call(&expr_node.line_info, class_name, fn_name, validator)?;
-                let fn_def = self.get_function(class_name, fn_name).unwrap();
-
-                for expr in params {
-                    let _ = self.validate_expr(expr, env, validator);
-                }
+                let fn_def =
+                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)?;
 
                 if class_name == main_hash() {
                     let _ =
                         self.validate_fn_definition(class_name, fn_name, fn_def, env, validator);
                 }
 
-                if !fn_def.returns {
-                    compile_error(
-                        no_return_error(&expr_node.line_info, fn_name, class_name),
-                        validator,
-                    )?
+                self.validate_fn_call(
+                    &expr_node.line_info,
+                    class_name,
+                    fn_name,
+                    fn_def,
+                    params,
+                    env,
+                    validator,
+                )?;
+                Ok(())
+            }
+            Expr::StaticMethodCall(class_name, fn_name, params) => {
+                self.validate_class_get(&expr_node.line_info, class_name, validator)?;
+                if !self.statics.contains(class_name) {
+                    return Err(diagnostic(
+                        &expr_node.line_info,
+                        ErrorType::InvalidType,
+                        format!(
+                            "tried to call function `{}` on a non static class `{}`",
+                            fn_name, class_name
+                        ),
+                        "cannot call a function",
+                    ));
                 }
-                Ok(())
-            }
-            Expr::SubstringCall { expr, start, end } => {
-                let _ = self.validate_expr(expr, env, validator);
-                let _ = self.validate_expr(start, env, validator);
-                let _ = self.validate_expr(end, env, validator);
-                Ok(())
-            }
-            Expr::LengthCall(expr) => {
-                let _ = self.validate_expr(expr, env, validator);
-                Ok(())
-            }
-            Expr::ClassNew(class_name_hash, params) => {
-                let _ = self.validate_class_call(&expr_node.line_info, class_name_hash, validator);
-                for expr in params {
-                    let _ = self.validate_expr(expr, env, validator);
-                }
+                let fn_def =
+                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)?;
+
+                self.validate_fn_call(
+                    &expr_node.line_info,
+                    class_name,
+                    fn_name,
+                    fn_def,
+                    params,
+                    env,
+                    validator,
+                )?;
                 Ok(())
             }
             Expr::ClassMethodCall {
@@ -95,23 +105,20 @@ impl AST {
                 }
                 Ok(())
             }
-            Expr::StaticMethodCall(class_name, fn_name, params) => {
-                self.validate_class_call(&expr_node.line_info, class_name, validator)?;
-                if !self.statics.contains(class_name) {
-                    return Err(diagnostic(&expr_node.line_info, ErrorType::InvalidType, format!("tried to call function `{}` on a non static class `{}`", fn_name, class_name), "cannot call a function"))
-                }
-                self.validate_fn_call(&expr_node.line_info, class_name, fn_name, validator)?;
-                let fn_def = self.get_function(class_name, fn_name).unwrap();
-
+            Expr::SubstringCall { expr, start, end } => {
+                let _ = self.validate_expr(expr, env, validator);
+                let _ = self.validate_expr(start, env, validator);
+                let _ = self.validate_expr(end, env, validator);
+                Ok(())
+            }
+            Expr::LengthCall(expr) => {
+                let _ = self.validate_expr(expr, env, validator);
+                Ok(())
+            }
+            Expr::ClassNew(class_name_hash, params) => {
+                let _ = self.validate_class_get(&expr_node.line_info, class_name_hash, validator);
                 for expr in params {
                     let _ = self.validate_expr(expr, env, validator);
-                }
-
-                if !fn_def.returns {
-                    compile_error(
-                        no_return_error(&expr_node.line_info, fn_name, class_name),
-                        validator,
-                    )?
                 }
                 Ok(())
             }
@@ -129,7 +136,35 @@ impl AST {
                 let _ = self.validate_expr(right, env, validator);
                 Ok(())
             }
-            Expr::MathRandom => Ok(())
+            Expr::MathRandom => Ok(()),
         }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn validate_fn_call(
+        &self,
+        line_info: &LineInfo,
+        class_name: &NameHash,
+        fn_name: &NameHash,
+        fn_def: &Function,
+        params: &Vec<ExprNode>,
+        env: &mut Env,
+        validator: &mut Validator,
+    ) -> Result<(), Diagnostic> {
+        if params.len() != fn_def.args.len() {
+            let _ = compile_error(
+                invalid_number_of_params_error(line_info, params.len(), fn_def.args.len()),
+                validator,
+            );
+        }
+
+        for expr in params {
+            let _ = self.validate_expr(expr, env, validator);
+        }
+
+        if !fn_def.returns {
+            compile_error(no_return_error(line_info, fn_name, class_name), validator)?
+        }
+        Ok(())
     }
 }

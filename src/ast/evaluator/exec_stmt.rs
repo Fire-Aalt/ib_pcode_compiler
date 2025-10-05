@@ -222,7 +222,12 @@ impl AST {
                     array[index] = res;
                     Ok(None)
                 } else {
-                    Err(invalid_type_call_error(&stmt_node.line_info, "index expression", &assign_val, "arrays"))
+                    Err(invalid_type_call_error(
+                        &stmt_node.line_info,
+                        "index expression",
+                        &assign_val,
+                        "arrays",
+                    ))
                 }
             }
         }

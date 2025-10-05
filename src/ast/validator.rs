@@ -3,7 +3,7 @@ mod validate_stmt;
 
 use crate::ast::{AST, main_hash};
 use crate::compiler::errors::{compile_error, diagnostic};
-use crate::data::ast_nodes::Function;
+use crate::data::ast_nodes::{Class, Function};
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 use crate::env::Env;
@@ -58,12 +58,18 @@ impl AST {
                 env.static_envs.insert(class_name.clone(), id);
 
                 if !class.constructor.args.is_empty() {
-                    let _ = compile_error(diagnostic(
-                        &class.constructor.line_info,
-                        ErrorType::Unsupported,
-                        format!("constructor parameters found for class `{}`. Static classes cannot have constructor parameters", class_name),
-                        "invalid constructor parameters",
-                    ), validator);
+                    let _ = compile_error(
+                        diagnostic(
+                            &class.constructor.line_info,
+                            ErrorType::Unsupported,
+                            format!(
+                                "constructor parameter(s) found for class `{}`. Static classes cannot have constructor parameters",
+                                class_name
+                            ),
+                            "invalid constructor parameter(s)",
+                        ),
+                        validator,
+                    );
                 }
             } else {
                 for arg in &class.constructor.args {
@@ -117,42 +123,44 @@ impl AST {
         Ok(())
     }
 
-    pub fn validate_fn_call(
+    pub fn validate_fn_get(
         &self,
         line_info: &LineInfo,
         class_name: &NameHash,
         fn_name: &NameHash,
         validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
-        self.get_function(class_name, fn_name)
-            .ok_or_else(|| {
-                line_info.compile_error(
+    ) -> Result<&Function, Diagnostic> {
+        match self.get_function(class_name, fn_name) {
+            Some(fn_def) => Ok(fn_def),
+            None => Err(line_info
+                .compile_error(
                     ErrorType::Uninitialized,
                     format!("cannot find function `{}` in this scope", fn_name).as_str(),
                     "not found in this scope",
                     validator,
                 )
-            })
-            .err()
-            .unwrap_or(Ok(()))
+                .err()
+                .unwrap()),
+        }
     }
 
-    pub fn validate_class_call(
+    pub fn validate_class_get(
         &self,
         line_info: &LineInfo,
         class_name: &NameHash,
         validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
-        self.get_class(class_name)
-            .ok_or_else(|| {
-                line_info.compile_error(
+    ) -> Result<&Class, Diagnostic> {
+        match self.get_class(class_name) {
+            Some(class_def) => Ok(class_def),
+            None => Err(line_info
+                .compile_error(
                     ErrorType::Uninitialized,
                     format!("cannot find class `{}`", class_name).as_str(),
                     "class is not defined",
                     validator,
                 )
-            })
-            .err()
-            .unwrap_or(Ok(()))
+                .err()
+                .unwrap()),
+        }
     }
 }

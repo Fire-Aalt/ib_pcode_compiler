@@ -162,9 +162,9 @@ impl AST {
                         constructor: Constructor {
                             line_info: constructor_info,
                             constructors,
-                            args
+                            args,
                         },
-                        is_static
+                        is_static,
                     },
                 );
 

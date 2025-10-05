@@ -78,7 +78,7 @@ pub enum Expr {
     Index(Box<ExprNode>, Box<ExprNode>),
     Input(Box<ExprNode>),
     Div(Box<ExprNode>, Box<ExprNode>),
-    MathRandom
+    MathRandom,
 }
 
 #[derive(Debug, Clone)]

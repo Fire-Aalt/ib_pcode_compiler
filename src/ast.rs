@@ -1,8 +1,8 @@
 use crate::compiler::Rule;
+use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{with_name_map, NameHash};
-use crate::data::Value;
+use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
@@ -93,13 +93,15 @@ impl AST {
 
     pub fn hash(&mut self, string: &str) -> NameHash {
         let name_hash = hash(string);
-        self.hash_to_name_map.insert(name_hash.clone(), string.to_string());
+        self.hash_to_name_map
+            .insert(name_hash.clone(), string.to_string());
         name_hash
     }
 
     pub fn hash_static(&mut self, string: &str) -> NameHash {
         let name_hash = hash(string);
-        self.hash_to_name_map.insert(name_hash.clone(), string.to_string());
+        self.hash_to_name_map
+            .insert(name_hash.clone(), string.to_string());
         self.statics.insert(name_hash.clone());
         name_hash
     }
@@ -151,15 +153,13 @@ impl AST {
     pub fn as_line_info(&self, pair: &Pair<Rule>) -> LineInfo {
         let span = pair.as_span();
         let (start_line, start_col) = pair.line_col();
-        let (_end_line, mut end_col) = span.end_pos().line_col();
+        let (end_line, mut end_col) = span.end_pos().line_col();
 
-
-        let first_line_end_col = match span.lines().next() {
-            Some(line) => line.chars().count() - 1,
-            None => end_col,
-        };
-
-        if first_line_end_col > end_col {
+        if end_line > start_line {
+            let first_line_end_col = match span.lines().next() {
+                Some(line) => line.chars().count() - 1,
+                None => end_col,
+            };
             end_col = first_line_end_col;
         }
 
@@ -179,14 +179,14 @@ pub fn hash(string: &str) -> NameHash {
             stripped.hash(&mut hasher);
             NameHash {
                 hash: hasher.finish(),
-                this_keyword: true
+                this_keyword: true,
             }
         }
         None => {
             string.hash(&mut hasher);
             NameHash {
                 hash: hasher.finish(),
-                this_keyword: false
+                this_keyword: false,
             }
         }
     };

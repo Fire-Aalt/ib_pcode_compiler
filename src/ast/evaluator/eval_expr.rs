@@ -1,14 +1,14 @@
 use crate::ast::AST;
 use crate::compiler::errors::{
-    diagnostic, invalid_type_call_error, no_return_error, out_of_bounds_error,
-    unsupported_operand_error,
+    compile_error, diagnostic, invalid_number_of_params_error, invalid_type_call_error,
+    no_return_error, out_of_bounds_error, unsupported_operand_error,
 };
 use crate::data::Value;
 use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::env::Env;
-use std::collections::VecDeque;
 use rand::Rng;
+use std::collections::VecDeque;
 
 impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
@@ -209,9 +209,17 @@ impl AST {
                             &expr_node.line_info,
                             ErrorType::Uninitialized,
                             format!("undefined function `{}` in class `{}`", fn_name, class_name),
-                            "uninitialized function",
+                            "undefined function",
                         )
                     })?;
+
+                    if params.len() != fn_def.args.len() {
+                        return Err(invalid_number_of_params_error(
+                            &expr_node.line_info,
+                            params.len(),
+                            fn_def.args.len(),
+                        ));
+                    }
 
                     let mut resolved_params = Vec::new();
                     for param in params {
