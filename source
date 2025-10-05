@@ -1,11 +1,19 @@
 
 static Class Math()
+    this.PI = 3.14
 
     this.floor = function(A)
     {
-        return A + 985
+        return A + this.PI
     }
 end Class
+
+Class how()
+    this.hh = this.gg * 4
+    this.gg = 5
+
+end Class
+
 
 //Class hhh()
   // this.gg = function()
@@ -45,5 +53,6 @@ A++
 
 output Math.floor(4)
 
+// TODO: add local env to statics
 // TODO: check if correct number of params was supplied
 // TODO: put errors into their own methods

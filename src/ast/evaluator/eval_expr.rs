@@ -96,10 +96,13 @@ impl AST {
                     resolved_params.push(self.eval_expr(param, env)?);
                 }
 
+                let id = env.static_envs[class_name];
+                env.push_local_env(id);
                 // Static methods are already validated and no checks are needed
                 let returned = self
                     .exec_fn(fn_def, &resolved_params, env)?
                     .unwrap_or(Value::Number(0.0));
+                env.pop_local_env();
                 Ok(returned)
             }
             Expr::SubstringCall { expr, start, end } => {

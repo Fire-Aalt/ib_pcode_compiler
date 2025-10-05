@@ -1,8 +1,8 @@
-use crate::ast::{main_hash, AST};
+use crate::ast::main_hash;
 use crate::data::{NameHash, Value};
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
-use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
@@ -13,6 +13,7 @@ mod local_env;
 pub struct Env {
     pub arrays: AllocatedLookupMap<VecDeque<Value>>,
     pub locals: AllocatedLookupMap<LocalEnv>,
+    pub static_envs: HashMap<NameHash, usize>,
     pub local_ids_stack: Vec<usize>,
     pub mode: EnvMode,
 }
@@ -50,6 +51,7 @@ impl Env {
         let mut e = Self {
             arrays: AllocatedLookupMap::new(),
             locals: AllocatedLookupMap::new(),
+            static_envs: HashMap::new(),
             local_ids_stack: Vec::new(),
             mode,
         };
