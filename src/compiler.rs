@@ -1,12 +1,13 @@
 use crate::ast::AST;
+use crate::common::get_all_file_paths_at;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
-use pest::Parser;
 use pest::iterators::Pair;
+use pest::Parser;
 use pest_derive::Parser;
-use std::fs;
 use std::ops::AddAssign;
+use std::path::Path;
 
 pub mod error_print;
 pub mod errors;
@@ -14,10 +15,6 @@ pub mod errors;
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 struct DSLParser;
-
-const COLLECTION: &str = "native_classes/Collection";
-const STACK: &str = "native_classes/Stack";
-const QUEUE: &str = "native_classes/Queue";
 
 pub fn compile(code: &str, should_panic: bool) -> AST {
     let (program, user_code_start_line) = construct_program_string(code);
@@ -42,13 +39,12 @@ fn construct_program_string(code: &str) -> (String, u32) {
 }
 
 fn load_includes() -> String {
-    let include_paths: Vec<&str> = vec![COLLECTION, STACK, QUEUE];
-
     let mut output = "".to_string();
 
-    for path in include_paths {
-        let contents = fs::read_to_string(path).expect("Should have been able to read the file");
+    let mut contents_vec = Vec::new();
+    get_all_file_paths_at(Path::new("include/"), &mut contents_vec);
 
+    for contents in contents_vec {
         output.add_assign(contents.as_str());
         output.add_assign("\n");
     }

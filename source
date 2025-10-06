@@ -1,20 +1,5 @@
 
-static Class Math(D)
-    this.PI = 3.14
 
-    this.floor = function(A)
-    {
-        return A + this.PI
-    }
-end Class
-
-
-Class hhh()
-  this.gg = function(A, B)
-    {
-    output A + B
-    }
-end Class
   //
   // method Show()
   // if true then
@@ -34,7 +19,6 @@ end Class
   // A = 454
   // output Show()
 
-output new hhh().gg(1)
 
 
 loop I from 0 to 10
@@ -45,6 +29,7 @@ end loop
 A = "sss"
 A++
 
-output Mathd.floor() + "sds" * !""
+output Math.max(-3.1, 7)
 
+// TODO: add math import
 // TODO: check for duplicate names of methods and classes
