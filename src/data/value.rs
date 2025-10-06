@@ -143,7 +143,7 @@ impl Value {
         }
     }
 
-    pub fn as_bool_unsafe(&self) -> bool {
+    pub unsafe fn as_bool_unchecked(&self) -> bool {
         match self {
             Value::Number(n) => to_bool_num(*n),
             Value::Bool(b) => *b,

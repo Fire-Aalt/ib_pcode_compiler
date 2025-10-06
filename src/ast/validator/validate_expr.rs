@@ -3,17 +3,12 @@ use crate::compiler::errors::{
     compile_error, diagnostic, invalid_number_of_params_error, no_return_error,
 };
 use crate::data::ast_nodes::{Expr, ExprNode, Function};
-use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
+use crate::data::diagnostic::ErrorType;
 use crate::data::{NameHash, Validator};
 use crate::env::Env;
 
 impl AST {
-    pub fn validate_expr(
-        &self,
-        expr_node: &ExprNode,
-        env: &mut Env,
-        validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    pub fn validate_expr(&self, expr_node: &ExprNode, env: &mut Env, validator: &mut Validator) {
         match &expr_node.expr {
             Expr::Ident(name) => {
                 let _ = env.get(name).ok_or_else(|| {
@@ -27,144 +22,135 @@ impl AST {
                         validator,
                     )
                 });
-                Ok(())
             }
-            Expr::Data(_) => Ok(()),
+            Expr::Data(_) => {}
             Expr::Array(data) => {
                 for expr in data {
-                    let _ = self.validate_expr(expr, env, validator);
+                    self.validate_expr(expr, env, validator);
                 }
-                Ok(())
             }
             Expr::Unary(_, expr) => {
-                let _ = self.validate_expr(expr, env, validator);
-                Ok(())
+                self.validate_expr(expr, env, validator);
             }
             Expr::BinOp(left, _, right) => {
-                let _ = self.validate_expr(left, env, validator);
-                let _ = self.validate_expr(right, env, validator);
-                Ok(())
+                self.validate_expr(left, env, validator);
+                self.validate_expr(right, env, validator);
             }
             Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
-                let fn_def =
-                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)?;
+
+                let Some(fn_def) =
+                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)
+                else {
+                    return;
+                };
 
                 if class_name == main_hash() {
-                    let _ =
-                        self.validate_fn_definition(class_name, fn_name, fn_def, env, validator);
+                    self.validate_fn_definition(class_name, fn_name, fn_def, env, validator);
                 }
 
                 self.validate_fn_call(
-                    &expr_node.line_info,
-                    class_name,
-                    fn_name,
-                    fn_def,
-                    params,
-                    env,
-                    validator,
-                )?;
-                Ok(())
+                    expr_node, class_name, fn_name, fn_def, params, env, validator,
+                );
             }
             Expr::StaticMethodCall(class_name, fn_name, params) => {
-                self.validate_class_get(&expr_node.line_info, class_name, validator)?;
+                self.validate_class_get(&expr_node.line_info, class_name, validator);
                 if !self.statics.contains(class_name) {
-                    return Err(diagnostic(
-                        &expr_node.line_info,
-                        ErrorType::InvalidType,
-                        format!(
-                            "tried to call function `{}` on a non static class `{}`",
-                            fn_name, class_name
+                    compile_error(
+                        diagnostic(
+                            &expr_node.line_info,
+                            ErrorType::InvalidType,
+                            format!(
+                                "tried to call function `{}` on a non static class `{}`",
+                                fn_name, class_name
+                            ),
+                            "cannot call a function",
                         ),
-                        "cannot call a function",
-                    ));
+                        validator,
+                    );
                 }
-                let fn_def =
-                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)?;
+
+                let Some(fn_def) =
+                    self.validate_fn_get(&expr_node.line_info, class_name, fn_name, validator)
+                else {
+                    return;
+                };
 
                 self.validate_fn_call(
-                    &expr_node.line_info,
-                    class_name,
-                    fn_name,
-                    fn_def,
-                    params,
-                    env,
-                    validator,
-                )?;
-                Ok(())
+                    expr_node, class_name, fn_name, fn_def, params, env, validator,
+                );
             }
             Expr::ClassMethodCall {
                 expr,
                 fn_name: _fn_name,
                 params,
             } => {
-                let _ = self.validate_expr(expr, env, validator);
+                self.validate_expr(expr, env, validator);
 
                 for param in params {
-                    let _ = self.validate_expr(param, env, validator);
+                    self.validate_expr(param, env, validator);
                 }
-                Ok(())
             }
             Expr::SubstringCall { expr, start, end } => {
-                let _ = self.validate_expr(expr, env, validator);
-                let _ = self.validate_expr(start, env, validator);
-                let _ = self.validate_expr(end, env, validator);
-                Ok(())
+                self.validate_expr(expr, env, validator);
+                self.validate_expr(start, env, validator);
+                self.validate_expr(end, env, validator);
             }
             Expr::LengthCall(expr) => {
-                let _ = self.validate_expr(expr, env, validator);
-                Ok(())
+                self.validate_expr(expr, env, validator);
             }
             Expr::ClassNew(class_name_hash, params) => {
-                let _ = self.validate_class_get(&expr_node.line_info, class_name_hash, validator);
+                self.validate_class_get(&expr_node.line_info, class_name_hash, validator);
                 for expr in params {
-                    let _ = self.validate_expr(expr, env, validator);
+                    self.validate_expr(expr, env, validator);
                 }
-                Ok(())
             }
             Expr::Index(left, index) => {
-                let _ = self.validate_expr(left, env, validator);
-                let _ = self.validate_expr(index, env, validator);
-                Ok(())
+                self.validate_expr(left, env, validator);
+                self.validate_expr(index, env, validator);
             }
             Expr::Input(text) => {
-                let _ = self.validate_expr(text, env, validator);
-                Ok(())
+                self.validate_expr(text, env, validator);
             }
             Expr::Div(left, right) => {
-                let _ = self.validate_expr(left, env, validator);
-                let _ = self.validate_expr(right, env, validator);
-                Ok(())
+                self.validate_expr(left, env, validator);
+                self.validate_expr(right, env, validator);
             }
-            Expr::MathRandom => Ok(()),
+            Expr::MathRandom => {}
         }
     }
 
     #[allow(clippy::too_many_arguments)]
     fn validate_fn_call(
         &self,
-        line_info: &LineInfo,
+        expr_node: &ExprNode,
         class_name: &NameHash,
         fn_name: &NameHash,
         fn_def: &Function,
         params: &Vec<ExprNode>,
         env: &mut Env,
         validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    ) {
         if params.len() != fn_def.args.len() {
-            let _ = compile_error(
-                invalid_number_of_params_error(line_info, params.len(), fn_def.args.len()),
+            compile_error(
+                invalid_number_of_params_error(
+                    &expr_node.line_info,
+                    params.len(),
+                    fn_def.args.len(),
+                ),
                 validator,
             );
         }
 
         for expr in params {
-            let _ = self.validate_expr(expr, env, validator);
+            self.validate_expr(expr, env, validator);
         }
 
         if !fn_def.returns {
-            compile_error(no_return_error(line_info, fn_name, class_name), validator)?
+            compile_error(
+                no_return_error(&expr_node.line_info, fn_name, class_name),
+                validator,
+            );
         }
-        Ok(())
     }
 }

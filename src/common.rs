@@ -31,7 +31,8 @@ pub fn get_all_file_paths_at(dir_path: &Path, contents_vec: &mut Vec<String>) {
             if entry_path.is_dir() {
                 get_all_file_paths_at(entry_path.as_path(), contents_vec)
             } else {
-                let contents = fs::read_to_string(entry_path).expect("Should have been able to read the file");
+                let contents =
+                    fs::read_to_string(entry_path).expect("Should have been able to read the file");
                 contents_vec.push(contents);
             }
         }

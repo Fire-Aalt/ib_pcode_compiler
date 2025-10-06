@@ -17,16 +17,12 @@ pub struct ExprNode {
 }
 
 impl ExprNode {
-    pub fn eval_as_num(&self, ast: &AST, env: &mut Env) -> Result<f64, Diagnostic> {
-        ast.eval_expr(self, env)?.as_num(&self.line_info)
-    }
-
-    pub fn eval_as_bool_unsafe(&self, ast: &AST, env: &mut Env) -> Result<bool, Diagnostic> {
-        Ok(ast.eval_expr(self, env)?.as_bool_unsafe())
-    }
-
-    pub fn eval_as_str(&self, ast: &AST, env: &mut Env) -> Result<String, Diagnostic> {
-        Ok(ast.eval_expr(self, env)?.as_string())
+    pub unsafe fn eval_as_bool_unchecked(
+        &self,
+        ast: &AST,
+        env: &mut Env,
+    ) -> Result<bool, Diagnostic> {
+        unsafe { Ok(ast.eval_expr(self, env)?.as_bool_unchecked()) }
     }
 }
 

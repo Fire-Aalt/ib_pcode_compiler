@@ -2,9 +2,9 @@ use crate::data::ast_nodes::Operand;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 
-pub fn compile_error(diagnostic: Diagnostic, validator: &mut Validator) -> Result<(), Diagnostic> {
+pub fn compile_error(diagnostic: Diagnostic, validator: &mut Validator) {
     validator.errors.push(diagnostic.clone());
-    Err(diagnostic)
+    validator.added_errors += 1;
 }
 
 pub fn diagnostic(

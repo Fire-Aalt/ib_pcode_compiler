@@ -1,30 +1,22 @@
-use crate::ast::AST;
 use crate::ast::validator::Validator;
-use crate::data::Value;
+use crate::ast::AST;
 use crate::data::ast_nodes::{AssignTarget, Stmt, StmtNode};
-use crate::data::diagnostic::{Diagnostic, ErrorType};
+use crate::data::diagnostic::ErrorType;
+use crate::data::Value;
 use crate::env::Env;
 
 impl AST {
-    pub fn validate_stmt(
-        &self,
-        stmt_node: &StmtNode,
-        env: &mut Env,
-        validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    pub fn validate_stmt(&self, stmt_node: &StmtNode, env: &mut Env, validator: &mut Validator) {
         match &stmt_node.stmt {
             Stmt::Assign(target, _, expr) => {
-                let _ = self.valid_assign_stmt(target, env, validator);
-                let _ = self.validate_expr(expr, env, validator);
-                Ok(())
+                self.valid_assign_stmt(target, env, validator);
+                self.validate_expr(expr, env, validator);
             }
             Stmt::Increment(target) => {
-                let _ = self.valid_assign_stmt(target, env, validator);
-                Ok(())
+                self.valid_assign_stmt(target, env, validator);
             }
             Stmt::Decrement(target) => {
-                let _ = self.valid_assign_stmt(target, env, validator);
-                Ok(())
+                self.valid_assign_stmt(target, env, validator);
             }
             Stmt::If {
                 cond,
@@ -32,8 +24,7 @@ impl AST {
                 elifs,
                 else_branch,
             } => {
-                let _ = self.validate_expr(cond, env, validator);
-
+                self.validate_expr(cond, env, validator);
                 self.validate_body(then_branch, env, validator);
 
                 for (cond, stmt_nodes) in elifs {
@@ -44,76 +35,59 @@ impl AST {
                 if let Some(else_branch) = else_branch {
                     self.validate_body(else_branch, env, validator);
                 }
-                Ok(())
             }
             Stmt::While(cond, body) => {
-                let _ = self.validate_expr(cond, env, validator);
-
+                self.validate_expr(cond, env, validator);
                 self.validate_body(body, env, validator);
-                Ok(())
             }
             Stmt::For(name_hash, start_num, end_num, body) => {
                 env.assign(name_hash, Value::Number(0.0));
-                let _ = self.validate_expr(start_num, env, validator);
-                let _ = self.validate_expr(end_num, env, validator);
+                self.validate_expr(start_num, env, validator);
+                self.validate_expr(end_num, env, validator);
 
                 self.validate_body(body, env, validator);
-                Ok(())
             }
             Stmt::Until(expr, body) => {
-                let _ = self.validate_expr(expr, env, validator);
-
+                self.validate_expr(expr, env, validator);
                 self.validate_body(body, env, validator);
-                Ok(())
             }
             Stmt::Input(name_hash) => {
                 env.assign(name_hash, Value::Number(0.0));
-                Ok(())
             }
             Stmt::Output(body) => {
                 for expr_node in body {
-                    let _ = self.validate_expr(expr_node, env, validator);
+                    self.validate_expr(expr_node, env, validator);
                 }
-                Ok(())
             }
             Stmt::Assert(expr, expected) => {
-                let _ = self.validate_expr(expr, env, validator);
-                let _ = self.validate_expr(expected, env, validator);
-                Ok(())
+                self.validate_expr(expr, env, validator);
+                self.validate_expr(expected, env, validator);
             }
             Stmt::Expr(expr_node) => {
-                if let Err(e) = self.validate_expr(expr_node, env, validator) {
-                    if let ErrorType::NoReturn = e.error_type {
-                        validator.errors.pop();
-                    }
-                };
-                Ok(())
+                validator.start_record();
+                self.validate_expr(expr_node, env, validator);
+
+                if validator.is_last_recorded_expr_error(ErrorType::NoReturn) {
+                    validator.errors.pop();
+                }
             }
             Stmt::MethodReturn(expr) => {
-                let _ = self.validate_expr(expr, env, validator);
-                Ok(())
+                self.validate_expr(expr, env, validator);
             }
-            Stmt::FunctionDeclaration(_) => Ok(()),
-            Stmt::ClassDeclaration(_) => Ok(()),
-            Stmt::EOI => Ok(()),
+            Stmt::FunctionDeclaration(_) => {}
+            Stmt::ClassDeclaration(_) => {}
+            Stmt::EOI => {}
         }
     }
 
-    fn valid_assign_stmt(
-        &self,
-        target: &AssignTarget,
-        env: &mut Env,
-        validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    fn valid_assign_stmt(&self, target: &AssignTarget, env: &mut Env, validator: &mut Validator) {
         match target {
             AssignTarget::Ident(name_hash) => {
                 env.assign(name_hash, Value::Number(0.0));
-                Ok(())
             }
             AssignTarget::Array(array_expr, index_expr) => {
-                let _ = self.validate_expr(array_expr, env, validator);
-                let _ = self.validate_expr(index_expr, env, validator);
-                Ok(())
+                self.validate_expr(array_expr, env, validator);
+                self.validate_expr(index_expr, env, validator);
             }
         }
     }

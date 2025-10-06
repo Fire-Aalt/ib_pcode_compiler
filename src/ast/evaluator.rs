@@ -103,14 +103,16 @@ impl AST {
         env: &mut Env,
     ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
-        match op {
-            Operand::And => Ok(Some(Value::Bool(
-                l_val.as_bool_unsafe() && r_expr.eval_as_bool_unsafe(self, env)?,
-            ))),
-            Operand::Or => Ok(Some(Value::Bool(
-                l_val.as_bool_unsafe() || r_expr.eval_as_bool_unsafe(self, env)?,
-            ))),
-            _ => Ok(None),
+        unsafe {
+            match op {
+                Operand::And => Ok(Some(Value::Bool(
+                    l_val.as_bool_unchecked() && r_expr.eval_as_bool_unchecked(self, env)?,
+                ))),
+                Operand::Or => Ok(Some(Value::Bool(
+                    l_val.as_bool_unchecked() || r_expr.eval_as_bool_unchecked(self, env)?,
+                ))),
+                _ => Ok(None),
+            }
         }
     }
 

@@ -14,6 +14,7 @@ impl AST {
         let mut validator = Validator {
             validated_functions: HashMap::new(),
             errors: Vec::new(),
+            added_errors: 0,
         };
 
         // Classes are encapsulated, so they can be checked fully first
@@ -41,11 +42,7 @@ impl AST {
         validator.errors
     }
 
-    fn validate_class_definitions(
-        &self,
-        env: &mut Env,
-        validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    fn validate_class_definitions(&self, env: &mut Env, validator: &mut Validator) {
         for (class_name, class) in &self.class_map {
             if class_name == main_hash() {
                 continue;
@@ -88,7 +85,6 @@ impl AST {
 
             env.pop_local_env();
         }
-        Ok(())
     }
 
     fn validate_fn_definition(
@@ -98,7 +94,7 @@ impl AST {
         function: &Function,
         env: &mut Env,
         validator: &mut Validator,
-    ) -> Result<(), Diagnostic> {
+    ) {
         let entry = validator
             .validated_functions
             .entry(class_name.clone())
@@ -120,7 +116,6 @@ impl AST {
                 .unwrap()
                 .insert(fn_name.clone());
         }
-        Ok(())
     }
 
     pub fn validate_fn_get(
@@ -129,18 +124,21 @@ impl AST {
         class_name: &NameHash,
         fn_name: &NameHash,
         validator: &mut Validator,
-    ) -> Result<&Function, Diagnostic> {
+    ) -> Option<&Function> {
         match self.get_function(class_name, fn_name) {
-            Some(fn_def) => Ok(fn_def),
-            None => Err(line_info
-                .compile_error(
-                    ErrorType::Uninitialized,
-                    format!("cannot find function `{}` in this scope", fn_name).as_str(),
-                    "not found in this scope",
+            Some(fn_def) => Some(fn_def),
+            None => {
+                compile_error(
+                    diagnostic(
+                        line_info,
+                        ErrorType::Uninitialized,
+                        format!("cannot find function `{}` in this scope", fn_name),
+                        "not found in this scope",
+                    ),
                     validator,
-                )
-                .err()
-                .unwrap()),
+                );
+                None
+            }
         }
     }
 
@@ -149,18 +147,21 @@ impl AST {
         line_info: &LineInfo,
         class_name: &NameHash,
         validator: &mut Validator,
-    ) -> Result<&Class, Diagnostic> {
+    ) -> Option<&Class> {
         match self.get_class(class_name) {
-            Some(class_def) => Ok(class_def),
-            None => Err(line_info
-                .compile_error(
-                    ErrorType::Uninitialized,
-                    format!("cannot find class `{}`", class_name).as_str(),
-                    "class is not defined",
+            Some(class_def) => Some(class_def),
+            None => {
+                compile_error(
+                    diagnostic(
+                        line_info,
+                        ErrorType::Uninitialized,
+                        format!("cannot find class `{}`", class_name),
+                        "class is not defined",
+                    ),
                     validator,
-                )
-                .err()
-                .unwrap()),
+                );
+                None
+            }
         }
     }
 }

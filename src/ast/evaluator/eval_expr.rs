@@ -1,11 +1,11 @@
 use crate::ast::AST;
 use crate::compiler::errors::{
-    diagnostic, invalid_number_of_params_error, invalid_type_call_error,
-    no_return_error, out_of_bounds_error, unsupported_operand_error,
+    diagnostic, invalid_number_of_params_error, invalid_type_call_error, no_return_error,
+    out_of_bounds_error, unsupported_operand_error,
 };
+use crate::data::Value;
 use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
-use crate::data::Value;
 use crate::env::Env;
 use rand::Rng;
 use std::collections::VecDeque;

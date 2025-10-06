@@ -55,8 +55,6 @@ output Math.asinh(8)
 output Math.atanh(8)
 output Math.acosh(8)
 
-// TODO: show file local line error
-// TODO: remove let _ = validate -> the methods should not return anything
 // TODO: allow access of variables in classes
 // TODO: check for duplicate names of methods and classes
 // TODO: add math tests
