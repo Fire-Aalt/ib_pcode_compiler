@@ -18,6 +18,16 @@ static Class Math()
         return -(this.floor(-x))
     }
 
+    this.round = function(x)
+    {
+        f = this.floor(x)
+        c = this.ceil(x)
+        if x - f < 0.5 then
+            return f
+        end if
+        return c
+    }
+
     this.max = function(a, b)
     {
         if a >= b then
