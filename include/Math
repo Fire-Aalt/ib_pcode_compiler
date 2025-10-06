@@ -1,5 +1,36 @@
 static Class Math()
-    this.PI = 3.14
+    this.E = 2.718281828459045
+    this.LN10 = 2.302585092994046
+    this.LN2 = 0.6931471805599453
+    this.LOG10E = 0.4342944819032518
+    this.LOG2E = 1.4426950408889634
+    this.PI = 3.141592653589793
+    this.SQRT1_2 = 0.7071067811865476
+    this.SQRT2 = 1.4142135623730951
+
+    this.abs = function(x)
+    {
+        if x < 0 then
+            return -x
+        end if
+        return x
+    }
+
+    this.sign = function(x)
+    {
+        if x > 0 then
+            return 1
+        end if
+        if x < 0 then
+            return -1
+        end if
+        return 0
+    }
+
+    this.trunc = function(x)
+    {
+        return x div 1
+    }
 
     this.floor = function(x)
     {
@@ -42,5 +73,355 @@ static Class Math()
             return a
         end if
         return b
+    }
+
+    //-----------------------------
+    //-- Exponential / Logarithms
+    //-----------------------------
+    this.exp = function(x)
+    {
+        eps = 1e-14
+        term = 1.0
+        sum = 1.0
+        n = 1
+        loop while n <= 200
+            term = term * x / n
+            sum = sum + term
+            if this.abs(term) < eps then
+                return sum
+            end if
+            n = n + 1
+        end loop
+        return sum
+    }
+
+    this.expm1 = function(x)
+    {
+        eps = 1e-14
+        term = x
+        sum = x
+        n = 2
+        loop while n <= 200
+            term = term * x / n
+            sum = sum + term
+            if this.abs(term) < eps then
+                return sum
+            end if
+            n = n + 1
+        end loop
+        return sum
+    }
+
+    this.log = function(x)
+    {
+        if x <= 0 then
+            return undefined
+        end if
+        eps = 1e-14
+        y = 0.0
+        if x > this.E then
+            y = 1.0
+        end if
+        if x < (1.0 / this.E) then
+            y = -1.0
+        end if
+        iter = 0
+        loop while iter < 100
+            ey = this.exp(y)
+            diff = ey - x
+            if this.abs(diff) < eps then
+                return y
+            end if
+            y = y - diff / ey
+            iter = iter + 1
+        end loop
+        return y
+    }
+
+    this.log1p = function(x)
+    {
+        if x <= -1 then
+            return undefined
+        end if
+        return this.log(1 + x)
+    }
+
+    this.log10 = function(x)
+    {
+        if x <= 0 then
+            return undefined
+        end if
+        return this.log(x) / this.LN10
+    }
+
+    this.log2 = function(x)
+    {
+        if x <= 0 then
+            return undefined
+        end if
+        return this.log(x) / this.LN2
+    }
+
+    //-----------------------------
+    //-- Power / roots / hypot
+    //-----------------------------
+    this.pow = function(x, y)
+    {
+        if x == 0 AND y == 0 then
+            return 1
+        end if
+        if x == 0 then
+            if y > 0 then
+                return 0
+            end if
+            return undefined
+        end if
+        yi = this.trunc(y)
+        if x < 0 AND yi != y then
+            return undefined
+        end if
+        if x < 0 then
+            s = 1
+            if (yi % 2) != 0 then
+                s = -1
+            end if
+            return s * this.exp(y * this.log(this.abs(x)))
+        end if
+        return this.exp(y * this.log(x))
+    }
+
+    this.sqrt = function(x)
+    {
+        if x < 0 then
+            return undefined
+        end if
+        if x == 0 then
+            return 0
+        end if
+        t = x
+        if t < 1 then
+            t = 1
+        end if
+        eps = 1e-14
+        iter = 0
+        loop while iter < 100
+            nt = 0.5 * (t + x / t)
+            if this.abs(nt - t) < eps then
+                return nt
+            end if
+            t = nt
+            iter = iter + 1
+        end loop
+        return t
+    }
+
+    this.cbrt = function(x)
+    {
+        if x == 0 then
+            return 0
+        end if
+        s = this.sign(x)
+        a = this.abs(x)
+        t = a
+        if t < 1 then
+            t = 1
+        end if
+        eps = 1e-14
+        iter = 0
+        loop while iter < 200
+            nt = (2.0 * t + a / (t * t)) / 3.0
+            if this.abs(nt - t) < eps then
+                return s * nt
+            end if
+            t = nt
+            iter = iter + 1
+        end loop
+        return s * t
+    }
+
+    //-----------------------------
+    //-- Trigonometric functions
+    //-----------------------------
+    this.sin = function(x)
+    {
+        two_pi = 2.0 * this.PI
+        xx = x
+        loop while xx > this.PI
+            xx = xx - two_pi
+        end loop
+        loop while xx < -this.PI
+            xx = xx + two_pi
+        end loop
+        term = xx
+        sum = xx
+        n = 1
+        eps = 1e-14
+        loop while n <= 60
+            term = -term * xx * xx / ((2 * n) * (2 * n + 1))
+            sum = sum + term
+            if this.abs(term) < eps then
+                return sum
+            end if
+            n = n + 1
+        end loop
+        return sum
+    }
+
+    this.cos = function(x)
+    {
+        two_pi = 2.0 * this.PI
+        xx = x
+        loop while xx > this.PI
+            xx = xx - two_pi
+        end loop
+        loop while xx < -this.PI
+            xx = xx + two_pi
+        end loop
+        term = 1.0
+        sum = 1.0
+        n = 1
+        eps = 1e-14
+        loop while n <= 60
+            term = -term * xx * xx / ((2 * n - 1) * (2 * n))
+            sum = sum + term
+            if this.abs(term) < eps then
+                return sum
+            end if
+            n = n + 1
+        end loop
+        return sum
+    }
+
+    this.tan = function(x)
+    {
+        c = this.cos(x)
+        if c == 0 then
+            return undefined
+        end if
+        return this.sin(x) / c
+    }
+
+    this.asin = function(x)
+    {
+        if x < -1 OR x > 1 then
+            return undefined
+        end if
+        y = x
+        eps = 1e-14
+        iter = 0
+        loop while iter < 100
+            f = this.sin(y) - x
+            if this.abs(f) < eps then
+                return y
+            end if
+            df = this.cos(y)
+            if df == 0 then
+                return y
+            end if
+            y = y - f / df
+            iter = iter + 1
+        end loop
+        return y
+    }
+
+    this.acos = function(x)
+    {
+        if x < -1 OR x > 1 then
+            return undefined
+        end if
+        return (this.PI / 2.0) - this.asin(x)
+    }
+
+    this.atan = function(x)
+    {
+        ax = this.abs(x)
+        if ax <= 1.0 then
+            term = x
+            sum = x
+            n = 1
+            eps = 1e-14
+            loop while n <= 200
+                term = -term * x * x
+                denom = 2 * n + 1
+                add = term / denom
+                sum = sum + add
+                if this.abs(add) < eps then
+                    return sum
+                end if
+                n = n + 1
+            end loop
+            return sum
+        end if
+        s = this.sign(x)
+        return s * (this.PI / 2.0 - this.atan(1.0 / ax))
+    }
+
+    this.atan2 = function(y, x)
+    {
+        if x > 0 then
+            return this.atan(y / x)
+        end if
+        if x < 0 AND y >= 0 then
+            return this.atan(y / x) + this.PI
+        end if
+        if x < 0 AND y < 0 then
+            return this.atan(y / x) - this.PI
+        end if
+        if x == 0 AND y > 0 then
+            return this.PI / 2.0
+        end if
+        if x == 0 AND y < 0 then
+            return - (this.PI / 2.0)
+        end if
+        return 0
+    }
+
+    //-----------------------------
+    //-- Hyperbolic functions and inverses
+    //-----------------------------
+    this.sinh = function(x)
+    {
+        ex = this.exp(x)
+        enx = this.exp(-x)
+        return (ex - enx) / 2.0
+    }
+
+    this.cosh = function(x)
+    {
+        ex = this.exp(x)
+        enx = this.exp(-x)
+        return (ex + enx) / 2.0
+    }
+
+    this.tanh = function(x)
+    {
+        ex = this.exp(x)
+        enx = this.exp(-x)
+        denom = ex + enx
+        if denom == 0 then
+            return undefined
+        end if
+        return (ex - enx) / denom
+    }
+
+    this.asinh = function(x)
+    {
+        return this.log(x + this.sqrt(x * x + 1.0))
+    }
+
+    this.atanh = function(x)
+    {
+        if x <= -1 OR x >= 1 then
+            return undefined
+        end if
+        return 0.5 * this.log((1.0 + x) / (1.0 - x))
+    }
+
+    this.acosh = function(x)
+    {
+        if x < 1 then
+            return undefined
+        end if
+        return this.log(x + this.sqrt(x * x - 1.0))
     }
 end Class

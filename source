@@ -29,7 +29,34 @@ end loop
 A = "sss"
 A++
 
-output Math.max(-3.1, 7)
 
-// TODO: add math import
+output Math.log(8)
+output Math.expm1(8)
+output Math.exp(8)
+output Math.log1p(8)
+output Math.log10(8)
+output Math.log2(8)
+
+output Math.sin(8)
+output Math.cos(8)
+output Math.asin(8)
+output Math.acos(8)
+output Math.atan(8)
+output Math.atan2(8, 6)
+
+output Math.pow(8, 6)
+output Math.sqrt(8)
+output Math.cbrt(8)
+
+output Math.sinh(8)
+output Math.cosh(8)
+output Math.tanh(8)
+output Math.asinh(8)
+output Math.atanh(8)
+output Math.acosh(8)
+
+// TODO: show file local line error
+// TODO: remove let _ = validate -> the methods should not return anything
+// TODO: allow access of variables in classes
 // TODO: check for duplicate names of methods and classes
+// TODO: add math tests
