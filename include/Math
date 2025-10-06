@@ -1,12 +1,12 @@
 static Class Math()
-    this.E = 2.718281828459045
-    this.LN10 = 2.302585092994046
-    this.LN2 = 0.6931471805599453
-    this.LOG10E = 0.4342944819032518
-    this.LOG2E = 1.4426950408889634
-    this.PI = 3.141592653589793
-    this.SQRT1_2 = 0.7071067811865476
-    this.SQRT2 = 1.4142135623730951
+    public this.E = 2.718281828459045
+    public this.LN10 = 2.302585092994046
+    public this.LN2 = 0.6931471805599453
+    public this.LOG10E = 0.4342944819032518
+    public this.LOG2E = 1.4426950408889634
+    public this.PI = 3.141592653589793
+    public this.SQRT1_2 = 0.7071067811865476
+    public this.SQRT2 = 1.4142135623730951
 
     this.abs = function(x)
     {

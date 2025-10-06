@@ -3,7 +3,7 @@ use crate::ast::builder::get_assign_target;
 use crate::compiler::Rule;
 use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Stmt, StmtNode};
 use pest::iterators::Pair;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 impl AST {
     pub fn build_stmt(&mut self, pair: Pair<Rule>) -> StmtNode {
@@ -125,7 +125,7 @@ impl AST {
                 if let Rule::static_keyword = inner.peek().unwrap().as_rule() {
                     inner.next();
                     is_static = true;
-                    class_name = self.hash_static(inner.next().unwrap().as_str());
+                    class_name = self.hash_static_class(inner.next().unwrap().as_str());
                 } else {
                     class_name = self.hash(inner.next().unwrap().as_str());
                 }
@@ -135,16 +135,27 @@ impl AST {
 
                 let mut constructors = Vec::new();
                 let mut functions = HashMap::new();
+                let mut public_vars = HashSet::new();
 
                 for stmt in inner {
                     match stmt.as_rule() {
                         Rule::class_constructor_stmt => {
                             let mut inner = stmt.into_inner();
 
-                            let var_name = inner.next().unwrap().as_str();
+                            let mut is_public = false;
+                            if let Rule::public_keyword = inner.peek().unwrap().as_rule() {
+                                inner.next();
+                                is_public = true;
+                            }
+
+                            let var_name = self.hash(inner.next().unwrap().as_str());
                             let expr = self.build_expr(inner.next().unwrap());
 
-                            constructors.push((self.hash(var_name), expr));
+                            if is_public {
+                                public_vars.insert(var_name.clone());
+                            }
+
+                            constructors.push((var_name, expr));
                         }
                         Rule::class_function => {
                             let (fn_name, function) = self.build_fn(stmt);
@@ -159,6 +170,7 @@ impl AST {
                     Class {
                         line_info: line.clone(),
                         functions,
+                        public_vars,
                         constructor: Constructor {
                             line_info: constructor_info,
                             constructors,

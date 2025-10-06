@@ -55,7 +55,7 @@ impl AST {
             }
             Expr::StaticMethodCall(class_name, fn_name, params) => {
                 self.validate_class_get(&expr_node.line_info, class_name, validator);
-                if !self.statics.contains(class_name) {
+                if !self.static_classes.contains(class_name) {
                     compile_error(
                         diagnostic(
                             &expr_node.line_info,
@@ -80,6 +80,22 @@ impl AST {
                     expr_node, class_name, fn_name, fn_def, params, env, validator,
                 );
             }
+            Expr::StaticGetVar(class_name, var_name) => {
+                let Some(class_def) =
+                    self.validate_class_get(&expr_node.line_info, class_name, validator)
+                else {
+                    return;
+                };
+
+                if !class_def.public_vars.contains(&var_name) {
+                    diagnostic( // TODO: same error as in eval
+                        &expr_node.line_info,
+                        ErrorType::Uninitialized,
+                        format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
+                        "undefined public variable",
+                    );
+                }
+            }
             Expr::ClassMethodCall {
                 expr,
                 fn_name: _fn_name,
@@ -90,6 +106,9 @@ impl AST {
                 for param in params {
                     self.validate_expr(param, env, validator);
                 }
+            }
+            Expr::ClassGetVar(expr, _) => {
+                self.validate_expr(expr, env, validator);
             }
             Expr::SubstringCall { expr, start, end } => {
                 self.validate_expr(expr, env, validator);

@@ -78,7 +78,8 @@ class_function = {
     ~ stmt*
     ~ "}" ~ end_line
 }
-class_constructor_stmt = { class_ident ~ "=" ~ expr ~ end_line }
+class_constructor_stmt = { public_keyword? ~ class_ident ~ "=" ~ expr ~ end_line }
+public_keyword = { "public" }
 
 // EXPRESSION
 expr_stmt = { term }
@@ -115,6 +116,8 @@ input_call = { "input" ~ "(" ~ expr? ~ ")" }
 div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
 math_random_call = { "Math" ~ "." ~ "random" ~ "(" ~ ")" }
 length_call = { "." ~ "length" }
+
+
 input_stmt = { "input" ~ any_ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
@@ -124,10 +127,12 @@ decl_param_list = { "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" }
 call_param_list = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 term = { primary ~ postfix* }
-primary = { number | string | bool | undefined | array | class_new | input_call | div_call | math_random_call | static_call | method_call | any_ident | "(" ~ expr ~ ")" }
-postfix = { length_call | call | index }
-static_call = { ident ~ "." ~ ident ~ call_param_list }
-call = { "." ~ ident ~ call_param_list }
+primary = { number | string | bool | undefined | array | class_new | input_call | div_call | math_random_call | static_class_call | static_class_var | method_call | any_ident | "(" ~ expr ~ ")" }
+postfix = { class_call | length_call | class_var | index }
+static_class_var = { ident ~ "." ~ ident }
+static_class_call = { ident ~ "." ~ ident ~ call_param_list }
+class_var = { "." ~ ident }
+class_call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
 
 number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
@@ -163,5 +168,6 @@ reserved_keyword = { "Class" ~ bw
          | "false" ~ bw
          | "undefined" ~ bw
          | static_keyword ~ bw
+         | public_keyword ~ bw
          | "main" ~ bw
 }

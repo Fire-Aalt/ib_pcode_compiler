@@ -19,7 +19,7 @@ pub struct AST {
     pub user_code_start_line: u32,
     pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
-    pub statics: HashSet<NameHash>,
+    pub static_classes: HashSet<NameHash>,
     class_map: HashMap<NameHash, Class>,
 }
 
@@ -39,7 +39,7 @@ impl AST {
             nodes: Vec::new(),
             class_map: HashMap::new(),
             hash_to_name_map: HashMap::new(),
-            statics: HashSet::new(),
+            static_classes: HashSet::new(),
         };
         let main = ast.main_hash();
         ast.add_class(
@@ -47,6 +47,7 @@ impl AST {
             Class {
                 line_info: LineInfo::default(),
                 functions: HashMap::new(),
+                public_vars: HashSet::new(),
                 constructor: Constructor::default(),
                 is_static: false,
             },
@@ -98,11 +99,9 @@ impl AST {
         name_hash
     }
 
-    pub fn hash_static(&mut self, string: &str) -> NameHash {
-        let name_hash = hash(string);
-        self.hash_to_name_map
-            .insert(name_hash.clone(), string.to_string());
-        self.statics.insert(name_hash.clone());
+    pub fn hash_static_class(&mut self, string: &str) -> NameHash {
+        let name_hash = self.hash(string);
+        self.static_classes.insert(name_hash.clone());
         name_hash
     }
 

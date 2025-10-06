@@ -88,23 +88,6 @@ impl AST {
                     .unwrap_or(Value::Number(0.0));
                 Ok(returned)
             }
-            Expr::StaticMethodCall(class_name, fn_name, params) => {
-                let fn_def = self.get_function(class_name, fn_name).unwrap();
-
-                let mut resolved_params = Vec::new();
-                for param in params {
-                    resolved_params.push(self.eval_expr(param, env)?);
-                }
-
-                let id = env.static_envs[class_name];
-                env.push_local_env(id);
-                // Static methods are already validated and no checks are needed
-                let returned = self
-                    .exec_fn(fn_def, &resolved_params, env)?
-                    .unwrap_or(Value::Number(0.0));
-                env.pop_local_env();
-                Ok(returned)
-            }
             Expr::SubstringCall { expr, start, end } => {
                 let val = &self.eval_expr(expr, env)?;
                 if let Value::String(s) = val {
@@ -244,6 +227,62 @@ impl AST {
                     ),
                     "",
                 ))
+            }
+            Expr::ClassGetVar(expr, var_name) => {
+                let val = self.eval_expr(expr, env)?;
+                if let Value::InstanceId(id) = val {
+                    let class_name = &env.get_class_name_hash(&id).clone();
+                    let class_def = self.get_class(class_name).unwrap();
+
+                    if !class_def.public_vars.contains(&var_name) {
+                        return Err(diagnostic(
+                            &expr_node.line_info,
+                            ErrorType::Uninitialized,
+                            format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
+                            "undefined public variable",
+                        ));
+                    }
+
+                    env.push_local_env(id);
+                    let returned = env.get(var_name).unwrap();
+                    env.pop_local_env();
+
+                    return Ok(returned);
+                }
+                Err(diagnostic(
+                    &expr_node.line_info,
+                    ErrorType::InvalidType,
+                    format!(
+                        "tried accessing a variable `{}` not on an instance of a class: `{}`",
+                        var_name, val
+                    ),
+                    "",
+                ))
+            }
+            Expr::StaticMethodCall(class_name, fn_name, params) => {
+                let fn_def = self.get_function(class_name, fn_name).unwrap();
+
+                let mut resolved_params = Vec::new();
+                for param in params {
+                    resolved_params.push(self.eval_expr(param, env)?);
+                }
+
+                let id = env.static_envs[class_name];
+                env.push_local_env(id);
+                // Static methods are already validated and no checks are needed
+                let returned = self
+                    .exec_fn(fn_def, &resolved_params, env)?
+                    .unwrap_or(Value::Number(0.0));
+                env.pop_local_env();
+                Ok(returned)
+            }
+            Expr::StaticGetVar(class_name, var_name) => {
+                let id = env.static_envs[class_name];
+                env.push_local_env(id);
+                // Static methods are already validated and no checks are needed
+                let returned = env.get(var_name).unwrap();
+                env.pop_local_env();
+                Ok(returned)
             }
         }
     }

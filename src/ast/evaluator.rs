@@ -11,7 +11,7 @@ mod exec_stmt;
 
 impl AST {
     pub fn traverse(&self, env: &mut Env) -> Result<(), Diagnostic> {
-        for name in &self.statics {
+        for name in &self.static_classes {
             let class_def = &self.class_map[name];
 
             let id = env.create_local_env(name.clone());

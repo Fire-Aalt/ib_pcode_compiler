@@ -2,7 +2,7 @@ use crate::ast::AST;
 use crate::data::diagnostic::{Diagnostic, LineInfo};
 use crate::data::{NameHash, Value};
 use crate::env::Env;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone)]
 pub struct StmtNode {
@@ -59,11 +59,13 @@ pub enum Expr {
     BinOp(Box<ExprNode>, Operand, Box<ExprNode>),
     LocalMethodCall(NameHash, Vec<ExprNode>),
     StaticMethodCall(NameHash, NameHash, Vec<ExprNode>),
+    StaticGetVar(NameHash, NameHash),
     SubstringCall {
         expr: Box<ExprNode>,
         start: Box<ExprNode>,
         end: Box<ExprNode>,
     },
+    ClassGetVar(Box<ExprNode>, NameHash),
     LengthCall(Box<ExprNode>),
     ClassNew(NameHash, Vec<ExprNode>),
     ClassMethodCall {
@@ -151,6 +153,7 @@ pub struct Function {
 pub struct Class {
     pub line_info: LineInfo,
     pub functions: HashMap<NameHash, Function>,
+    pub public_vars: HashSet<NameHash>,
     pub constructor: Constructor,
     pub is_static: bool,
 }

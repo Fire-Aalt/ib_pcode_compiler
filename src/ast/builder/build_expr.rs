@@ -136,7 +136,7 @@ impl AST {
                 expr_node(line, Expr::Div(Box::new(left), Box::new(right)))
             }
             Rule::math_random_call => expr_node(line, Expr::MathRandom),
-            Rule::static_call => {
+            Rule::static_class_call => {
                 let mut inner = first.into_inner();
 
                 let static_class_name = inner.next().unwrap().as_str();
@@ -153,7 +153,7 @@ impl AST {
                 fn_name_hash.this_keyword = true;
 
                 let static_class_hash = self.hash(static_class_name);
-                if !self.statics.contains(&static_class_hash) {
+                if !self.static_classes.contains(&static_class_hash) {
                     if method_name == "substring" {
                         assert_eq!(params.len(), 2);
                         let end = params.pop().unwrap();
@@ -184,6 +184,26 @@ impl AST {
                     Expr::StaticMethodCall(static_class_hash, fn_name_hash, params),
                 )
             }
+            Rule::static_class_var => {
+                let mut inner = first.into_inner();
+
+                let static_class_name = self.hash(inner.next().unwrap().as_str());
+                let mut var_name = self.hash(inner.next().unwrap().as_str());
+
+                var_name.this_keyword = true;
+
+                if !self.static_classes.contains(&static_class_name) {
+                    return expr_node(
+                        line.clone(),
+                        Expr::ClassGetVar(
+                            Box::new(expr_node(line, Expr::Ident(static_class_name))),
+                            var_name,
+                        ),
+                    );
+                }
+
+                expr_node(line, Expr::StaticGetVar(static_class_name, var_name))
+            }
             Rule::class_new => {
                 let mut inner = first.into_inner();
 
@@ -208,7 +228,15 @@ impl AST {
                 Rule::length_call => {
                     node = expr_node(line, Expr::LengthCall(Box::new(node)));
                 }
-                Rule::call => {
+                Rule::class_var => {
+                    let mut inner = post.into_inner();
+
+                    let mut var_name = self.hash(inner.next().unwrap().as_str());
+                    var_name.this_keyword = true;
+
+                    node = expr_node(line, Expr::ClassGetVar(Box::new(node), var_name));
+                }
+                Rule::class_call => {
                     let mut inner = post.into_inner();
 
                     let fn_name = inner.next().unwrap().as_str();
