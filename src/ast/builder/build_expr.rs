@@ -166,20 +166,16 @@ impl AST {
                     var_name.this_keyword = true;
 
                     if let Expr::Ident(static_class_name) = &node.expr {
-                        if !self.static_classes.contains(static_class_name) {
-                            return expr_node(
-                                line.clone(),
-                                Expr::ClassGetVar(
-                                    Box::new(expr_node(line, Expr::Ident(static_class_name.clone()))),
-                                    var_name,
-                                ),
-                            );
+                        if self.static_classes.contains(static_class_name) {
+                            node = expr_node(line.clone(), Expr::StaticGetVar(static_class_name.clone(), var_name));
+                            break;
                         }
+                        node = expr_node(line.clone(), Expr::Ident(static_class_name.clone()));
+                    };
 
-                        return expr_node(line, Expr::StaticGetVar(static_class_name.clone(), var_name));
-                    } else {
+                    if !matches!(node.expr, Expr::StaticGetVar(_, _)) {
                         node = expr_node(line, Expr::ClassGetVar(Box::new(node), var_name));
-                    }
+                    } // TODO: rewrite class_call into the same style
                 }
                 Rule::class_call => {
                     let mut inner = post.into_inner();
@@ -187,7 +183,7 @@ impl AST {
                     let fn_name = inner.next().unwrap().as_str();
                     let mut fn_name_hash = self.hash(fn_name);
                     fn_name_hash.this_keyword = true;
-                    
+
                     let mut params: Vec<ExprNode> = inner
                         .next()
                         .unwrap()
@@ -198,7 +194,7 @@ impl AST {
                     if let Expr::Ident(static_class_name) = &node.expr {
                         if !self.static_classes.contains(static_class_name) {
                             if fn_name == "substring" {
-                                assert_eq!(params.len(), 2);
+                                assert_eq!(params.len(), 2); // TODO: safer check
                                 let end = params.pop().unwrap();
                                 let start = params.pop().unwrap();
 
