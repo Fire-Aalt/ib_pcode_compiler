@@ -136,74 +136,6 @@ impl AST {
                 expr_node(line, Expr::Div(Box::new(left), Box::new(right)))
             }
             Rule::math_random_call => expr_node(line, Expr::MathRandom),
-            Rule::static_class_call => {
-                let mut inner = first.into_inner();
-
-                let static_class_name = inner.next().unwrap().as_str();
-                let method_name = inner.next().unwrap().as_str();
-
-                let mut params: Vec<ExprNode> = inner
-                    .next()
-                    .unwrap()
-                    .into_inner()
-                    .map(|inner| self.build_expr(inner))
-                    .collect();
-
-                let mut fn_name_hash = self.hash(method_name);
-                fn_name_hash.this_keyword = true;
-
-                let static_class_hash = self.hash(static_class_name);
-                if !self.static_classes.contains(&static_class_hash) {
-                    if method_name == "substring" {
-                        assert_eq!(params.len(), 2);
-                        let end = params.pop().unwrap();
-                        let start = params.pop().unwrap();
-
-                        return expr_node(
-                            line.clone(),
-                            Expr::SubstringCall {
-                                expr: Box::new(expr_node(line, Expr::Ident(static_class_hash))),
-                                start: Box::new(start),
-                                end: Box::new(end),
-                            },
-                        );
-                    }
-
-                    return expr_node(
-                        line.clone(),
-                        Expr::ClassMethodCall {
-                            expr: Box::new(expr_node(line, Expr::Ident(static_class_hash))),
-                            fn_name: fn_name_hash,
-                            params,
-                        },
-                    );
-                }
-
-                expr_node(
-                    line,
-                    Expr::StaticMethodCall(static_class_hash, fn_name_hash, params),
-                )
-            }
-            Rule::static_class_var => {
-                let mut inner = first.into_inner();
-
-                let static_class_name = self.hash(inner.next().unwrap().as_str());
-                let mut var_name = self.hash(inner.next().unwrap().as_str());
-
-                var_name.this_keyword = true;
-
-                if !self.static_classes.contains(&static_class_name) {
-                    return expr_node(
-                        line.clone(),
-                        Expr::ClassGetVar(
-                            Box::new(expr_node(line, Expr::Ident(static_class_name))),
-                            var_name,
-                        ),
-                    );
-                }
-
-                expr_node(line, Expr::StaticGetVar(static_class_name, var_name))
-            }
             Rule::class_new => {
                 let mut inner = first.into_inner();
 
@@ -230,16 +162,32 @@ impl AST {
                 }
                 Rule::class_var => {
                     let mut inner = post.into_inner();
-
                     let mut var_name = self.hash(inner.next().unwrap().as_str());
                     var_name.this_keyword = true;
 
-                    node = expr_node(line, Expr::ClassGetVar(Box::new(node), var_name));
+                    if let Expr::Ident(static_class_name) = &node.expr {
+                        if !self.static_classes.contains(static_class_name) {
+                            return expr_node(
+                                line.clone(),
+                                Expr::ClassGetVar(
+                                    Box::new(expr_node(line, Expr::Ident(static_class_name.clone()))),
+                                    var_name,
+                                ),
+                            );
+                        }
+
+                        return expr_node(line, Expr::StaticGetVar(static_class_name.clone(), var_name));
+                    } else {
+                        node = expr_node(line, Expr::ClassGetVar(Box::new(node), var_name));
+                    }
                 }
                 Rule::class_call => {
                     let mut inner = post.into_inner();
 
                     let fn_name = inner.next().unwrap().as_str();
+                    let mut fn_name_hash = self.hash(fn_name);
+                    fn_name_hash.this_keyword = true;
+                    
                     let mut params: Vec<ExprNode> = inner
                         .next()
                         .unwrap()
@@ -247,32 +195,63 @@ impl AST {
                         .map(|p| self.build_expr(p))
                         .collect();
 
-                    if fn_name == "substring" {
-                        assert_eq!(params.len(), 2);
-                        let end = params.pop().unwrap();
-                        let start = params.pop().unwrap();
+                    if let Expr::Ident(static_class_name) = &node.expr {
+                        if !self.static_classes.contains(static_class_name) {
+                            if fn_name == "substring" {
+                                assert_eq!(params.len(), 2);
+                                let end = params.pop().unwrap();
+                                let start = params.pop().unwrap();
+
+                                return expr_node(
+                                    line.clone(),
+                                    Expr::SubstringCall {
+                                        expr: Box::new(expr_node(line, Expr::Ident(static_class_name.clone()))),
+                                        start: Box::new(start),
+                                        end: Box::new(end),
+                                    },
+                                );
+                            }
+
+                            return expr_node(
+                                line.clone(),
+                                Expr::ClassMethodCall {
+                                    expr: Box::new(expr_node(line, Expr::Ident(static_class_name.clone()))),
+                                    fn_name: fn_name_hash,
+                                    params,
+                                },
+                            );
+                        }
 
                         return expr_node(
-                            line.clone(),
-                            Expr::SubstringCall {
+                            line,
+                            Expr::StaticMethodCall(static_class_name.clone(), fn_name_hash, params),
+                        );
+                    } else {
+                        if fn_name == "substring" {
+                            assert_eq!(params.len(), 2);
+                            let end = params.pop().unwrap();
+                            let start = params.pop().unwrap();
+
+                            return expr_node(
+                                line.clone(),
+                                Expr::SubstringCall {
+                                    expr: Box::new(node),
+                                    start: Box::new(start),
+                                    end: Box::new(end),
+                                },
+                            );
+                        }
+
+                        node = expr_node(
+                            line,
+                            Expr::ClassMethodCall {
                                 expr: Box::new(node),
-                                start: Box::new(start),
-                                end: Box::new(end),
+                                fn_name: fn_name_hash,
+                                params,
                             },
                         );
                     }
 
-                    let mut fn_name_hash = self.hash(fn_name);
-                    fn_name_hash.this_keyword = true;
-
-                    node = expr_node(
-                        line,
-                        Expr::ClassMethodCall {
-                            expr: Box::new(node),
-                            fn_name: fn_name_hash,
-                            params,
-                        },
-                    );
                 }
                 Rule::index => {
                     let idx_pair = post.into_inner().next().unwrap();

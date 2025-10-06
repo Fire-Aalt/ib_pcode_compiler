@@ -55,12 +55,7 @@ output Math.asinh(8)
 output Math.atanh(8)
 output Math.acosh(8)
 
-V = new Collection()
-V.addItem("sas")
-
-output V.index
 output Math.PI
 
-// TODO: allow access of variables in classes
 // TODO: check for duplicate names of methods and classes
 // TODO: add math tests
