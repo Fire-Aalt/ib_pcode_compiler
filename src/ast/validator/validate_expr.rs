@@ -80,7 +80,7 @@ impl AST {
                     return;
                 };
 
-                if !class_def.public_vars.contains(&var_name) {
+                if !class_def.public_vars.contains(var_name) {
                     diagnostic(
                         // TODO: same error as in eval
                         line,
@@ -120,22 +120,22 @@ impl AST {
             Expr::NativeMethodCall(native_method, target, params) => {
                 match native_method {
                     NativeMethod::Div => {
-                        Self::valid_number_of_args(line, &params, |len| len == 2, &"2", validator);
+                        Self::valid_number_of_args(line, params, |len| len == 2, &"2", validator);
                     }
                     NativeMethod::Input => {
                         Self::valid_number_of_args(
                             line,
-                            &params,
+                            params,
                             |len| len <= 1,
                             &"0 or 1",
                             validator,
                         );
                     }
                     NativeMethod::MathRandom => {
-                        Self::valid_number_of_args(line, &params, |len| len == 0, &"0", validator);
+                        Self::valid_number_of_args(line, params, |len| len == 0, &"0", validator);
                     }
                     NativeMethod::SubstringCall => {
-                        Self::valid_number_of_args(line, &params, |len| len == 2, &"2", validator);
+                        Self::valid_number_of_args(line, params, |len| len == 2, &"2", validator);
                         self.validate_expr(target.as_ref().unwrap(), env, validator);
                     }
                     NativeMethod::LengthCall => {

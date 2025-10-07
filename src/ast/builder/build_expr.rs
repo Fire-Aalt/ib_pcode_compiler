@@ -141,7 +141,7 @@ impl AST {
 
         for post in inner {
             let post = post.into_inner().next().unwrap();
-            let line = &self.as_line_info(&post);
+            let post_line = &self.as_line_info(&post);
 
             match post.as_rule() {
                 Rule::class_var => {
@@ -163,10 +163,10 @@ impl AST {
                     if !matches!(node, Expr::StaticGetVar(_, _)) {
                         match var_name {
                             LENGTH_VAR => {
-                                node = Expr::NativeMethodCall(NativeMethod::LengthCall, Some(Box::new(expr_node(line, node))), Vec::new());
+                                node = Expr::NativeMethodCall(NativeMethod::LengthCall, Some(Box::new(expr_node(post_line, node))), Vec::new());
                             }
                             _ => {
-                                node = Expr::ClassGetVar(Box::new(expr_node(line, node)), var_name);
+                                node = Expr::ClassGetVar(Box::new(expr_node(post_line, node)), var_name);
                             }
                         }
                     }
@@ -212,11 +212,11 @@ impl AST {
                     if !matches!(node, Expr::StaticMethodCall(_, _, _)) {
                         match fn_name {
                             SUBSTRING_FN => {
-                                node = Expr::NativeMethodCall(NativeMethod::SubstringCall, Some(Box::new(expr_node(line, node))), params);
+                                node = Expr::NativeMethodCall(NativeMethod::SubstringCall, Some(Box::new(expr_node(post_line, node))), params);
                             }
                             _ => {
                                 node = Expr::ClassMethodCall {
-                                    expr: Box::new(expr_node(line, node)),
+                                    expr: Box::new(expr_node(post_line, node)),
                                     fn_name,
                                     params,
                                 };

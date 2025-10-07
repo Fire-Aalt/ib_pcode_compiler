@@ -71,7 +71,11 @@ impl AST {
                         Ok(Value::Number((left as i64 / right as i64) as f64))
                     }
                     NativeMethod::Input => {
-                        let text = self.eval_expr(&params[0], env)?;
+                        let text = if params.len() == 1 {
+                            self.eval_expr(&params[0], env)?
+                        } else {
+                            Value::String("".into())
+                        };
                         Ok(self.exec_input(&text.fmt(), env))
                     }
                     NativeMethod::MathRandom => {
