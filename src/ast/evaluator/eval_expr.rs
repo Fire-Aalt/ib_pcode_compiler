@@ -4,7 +4,7 @@ use crate::compiler::errors::{
     out_of_bounds_error, unsupported_operand_error,
 };
 use crate::data::Value;
-use crate::data::ast_nodes::{Expr, ExprNode, UnaryOp};
+use crate::data::ast_nodes::{Expr, ExprNode, NativeMethod, UnaryOp};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
 use crate::env::Env;
 use rand::Rng;
@@ -59,19 +59,60 @@ impl AST {
                     }
                 }
             }
-            Expr::Input(text) => {
-                let text = self.eval_expr(text, env)?;
-                Ok(self.exec_input(&text.fmt(), env))
-            }
-            Expr::Div(left, right) => {
-                let left = self.eval_expr(left, env)?.as_num(&left.line_info)?;
-                let right = self.eval_expr(right, env)?.as_num(&right.line_info)?;
+            Expr::NativeMethodCall(native_method, target, params) => {
+                match native_method {
+                    NativeMethod::Div => {
+                        let left = &params[0];
+                        let right = &params[1];
 
-                Ok(Value::Number((left as i64 / right as i64) as f64))
-            }
-            Expr::MathRandom => {
-                let mut rng = rand::rng();
-                Ok(Value::Number(rng.random_range(0.0..1.0)))
+                        let left = self.eval_expr(left, env)?.as_num(&left.line_info)?;
+                        let right = self.eval_expr(right, env)?.as_num(&right.line_info)?;
+
+                        Ok(Value::Number((left as i64 / right as i64) as f64))
+                    }
+                    NativeMethod::Input => {
+                        let text = self.eval_expr(&params[0], env)?;
+                        Ok(self.exec_input(&text.fmt(), env))
+                    }
+                    NativeMethod::MathRandom => {
+                        let mut rng = rand::rng();
+                        Ok(Value::Number(rng.random_range(0.0..1.0)))
+                    }
+                    NativeMethod::SubstringCall => {
+                        let expr = target.as_ref().unwrap();
+                        let start = &params[0];
+                        let end = &params[1];
+
+                        let val = &self.eval_expr(expr, env)?;
+                        if let Value::String(s) = val {
+                            let start = self.eval_expr(start, env)?.as_num(&start.line_info)? as usize;
+                            let end = self.eval_expr(end, env)?.as_num(&end.line_info)? as usize;
+
+                            Ok(Value::String(s[start..end].to_string()))
+                        } else {
+                            Err(invalid_type_call_error(
+                                &expr.line_info,
+                                "`.substring(start, end)`",
+                                val,
+                                "strings",
+                            ))
+                        }
+                    }
+                    NativeMethod::LengthCall => {
+                        let expr = target.as_ref().unwrap();
+                        let val = &self.eval_expr(expr, env)?;
+                        match val {
+                            Value::String(s) => Ok(Value::Number(s.len() as f64)),
+                            Value::ArrayId(id) => Ok(Value::Number(env.get_array(id).len() as f64)),
+                            _ => Err(invalid_type_call_error(
+                                &expr.line_info,
+                                "`.length`",
+                                val,
+                                "strings and arrays",
+                            )),
+                        }
+                    }
+                }
             }
             Expr::LocalMethodCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
@@ -87,35 +128,6 @@ impl AST {
                     .exec_fn(fn_def, &resolved_params, env)?
                     .unwrap_or(Value::Number(0.0));
                 Ok(returned)
-            }
-            Expr::SubstringCall { expr, start, end } => {
-                let val = &self.eval_expr(expr, env)?;
-                if let Value::String(s) = val {
-                    let start = self.eval_expr(start, env)?.as_num(&start.line_info)? as usize;
-                    let end = self.eval_expr(end, env)?.as_num(&end.line_info)? as usize;
-
-                    Ok(Value::String(s[start..end].to_string()))
-                } else {
-                    Err(invalid_type_call_error(
-                        &expr.line_info,
-                        "`.substring(start, end)`",
-                        val,
-                        "strings",
-                    ))
-                }
-            }
-            Expr::LengthCall(expr) => {
-                let val = &self.eval_expr(expr, env)?;
-                match val {
-                    Value::String(s) => Ok(Value::Number(s.len() as f64)),
-                    Value::ArrayId(id) => Ok(Value::Number(env.get_array(id).len() as f64)),
-                    _ => Err(invalid_type_call_error(
-                        &expr.line_info,
-                        "`.length`",
-                        val,
-                        "strings and arrays",
-                    )),
-                }
             }
             Expr::Index(left, index) => {
                 let index = self.eval_expr(index, env)?.as_num(&index.line_info)? as i64;
@@ -200,7 +212,7 @@ impl AST {
                         return Err(invalid_number_of_params_error(
                             &expr_node.line_info,
                             params.len(),
-                            fn_def.args.len(),
+                            fn_def.args.len().to_string(),
                         ));
                     }
 

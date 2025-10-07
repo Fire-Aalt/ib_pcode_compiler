@@ -1,10 +1,11 @@
 use crate::ast::AST;
 use crate::common::get_all_file_paths_at;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
+use crate::data::diagnostic::Diagnostic;
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
-use pest::Parser;
 use pest::iterators::Pair;
+use pest::Parser;
 use pest_derive::Parser;
 use std::ops::AddAssign;
 use std::path::Path;
@@ -22,10 +23,8 @@ pub fn compile(code: &str, should_panic: bool) -> AST {
     let parsed_result = parse(&program, user_code_start_line, should_panic);
 
     let ast = build_ast(&program, user_code_start_line, parsed_result);
+    validate_ast(&ast, should_panic);
 
-    with_name_map(&ast.hash_to_name_map, || {
-        validate_ast(&ast, should_panic);
-    });
     ast
 }
 
@@ -76,10 +75,16 @@ fn build_ast(program: &str, user_code_start_line: u32, parsed_result: Pair<Rule>
 
 fn validate_ast(ast: &AST, should_panic: bool) {
     let mut env = Env::release();
-    let compile_errors = ast.validate(&mut env);
 
+    with_name_map(&ast.hash_to_name_map, || {
+        let validator = ast.validate(&mut env);
+        show_compiler_errors(&ast, should_panic, &validator.errors);
+    });
+}
+
+fn show_compiler_errors(ast: &AST, should_panic: bool, compile_errors: &Vec<Diagnostic>) {
     if !compile_errors.is_empty() {
-        for error in &compile_errors {
+        for error in compile_errors {
             print_diagnostic_error(ast, "Compilation", error.clone());
         }
 

@@ -152,7 +152,6 @@ reserved_keyword = { "Class"
          | "end"
          | "return"
          | "output"
-         | "assert"
          | "new"
          | "this"
          | "true"
@@ -160,5 +159,4 @@ reserved_keyword = { "Class"
          | "undefined"
          | static_keyword
          | public_keyword
-         | "main"
 }

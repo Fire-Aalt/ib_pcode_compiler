@@ -60,13 +60,7 @@ pub enum Expr {
     LocalMethodCall(NameHash, Vec<ExprNode>),
     StaticMethodCall(NameHash, NameHash, Vec<ExprNode>),
     StaticGetVar(NameHash, NameHash),
-    SubstringCall {
-        expr: Box<ExprNode>,
-        start: Box<ExprNode>,
-        end: Box<ExprNode>,
-    },
     ClassGetVar(Box<ExprNode>, NameHash),
-    LengthCall(Box<ExprNode>),
     ClassNew(NameHash, Vec<ExprNode>),
     ClassMethodCall {
         expr: Box<ExprNode>,
@@ -74,9 +68,16 @@ pub enum Expr {
         params: Vec<ExprNode>,
     },
     Index(Box<ExprNode>, Box<ExprNode>),
-    Input(Box<ExprNode>),
-    Div(Box<ExprNode>, Box<ExprNode>),
+    NativeMethodCall(NativeMethod, Option<Box<ExprNode>>, Vec<ExprNode>),
+}
+
+#[derive(Debug, Clone)]
+pub enum NativeMethod {
+    Div,
+    Input,
     MathRandom,
+    SubstringCall,
+    LengthCall
 }
 
 #[derive(Debug, Clone)]

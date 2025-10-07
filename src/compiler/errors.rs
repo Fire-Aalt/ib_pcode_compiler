@@ -49,14 +49,14 @@ pub fn out_of_bounds_error(line_info: &LineInfo, index: i64, length: usize) -> D
 pub fn invalid_number_of_params_error(
     line_info: &LineInfo,
     provided_number: usize,
-    expected_number: usize,
+    expected: String,
 ) -> Diagnostic {
     Diagnostic {
         line_info: line_info.clone(),
         error_type: ErrorType::OutOfBounds,
         message: format!(
             "provided number of parameters `{}` is not the same as requested `{}`",
-            provided_number, expected_number
+            provided_number, expected
         ),
         note: "incorrect number of params".to_string(),
     }

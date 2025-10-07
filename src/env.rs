@@ -1,4 +1,4 @@
-use crate::ast::main_hash;
+use crate::ast::{MAIN_CLASS};
 use crate::data::{NameHash, Value};
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;
@@ -55,7 +55,7 @@ impl Env {
             local_ids_stack: Vec::new(),
             mode,
         };
-        e.create_local_env(main_hash()); // global env
+        e.create_local_env(MAIN_CLASS); // global env
         e.push_local_env(0);
         e
     }

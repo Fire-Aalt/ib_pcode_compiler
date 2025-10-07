@@ -1,7 +1,7 @@
 use crate::ast::AST;
 use crate::compiler::Rule;
-use crate::data::NameHash;
 use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
+use crate::data::NameHash;
 use pest::iterators::{Pair, Pairs};
 
 mod build_expr;

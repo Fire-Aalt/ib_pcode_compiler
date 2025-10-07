@@ -32,7 +32,7 @@ const fn starts_with_this(s: &str) -> bool {
     true
 }
 
-pub const fn hash(s: &str) -> NameHash {
+pub const fn hash_const(s: &str) -> NameHash {
     if starts_with_this(s) {
         let h = fnv1a_from(s, 5);
         NameHash::new(h, true)

@@ -1,16 +1,16 @@
 mod validate_expr;
 mod validate_stmt;
 
-use crate::ast::{AST, main_hash};
-use crate::compiler::errors::{compile_error, diagnostic};
-use crate::data::ast_nodes::{Class, Function};
-use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
+use std::collections::HashMap;
+use crate::ast::{AST, MAIN_CLASS};
+use crate::compiler::errors::{compile_error, diagnostic, invalid_number_of_params_error};
+use crate::data::ast_nodes::{Class, ExprNode, Function};
+use crate::data::diagnostic::{ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 use crate::env::Env;
-use std::collections::HashMap;
 
 impl AST {
-    pub fn validate(&self, env: &mut Env) -> Vec<Diagnostic> {
+    pub fn validate(&self, env: &mut Env) -> Validator {
         let mut validator = Validator {
             validated_functions: HashMap::new(),
             errors: Vec::new(),
@@ -26,12 +26,11 @@ impl AST {
         }
 
         // Check unused methods in the main program
-        let main = &main_hash();
-        let id = env.create_local_env(main.clone());
+        let id = env.create_local_env(MAIN_CLASS);
         env.push_local_env(id);
 
-        for (fn_name, function) in &self.class_map[main].functions {
-            let _ = self.validate_fn_definition(main, fn_name, function, env, &mut validator);
+        for (fn_name, function) in &self.class_map[&MAIN_CLASS].functions {
+            let _ = self.validate_fn_definition(&MAIN_CLASS, fn_name, function, env, &mut validator);
         }
         env.pop_local_env();
 
@@ -39,12 +38,12 @@ impl AST {
         validator
             .errors
             .sort_by(|left, right| left.line_info.start_line.cmp(&right.line_info.start_line));
-        validator.errors
+        validator
     }
 
     fn validate_class_definitions(&self, env: &mut Env, validator: &mut Validator) {
         for (class_name, class) in &self.class_map {
-            if class_name == main_hash() {
+            if class_name == MAIN_CLASS {
                 continue;
             }
 
@@ -163,5 +162,13 @@ impl AST {
                 None
             }
         }
+    }
+
+    pub fn valid_number_of_args(line_info: &LineInfo, params: &Vec<ExprNode>, assert: fn(usize) -> bool, expected: &'static &str, validator: &mut Validator) -> bool {
+        if assert(params.len()) {
+            return true;
+        }
+        compile_error(invalid_number_of_params_error(line_info, params.len(), expected.to_string()), validator);
+        false
     }
 }

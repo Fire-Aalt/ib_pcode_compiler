@@ -13,7 +13,7 @@ pub mod builder;
 pub mod evaluator;
 mod validator;
 mod hasher;
-pub use hasher::hash;
+pub use hasher::hash_const;
 
 pub struct AST {
     pub source: String,
@@ -31,6 +31,8 @@ impl Display for AST {
         })
     }
 }
+
+pub const MAIN_CLASS: NameHash = hash_const("main");
 
 impl AST {
     pub fn new(source: String, user_code_start_line: u32) -> Self {
@@ -94,7 +96,7 @@ impl AST {
     }
 
     pub fn hash(&mut self, string: &str) -> NameHash {
-        let name_hash = hash(string);
+        let name_hash = hash_const(string);
         self.hash_to_name_map
             .insert(name_hash.clone(), string.to_string());
         name_hash
@@ -169,8 +171,4 @@ impl AST {
             end_col: end_col as u16,
         }
     }
-}
-
-pub fn main_hash() -> NameHash {
-    hash("main")
 }

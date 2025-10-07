@@ -17,7 +17,7 @@
   //
   //
   // A = 454
-  // output Show()
+output Show()
 
 
 
@@ -61,12 +61,12 @@ output div(4.5, 2)
 
 method in(A)
 
-    return 4
 end method
 
 
 output in("sdasdadds")
-//output input("sdasdadds")
+output input("sdasdadds", 545)
+
 
 // TODO: add integers
 // TODO: check for duplicate names of methods and classes
