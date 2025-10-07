@@ -88,10 +88,14 @@ impl AST {
                 };
 
                 if !class_def.public_vars.contains(&var_name) {
-                    diagnostic( // TODO: same error as in eval
+                    diagnostic(
+                        // TODO: same error as in eval
                         &expr_node.line_info,
                         ErrorType::Uninitialized,
-                        format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
+                        format!(
+                            "public variable `{}` was not found in class `{}` ",
+                            var_name, class_name
+                        ),
                         "undefined public variable",
                     );
                 }

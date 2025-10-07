@@ -10,6 +10,10 @@ pub struct NameHash {
 }
 
 impl NameHash {
+    pub const fn new(hash: u64, this_keyword: bool) -> Self {
+        NameHash { hash, this_keyword }
+    }
+    
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         if let Some(name) = lookup_name(self) {
             write!(f, "{}", name)

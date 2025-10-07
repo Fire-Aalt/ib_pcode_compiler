@@ -1,8 +1,8 @@
-use crate::ast::validator::Validator;
 use crate::ast::AST;
+use crate::ast::validator::Validator;
+use crate::data::Value;
 use crate::data::ast_nodes::{AssignTarget, Stmt, StmtNode};
 use crate::data::diagnostic::ErrorType;
-use crate::data::Value;
 use crate::env::Env;
 
 impl AST {

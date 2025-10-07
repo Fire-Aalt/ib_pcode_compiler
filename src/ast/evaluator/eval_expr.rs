@@ -240,7 +240,10 @@ impl AST {
                             return Err(diagnostic(
                                 &expr_node.line_info,
                                 ErrorType::Uninitialized,
-                                format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
+                                format!(
+                                    "public variable `{}` was not found in class `{}` ",
+                                    var_name, class_name
+                                ),
                                 "undefined public variable",
                             ));
                         }
@@ -251,17 +254,15 @@ impl AST {
 
                         Ok(returned)
                     }
-                    _ => {
-                        Err(diagnostic(
-                            &expr_node.line_info,
-                            ErrorType::InvalidType,
-                            format!(
-                                "tried accessing a variable `{}` not on an instance of a class: `{}`",
-                                var_name, val
-                            ),
-                            "",
-                        ))
-                    }
+                    _ => Err(diagnostic(
+                        &expr_node.line_info,
+                        ErrorType::InvalidType,
+                        format!(
+                            "tried accessing a variable `{}` not on an instance of a class: `{}`",
+                            var_name, val
+                        ),
+                        "",
+                    )),
                 }
             }
             Expr::StaticMethodCall(class_name, fn_name, params) => {

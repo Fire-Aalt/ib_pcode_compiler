@@ -1,18 +1,19 @@
 use crate::compiler::Rule;
-use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{NameHash, with_name_map};
+use crate::data::name_hash::{with_name_map, NameHash};
+use crate::data::Value;
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Display, Formatter};
-use std::hash::{DefaultHasher, Hash, Hasher};
 
 pub mod builder;
 pub mod evaluator;
 mod validator;
+mod hasher;
+pub use hasher::hash;
 
 pub struct AST {
     pub source: String,
@@ -168,28 +169,6 @@ impl AST {
             end_col: end_col as u16,
         }
     }
-}
-
-pub fn hash(string: &str) -> NameHash {
-    let mut hasher = DefaultHasher::new();
-
-    let name_hash = match string.strip_prefix("this.") {
-        Some(stripped) => {
-            stripped.hash(&mut hasher);
-            NameHash {
-                hash: hasher.finish(),
-                this_keyword: true,
-            }
-        }
-        None => {
-            string.hash(&mut hasher);
-            NameHash {
-                hash: hasher.finish(),
-                this_keyword: false,
-            }
-        }
-    };
-    name_hash
 }
 
 pub fn main_hash() -> NameHash {
