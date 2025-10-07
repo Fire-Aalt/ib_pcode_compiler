@@ -29,7 +29,7 @@ impl Value {
         }
     }
 
-    fn fmt(&self) -> String {
+    pub fn fmt(&self) -> String {
         match self {
             Value::Number(n) => format!("{}", n),
             Value::Bool(b) => format!("{}", b),

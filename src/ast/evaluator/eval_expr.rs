@@ -61,7 +61,7 @@ impl AST {
             }
             Expr::Input(text) => {
                 let text = self.eval_expr(text, env)?;
-                Ok(self.exec_input(&text.to_string(), env))
+                Ok(self.exec_input(&text.fmt(), env))
             }
             Expr::Div(left, right) => {
                 let left = self.eval_expr(left, env)?.as_num(&left.line_info)?;
@@ -108,7 +108,7 @@ impl AST {
                 let val = &self.eval_expr(expr, env)?;
                 match val {
                     Value::String(s) => Ok(Value::Number(s.len() as f64)),
-                    Value::ArrayId(id) => Ok(Value::Number(env.get_array(&id).len() as f64)),
+                    Value::ArrayId(id) => Ok(Value::Number(env.get_array(id).len() as f64)),
                     _ => Err(invalid_type_call_error(
                         &expr.line_info,
                         "`.length`",
@@ -230,34 +230,39 @@ impl AST {
             }
             Expr::ClassGetVar(expr, var_name) => {
                 let val = self.eval_expr(expr, env)?;
-                if let Value::InstanceId(id) = val {
-                    let class_name = &env.get_class_name_hash(&id).clone();
-                    let class_def = self.get_class(class_name).unwrap();
 
-                    if !class_def.public_vars.contains(&var_name) {
-                        return Err(diagnostic(
-                            &expr_node.line_info,
-                            ErrorType::Uninitialized,
-                            format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
-                            "undefined public variable",
-                        ));
+                match val {
+                    Value::InstanceId(id) => {
+                        let class_name = &env.get_class_name_hash(&id).clone();
+                        let class_def = self.get_class(class_name).unwrap();
+
+                        if !class_def.public_vars.contains(var_name) {
+                            return Err(diagnostic(
+                                &expr_node.line_info,
+                                ErrorType::Uninitialized,
+                                format!("public variable `{}` was not found in class `{}` ", var_name, class_name),
+                                "undefined public variable",
+                            ));
+                        }
+
+                        env.push_local_env(id);
+                        let returned = env.get(var_name).unwrap();
+                        env.pop_local_env();
+
+                        Ok(returned)
                     }
-
-                    env.push_local_env(id);
-                    let returned = env.get(var_name).unwrap();
-                    env.pop_local_env();
-
-                    return Ok(returned);
+                    _ => {
+                        Err(diagnostic(
+                            &expr_node.line_info,
+                            ErrorType::InvalidType,
+                            format!(
+                                "tried accessing a variable `{}` not on an instance of a class: `{}`",
+                                var_name, val
+                            ),
+                            "",
+                        ))
+                    }
                 }
-                Err(diagnostic(
-                    &expr_node.line_info,
-                    ErrorType::InvalidType,
-                    format!(
-                        "tried accessing a variable `{}` not on an instance of a class: `{}`",
-                        var_name, val
-                    ),
-                    "",
-                ))
             }
             Expr::StaticMethodCall(class_name, fn_name, params) => {
                 let fn_def = self.get_function(class_name, fn_name).unwrap();

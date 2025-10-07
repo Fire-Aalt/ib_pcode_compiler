@@ -4,7 +4,7 @@ end_line = _{ "\n"+ }
 allow_end_line = _{ "\n"* }
 
 program = { SOI ~ (stmt | end_line)* ~ EOI }
-stmt = _{ (class_decl | assign_stmts | control_stmts | input_stmt | output_stmt | assert_stmt | method_stmts | expr_stmt) ~ end_line }
+stmt = _{ (class_decl | assign_stmts | control_stmts | native_stmts | method_stmts | expr_stmt) ~ end_line }
 
 // ASSIGN
 assign_stmts = _{ assign_stmt | increment_stmt | decrement_stmt }
@@ -79,6 +79,7 @@ class_function = {
     ~ "}" ~ end_line
 }
 class_constructor_stmt = { public_keyword? ~ class_ident ~ "=" ~ expr ~ end_line }
+static_keyword = { "static" }
 public_keyword = { "public" }
 
 // EXPRESSION
@@ -112,10 +113,8 @@ unary = { (not | subtract)* ~ term }
 
 
 // NATIVE METHODS
-input_call = { "input" ~ "(" ~ expr? ~ ")" }
-div_call = { "div" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
-math_random_call = { "Math" ~ "." ~ "random" ~ "(" ~ ")" }
-length_call = { "." ~ "length" }
+native_stmts = _{ input_stmt | output_stmt | assert_stmt }
+
 input_stmt = { "input" ~ any_ident }
 output_stmt = { "output" ~ expr ~ ("," ~ expr)* }
 assert_stmt = { "assert" ~ "(" ~ expr ~ "," ~ expr ~ ")" }
@@ -125,8 +124,8 @@ decl_param_list = { "(" ~ (ident ~ ("," ~ ident)*)? ~ ")" }
 call_param_list = { "(" ~ (expr ~ ("," ~ expr)*)? ~ ")" }
 
 term = { primary ~ postfix* }
-primary = { number | string | bool | undefined | array | class_new | input_call | div_call | math_random_call | method_call | any_ident | "(" ~ expr ~ ")" }
-postfix = { class_call | length_call | class_var | index }
+primary = { number | string | bool | undefined | array | class_new | method_call | any_ident | "(" ~ expr ~ ")" }
+postfix = { class_call | class_var | index }
 class_var = { "." ~ ident }
 class_call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
@@ -138,32 +137,28 @@ bool = { "true" | "false" }
 undefined = { "undefined" }
 array = { ("[" ~ allow_end_line ~ (expr ~ (allow_end_line ~ "," ~ allow_end_line ~ expr)*)? ~ allow_end_line ~ "]") | ("new" ~ "Array" ~ "()") }
 
-ident = @{ !reserved_keyword ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+ident = @{ !(reserved_keyword ~ !ASCII_ALPHANUMERIC) ~ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 class_ident = { "this" ~ "." ~ ident }
 any_ident = _{ class_ident | ident }
 
-static_keyword = { "static" }
-
-bw = _{ !(ASCII_ALPHANUMERIC | "_") }
-reserved_keyword = { "Class" ~ bw
-         | "method" ~ bw
-         | "if" ~ bw
-         | "else" ~ bw
-         | "loop" ~ bw
-         | "while" ~ bw
-         | "for" ~ bw
-         | "until" ~ bw
-         | "end" ~ bw
-         | "return" ~ bw
-         | "input" ~ bw
-         | "output" ~ bw
-         | "assert" ~ bw
-         | "new" ~ bw
-         | "this" ~ bw
-         | "true" ~ bw
-         | "false" ~ bw
-         | "undefined" ~ bw
-         | static_keyword ~ bw
-         | public_keyword ~ bw
-         | "main" ~ bw
+reserved_keyword = { "Class"
+         | "method"
+         | "if"
+         | "else"
+         | "loop"
+         | "while"
+         | "for"
+         | "until"
+         | "end"
+         | "return"
+         | "output"
+         | "assert"
+         | "new"
+         | "this"
+         | "true"
+         | "false"
+         | "undefined"
+         | static_keyword
+         | public_keyword
+         | "main"
 }

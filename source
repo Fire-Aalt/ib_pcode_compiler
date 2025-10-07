@@ -56,6 +56,18 @@ output Math.atanh(8)
 output Math.acosh(8)
 
 output Math.PI
+output Math.random() + Math.random() + A.length
+output div(4.5, 2)
 
+method in(A)
+
+    return 4
+end method
+
+
+output in("sdasdadds")
+//output input("sdasdadds")
+
+// TODO: add integers
 // TODO: check for duplicate names of methods and classes
 // TODO: add math tests
