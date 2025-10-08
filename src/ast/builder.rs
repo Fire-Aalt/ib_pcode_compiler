@@ -1,23 +1,25 @@
-use crate::ast::AST;
+use crate::ast::{hash_const, AST};
 use crate::compiler::Rule;
-use crate::data::NameHash;
+use crate::data::{NameHash, Validator};
 use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
 use pest::iterators::{Pair, Pairs};
+use crate::compiler::errors::{compile_error, diagnostic};
+use crate::data::diagnostic::ErrorType;
 
 mod build_expr;
 mod build_stmt;
 
 impl AST {
-    pub fn build_ast(&mut self, pair: Pair<Rule>) {
+    pub fn build_ast(&mut self, pair: Pair<Rule>, validator: &mut Validator) {
         assert_eq!(pair.as_rule(), Rule::program);
 
         self.nodes = pair
             .into_inner()
-            .map(|inner| self.build_stmt(inner))
+            .map(|inner| self.build_stmt(inner, validator))
             .collect();
     }
 
-    fn build_fn(&mut self, pair: Pair<Rule>) -> (NameHash, Function) {
+    fn build_fn(&mut self, pair: Pair<Rule>, validator: &mut Validator) -> (NameHash, Function) {
         let mut inner = pair.into_inner();
 
         let fn_name = inner.next().unwrap().as_str();
@@ -26,7 +28,7 @@ impl AST {
 
         let mut fn_body = Vec::new();
         for pair in inner {
-            let stmt_node = self.build_stmt(pair);
+            let stmt_node = self.build_stmt(pair, validator);
             if let Stmt::MethodReturn(_) = &stmt_node.stmt {
                 fn_returns = true;
             }
@@ -58,10 +60,13 @@ impl AST {
     }
 }
 
-fn get_assign_target(assignee: ExprNode) -> AssignTarget {
+fn get_assign_target(assignee: ExprNode, validator: &mut Validator) -> AssignTarget {
     match assignee.expr {
         Expr::Ident(name) => AssignTarget::Ident(name),
         Expr::Index(array, index) => AssignTarget::Array(*array, *index),
-        _ => unreachable!(),
+        _ => {
+            compile_error(diagnostic(&assignee.line_info, ErrorType::Unsupported, "can only assign into a local variable or an index expression".into(), "unsupported assign target"), validator);
+            AssignTarget::Ident(hash_const(""))
+        }
     }
 }

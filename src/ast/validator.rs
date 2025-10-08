@@ -8,22 +8,15 @@ use crate::data::diagnostic::{ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 use crate::env::Env;
 use std::cmp::Ordering;
-use std::collections::HashMap;
 
 impl AST {
-    pub fn validate(&self, env: &mut Env) -> Validator {
-        let mut validator = Validator {
-            validated_functions: HashMap::new(),
-            errors: Vec::new(),
-            added_errors: 0,
-        };
-
+    pub fn validate(&self, env: &mut Env, validator: &mut Validator) {
         // Classes are encapsulated, so they can be checked fully first
-        self.validate_class_definitions(env, &mut validator);
+        self.validate_class_definitions(env, validator);
 
         // Main program execution flow check
         for stmt_node in &self.nodes {
-            self.validate_stmt(stmt_node, env, &mut validator);
+            self.validate_stmt(stmt_node, env, validator);
         }
 
         // Check unused methods in the main program
@@ -31,7 +24,7 @@ impl AST {
         env.push_local_env(id);
 
         for (fn_name, function) in &self.class_map[&MAIN_CLASS].functions {
-            self.validate_fn_definition(&MAIN_CLASS, fn_name, function, env, &mut validator);
+            self.validate_fn_definition(&MAIN_CLASS, fn_name, function, env, validator);
         }
         env.pop_local_env();
 
@@ -44,7 +37,6 @@ impl AST {
             };
             ord
         });
-        validator
     }
 
     fn validate_class_definitions(&self, env: &mut Env, validator: &mut Validator) {

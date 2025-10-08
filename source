@@ -69,14 +69,24 @@ Class how()
 
 end Class
 
-output sj()
-output Math.sj()
-output new Math().show
-output Math.show
-output Math.shows(new a(), 8)
-output new ho().hh()
+Class how()
+
+end Class
+
+method how()
+
+end method
+
+how() = 45
+
+//output sj()
+//output Math.sj()
+//output new Math().show
+//output Math.show
+//output Math.shows(new a(), 8)
+//output new ho().hh()
 //output new how().hh(A, 554)
-output new how().hh
+//output new how().hh
 
 // TODO: check for duplicate names of methods and classes
 // TODO: add math tests

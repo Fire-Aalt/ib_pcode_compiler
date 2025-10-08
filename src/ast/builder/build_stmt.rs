@@ -4,16 +4,17 @@ use crate::compiler::Rule;
 use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Stmt, StmtNode};
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
+use crate::data::Validator;
 
 impl AST {
-    pub fn build_stmt(&mut self, pair: Pair<Rule>) -> StmtNode {
+    pub fn build_stmt(&mut self, pair: Pair<Rule>, validator: &mut Validator) -> StmtNode {
         let line = self.as_line_info(&pair);
         let stmt = match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
 
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee);
+                let assign_target = get_assign_target(assignee, validator);
 
                 let op = match inner.next().unwrap().as_rule() {
                     Rule::assign => AssignOperator::Assign,
@@ -29,13 +30,13 @@ impl AST {
             Rule::increment_stmt => {
                 let mut inner = pair.into_inner();
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee);
+                let assign_target = get_assign_target(assignee, validator);
                 Stmt::Increment(assign_target)
             }
             Rule::decrement_stmt => {
                 let mut inner = pair.into_inner();
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee);
+                let assign_target = get_assign_target(assignee, validator);
                 Stmt::Decrement(assign_target)
             }
             Rule::if_stmt => {
@@ -54,18 +55,18 @@ impl AST {
 
                             let mut elif_body = Vec::new();
                             for sp in elif_inner {
-                                elif_body.push(self.build_stmt(sp));
+                                elif_body.push(self.build_stmt(sp, validator));
                             }
                             elifs.push((elif_cond, elif_body));
                         }
                         Rule::else_clause => {
                             let mut else_body = Vec::new();
                             for sp in p.into_inner() {
-                                else_body.push(self.build_stmt(sp));
+                                else_body.push(self.build_stmt(sp, validator));
                             }
                             else_branch = Some(else_body);
                         }
-                        _ => then_branch.push(self.build_stmt(p)),
+                        _ => then_branch.push(self.build_stmt(p, validator)),
                     }
                 }
                 Stmt::If {
@@ -78,7 +79,7 @@ impl AST {
             Rule::while_loop_stmt => {
                 let mut inner = pair.into_inner();
                 let cond = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
                 Stmt::While(cond, body)
             }
             Rule::for_loop_stmt => {
@@ -86,13 +87,13 @@ impl AST {
                 let ident = inner.next().unwrap().as_str();
                 let start_num = self.build_expr(inner.next().unwrap());
                 let end_num = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
                 Stmt::For(self.hash(ident), start_num, end_num, body)
             }
             Rule::loop_until_stmt => {
                 let mut inner = pair.into_inner();
                 let expr = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner)).collect();
+                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
                 Stmt::Until(expr, body)
             }
             Rule::input_stmt => {
@@ -112,7 +113,7 @@ impl AST {
                 Stmt::Assert(expr, expected)
             }
             Rule::method_decl => {
-                let (fn_name, function) = self.build_fn(pair);
+                let (fn_name, function) = self.build_fn(pair, validator);
                 self.add_function(fn_name.clone(), function);
 
                 Stmt::FunctionDeclaration(fn_name)
@@ -158,7 +159,7 @@ impl AST {
                             constructors.push((var_name, expr));
                         }
                         Rule::class_function => {
-                            let (fn_name, function) = self.build_fn(stmt);
+                            let (fn_name, function) = self.build_fn(stmt, validator);
                             functions.insert(fn_name.clone(), function);
                         }
                         _ => unreachable!(),

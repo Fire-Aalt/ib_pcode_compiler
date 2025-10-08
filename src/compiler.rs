@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::ast::AST;
 use crate::common::get_all_file_paths_at;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
@@ -9,6 +10,7 @@ use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::ops::AddAssign;
 use std::path::Path;
+use crate::data::Validator;
 
 pub mod error_print;
 pub mod errors;
@@ -22,8 +24,16 @@ pub fn compile(code: &str, should_panic: bool) -> AST {
 
     let parsed_result = parse(&program, user_code_start_line, should_panic);
 
-    let ast = build_ast(&program, user_code_start_line, parsed_result);
-    validate_ast(&ast, should_panic);
+    let mut validator = Validator {
+        validated_functions: HashMap::new(),
+        errors: Vec::new(),
+        added_errors: 0,
+    };
+
+    let ast = build_ast(&program, user_code_start_line, parsed_result, &mut validator);
+    validate_ast(&ast, &mut validator);
+
+    show_compiler_errors(&ast, should_panic, &validator.errors);
 
     ast
 }
@@ -67,18 +77,17 @@ fn parse(program: &str, user_code_start_line: u32, should_panic: bool) -> Pair<R
     .unwrap()
 }
 
-fn build_ast(program: &str, user_code_start_line: u32, parsed_result: Pair<Rule>) -> AST {
+fn build_ast(program: &str, user_code_start_line: u32, parsed_result: Pair<Rule>, validator: &mut Validator) -> AST {
     let mut ast = AST::new(program.to_string(), user_code_start_line);
-    ast.build_ast(parsed_result);
+    ast.build_ast(parsed_result, validator);
     ast
 }
 
-fn validate_ast(ast: &AST, should_panic: bool) {
+fn validate_ast(ast: &AST, validator: &mut Validator) {
     let mut env = Env::release();
 
     with_name_map(&ast.hash_to_name_map, || {
-        let validator = ast.validate(&mut env);
-        show_compiler_errors(ast, should_panic, &validator.errors);
+        ast.validate(&mut env, validator);
     });
 }
 
