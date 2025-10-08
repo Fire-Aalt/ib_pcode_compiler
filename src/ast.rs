@@ -1,8 +1,8 @@
 use crate::compiler::Rule;
+use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
 use crate::data::diagnostic::LineInfo;
-use crate::data::name_hash::{with_name_map, NameHash};
-use crate::data::Value;
+use crate::data::name_hash::{NameHash, with_name_map};
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
@@ -11,8 +11,8 @@ use std::fmt::{Display, Formatter};
 
 pub mod builder;
 pub mod evaluator;
-mod validator;
 mod hasher;
+mod validator;
 pub use hasher::hash_const;
 
 pub struct AST {
@@ -44,9 +44,8 @@ impl AST {
             hash_to_name_map: HashMap::new(),
             static_classes: HashSet::new(),
         };
-        let main = ast.main_hash();
         ast.add_class(
-            main,
+            MAIN_CLASS,
             Class {
                 line_info: LineInfo::default(),
                 functions: HashMap::new(),
@@ -58,18 +57,13 @@ impl AST {
         ast
     }
 
-    pub fn main_hash(&mut self) -> NameHash {
-        self.hash("main")
-    }
-
     pub fn add_class(&mut self, name_hash: NameHash, class: Class) {
         self.class_map.insert(name_hash, class);
     }
 
     pub fn add_function(&mut self, name_hash: NameHash, function: Function) {
-        let hash = &self.main_hash();
         self.class_map
-            .get_mut(hash)
+            .get_mut(&MAIN_CLASS)
             .unwrap()
             .functions
             .insert(name_hash, function);
@@ -99,6 +93,14 @@ impl AST {
         let name_hash = hash_const(string);
         self.hash_to_name_map
             .insert(name_hash.clone(), string.to_string());
+        name_hash
+    }
+
+    pub fn hash_with_this_keyword(&mut self, string: &str) -> NameHash {
+        let string = "this.".to_string() + string;
+        let name_hash = hash_const(string.as_str());
+
+        self.hash_to_name_map.insert(name_hash.clone(), string);
         name_hash
     }
 

@@ -1,13 +1,14 @@
 mod validate_expr;
 mod validate_stmt;
 
-use std::collections::HashMap;
 use crate::ast::{AST, MAIN_CLASS};
 use crate::compiler::errors::{compile_error, diagnostic, invalid_number_of_params_error};
 use crate::data::ast_nodes::{Class, ExprNode, Function};
 use crate::data::diagnostic::{ErrorType, LineInfo};
 use crate::data::{NameHash, Validator, Value};
 use crate::env::Env;
+use std::cmp::Ordering;
+use std::collections::HashMap;
 
 impl AST {
     pub fn validate(&self, env: &mut Env) -> Validator {
@@ -18,11 +19,11 @@ impl AST {
         };
 
         // Classes are encapsulated, so they can be checked fully first
-        let _ = self.validate_class_definitions(env, &mut validator);
+        self.validate_class_definitions(env, &mut validator);
 
         // Main program execution flow check
         for stmt_node in &self.nodes {
-            let _ = self.validate_stmt(stmt_node, env, &mut validator);
+            self.validate_stmt(stmt_node, env, &mut validator);
         }
 
         // Check unused methods in the main program
@@ -30,14 +31,19 @@ impl AST {
         env.push_local_env(id);
 
         for (fn_name, function) in &self.class_map[&MAIN_CLASS].functions {
-            let _ = self.validate_fn_definition(&MAIN_CLASS, fn_name, function, env, &mut validator);
+            self.validate_fn_definition(&MAIN_CLASS, fn_name, function, env, &mut validator);
         }
         env.pop_local_env();
 
         // Sort by first line, as some errors might be caught later
-        validator
-            .errors
-            .sort_by(|left, right| left.line_info.start_line.cmp(&right.line_info.start_line));
+        validator.errors.sort_by(|left, right| {
+            let mut ord = left.line_info.start_line.cmp(&right.line_info.start_line);
+
+            if ord == Ordering::Equal {
+                ord = left.line_info.start_col.cmp(&right.line_info.start_col);
+            };
+            ord
+        });
         validator
     }
 
@@ -54,7 +60,7 @@ impl AST {
                 env.static_envs.insert(class_name.clone(), id);
 
                 if !class.constructor.args.is_empty() {
-                    let _ = compile_error(
+                    compile_error(
                         diagnostic(
                             &class.constructor.line_info,
                             ErrorType::Unsupported,
@@ -74,12 +80,12 @@ impl AST {
             }
 
             for (arg, expr_node) in &class.constructor.constructors {
-                let _ = self.validate_expr(expr_node, env, validator);
+                self.validate_expr(expr_node, env, validator);
                 env.define(arg, Value::Number(0.0))
             }
 
             for (fn_name, function) in &class.functions {
-                let _ = self.validate_fn_definition(class_name, fn_name, function, env, validator);
+                self.validate_fn_definition(class_name, fn_name, function, env, validator);
             }
 
             env.pop_local_env();
@@ -105,7 +111,7 @@ impl AST {
             }
 
             for stmt_node in &function.body {
-                let _ = self.validate_stmt(stmt_node, env, validator);
+                self.validate_stmt(stmt_node, env, validator);
             }
             env.pop_scope();
 
@@ -114,30 +120,6 @@ impl AST {
                 .get_mut(class_name)
                 .unwrap()
                 .insert(fn_name.clone());
-        }
-    }
-
-    pub fn validate_fn_get(
-        &self,
-        line_info: &LineInfo,
-        class_name: &NameHash,
-        fn_name: &NameHash,
-        validator: &mut Validator,
-    ) -> Option<&Function> {
-        match self.get_function(class_name, fn_name) {
-            Some(fn_def) => Some(fn_def),
-            None => {
-                compile_error(
-                    diagnostic(
-                        line_info,
-                        ErrorType::Uninitialized,
-                        format!("cannot find function `{}` in this scope", fn_name),
-                        "not found in this scope",
-                    ),
-                    validator,
-                );
-                None
-            }
         }
     }
 
@@ -164,11 +146,20 @@ impl AST {
         }
     }
 
-    pub fn valid_number_of_args(line_info: &LineInfo, params: &Vec<ExprNode>, assert: fn(usize) -> bool, expected: &'static &str, validator: &mut Validator) -> bool {
+    pub fn valid_number_of_args(
+        line_info: &LineInfo,
+        params: &[ExprNode],
+        assert: fn(usize) -> bool,
+        expected: &'static &str,
+        validator: &mut Validator,
+    ) -> bool {
         if assert(params.len()) {
             return true;
         }
-        compile_error(invalid_number_of_params_error(line_info, params.len(), expected.to_string()), validator);
+        compile_error(
+            invalid_number_of_params_error(line_info, params.len(), expected.to_string()),
+            validator,
+        );
         false
     }
 }

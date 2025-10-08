@@ -103,16 +103,14 @@ impl AST {
         env: &mut Env,
     ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
-        unsafe {
-            match op {
-                Operand::And => Ok(Some(Value::Bool(
-                    l_val.as_bool_unchecked() && r_expr.eval_as_bool_unchecked(self, env)?,
-                ))),
-                Operand::Or => Ok(Some(Value::Bool(
-                    l_val.as_bool_unchecked() || r_expr.eval_as_bool_unchecked(self, env)?,
-                ))),
-                _ => Ok(None),
-            }
+        match op {
+            Operand::And => Ok(Some(Value::Bool(unsafe {
+                l_val.as_bool_unchecked() && r_expr.eval_as_bool_unchecked(self, env)?
+            }))),
+            Operand::Or => Ok(Some(Value::Bool(unsafe {
+                l_val.as_bool_unchecked() || r_expr.eval_as_bool_unchecked(self, env)?
+            }))),
+            _ => Ok(None),
         }
     }
 
@@ -126,8 +124,8 @@ impl AST {
     }
 
     fn num_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
-        let l = l_val.as_num_unsafe();
-        let r = r_val.as_num_unsafe();
+        let l = unsafe { l_val.as_num_unchecked() };
+        let r = unsafe { r_val.as_num_unchecked() };
 
         let res = match op {
             Operand::Add => Value::Number(l + r),

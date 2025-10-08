@@ -129,7 +129,9 @@ impl Value {
         }
     }
 
-    pub fn as_num_unsafe(&self) -> f64 {
+    /// # Safety
+    /// Can only convert Number and Bool into a number, otherwise panics
+    pub unsafe fn as_num_unchecked(&self) -> f64 {
         match self {
             Value::Number(n) => *n,
             Value::Bool(b) => {
@@ -143,6 +145,8 @@ impl Value {
         }
     }
 
+    /// # Safety
+    /// Can only convert Number, Bool and String into a bool, otherwise panics
     pub unsafe fn as_bool_unchecked(&self) -> bool {
         match self {
             Value::Number(n) => to_bool_num(*n),

@@ -1,17 +1,10 @@
-use crate::ast::{hash_const, AST};
+use crate::ast::{AST, hash_const};
 use crate::common::fix_quotes_plain;
 use crate::compiler::Rule;
 use crate::data::ast_nodes::{Expr, ExprNode, NativeMethod, Operand, UnaryOp};
 use crate::data::diagnostic::LineInfo;
 use crate::data::{NameHash, Value};
 use pest::iterators::Pair;
-
-fn expr_node(line: &LineInfo, expr: Expr) -> ExprNode {
-    ExprNode {
-        line_info: line.clone(),
-        expr,
-    }
-}
 
 impl AST {
     pub fn build_expr(&mut self, pair: Pair<Rule>) -> ExprNode {
@@ -106,7 +99,10 @@ impl AST {
             Rule::method_call => {
                 let mut inner = first.into_inner();
 
-                let method_name = self.hash(inner.next().unwrap().as_str());
+                let fn_rule = inner.next().unwrap();
+                let fn_line = self.as_line_info(&fn_rule);
+                let method_name = self.hash(fn_rule.as_str());
+
                 let params: Vec<ExprNode> = inner
                     .next()
                     .unwrap()
@@ -118,8 +114,8 @@ impl AST {
                 const INPUT: NameHash = hash_const("input");
 
                 match method_name {
-                    DIV => Expr::NativeMethodCall(NativeMethod::Div, None, params),
-                    INPUT => Expr::NativeMethodCall(NativeMethod::Input, None, params),
+                    DIV => Expr::NativeMethodCall(NativeMethod::Div, None, fn_line, params),
+                    INPUT => Expr::NativeMethodCall(NativeMethod::Input, None, fn_line, params),
                     _ => Expr::LocalMethodCall(method_name, params),
                 }
             }
@@ -146,12 +142,15 @@ impl AST {
             match post.as_rule() {
                 Rule::class_var => {
                     let mut inner = post.into_inner();
-                    let mut var_name = self.hash(inner.next().unwrap().as_str());
-                    var_name.this_keyword = true;
+                    let var_name = self.hash_with_this_keyword(inner.next().unwrap().as_str());
 
                     if let Expr::Ident(static_class_name) = &node {
                         if self.static_classes.contains(static_class_name) {
-                            node = Expr::StaticGetVar(static_class_name.clone(), var_name);
+                            node = Expr::StaticGetVar(
+                                post_line.clone(),
+                                static_class_name.clone(),
+                                var_name,
+                            );
                             continue; // static early out
                         } else {
                             node = Expr::Ident(static_class_name.clone());
@@ -160,22 +159,29 @@ impl AST {
 
                     const LENGTH_VAR: NameHash = hash_const("this.length");
 
-                    if !matches!(node, Expr::StaticGetVar(_, _)) {
+                    if !matches!(node, Expr::StaticGetVar(_, _, _)) {
                         match var_name {
                             LENGTH_VAR => {
-                                node = Expr::NativeMethodCall(NativeMethod::LengthCall, Some(Box::new(expr_node(post_line, node))), Vec::new());
+                                node = Expr::NativeMethodCall(
+                                    NativeMethod::LengthCall,
+                                    Some(Box::new(expr_node(line, node))),
+                                    post_line.clone(),
+                                    Vec::new(),
+                                );
                             }
                             _ => {
-                                node = Expr::ClassGetVar(Box::new(expr_node(post_line, node)), var_name);
+                                node = Expr::ClassGetVar(
+                                    Box::new(expr_node(line, node)),
+                                    post_line.clone(),
+                                    var_name,
+                                );
                             }
                         }
                     }
                 }
                 Rule::class_call => {
                     let mut inner = post.into_inner();
-
-                    let mut fn_name = self.hash(inner.next().unwrap().as_str());
-                    fn_name.this_keyword = true;
+                    let fn_name = self.hash_with_this_keyword(inner.next().unwrap().as_str());
 
                     let params: Vec<ExprNode> = inner
                         .next()
@@ -191,10 +197,16 @@ impl AST {
                         if self.static_classes.contains(static_class_name) {
                             match (static_class_name, &fn_name) {
                                 (&MATH_CLASS, &RANDOM_FN) => {
-                                    node = Expr::NativeMethodCall(NativeMethod::MathRandom, None, params);
+                                    node = Expr::NativeMethodCall(
+                                        NativeMethod::MathRandom,
+                                        None,
+                                        post_line.clone(),
+                                        params,
+                                    );
                                 }
                                 _ => {
                                     node = Expr::StaticMethodCall(
+                                        post_line.clone(),
                                         static_class_name.clone(),
                                         fn_name,
                                         params,
@@ -209,14 +221,20 @@ impl AST {
 
                     const SUBSTRING_FN: NameHash = hash_const("this.substring");
 
-                    if !matches!(node, Expr::StaticMethodCall(_, _, _)) {
+                    if !matches!(node, Expr::StaticMethodCall(_, _, _, _)) {
                         match fn_name {
                             SUBSTRING_FN => {
-                                node = Expr::NativeMethodCall(NativeMethod::SubstringCall, Some(Box::new(expr_node(post_line, node))), params);
+                                node = Expr::NativeMethodCall(
+                                    NativeMethod::SubstringCall,
+                                    Some(Box::new(expr_node(line, node))),
+                                    post_line.clone(),
+                                    params,
+                                );
                             }
                             _ => {
                                 node = Expr::ClassMethodCall {
-                                    expr: Box::new(expr_node(post_line, node)),
+                                    expr: Box::new(expr_node(line, node)),
+                                    fn_line: post_line.clone(),
                                     fn_name,
                                     params,
                                 };
@@ -233,5 +251,12 @@ impl AST {
             }
         }
         expr_node(line, node)
+    }
+}
+
+fn expr_node(line: &LineInfo, expr: Expr) -> ExprNode {
+    ExprNode {
+        line_info: line.clone(),
+        expr,
     }
 }

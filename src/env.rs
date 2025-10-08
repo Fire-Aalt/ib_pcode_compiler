@@ -1,4 +1,4 @@
-use crate::ast::{MAIN_CLASS};
+use crate::ast::MAIN_CLASS;
 use crate::data::{NameHash, Value};
 use crate::env::allocated_lookup_map::AllocatedLookupMap;
 use crate::env::local_env::LocalEnv;

@@ -65,36 +65,18 @@ method in(A)
 end method
 
 
-output in("sdasdadds") div 2
+Class how()
 
-NAMES = new Collection()
-NAMES.addItem("Alex")
-NAMES.addItem("Boris")
-NAMES.addItem("Alex")
-NAMES.addItem("Boris")
-NAMES.addItem("Tyy")
-NAMES.addItem("SASAS")
-NAMES.addItem("ddd")
-NAMES.addItem("ddd")
-LIST = new Array()
+end Class
 
-COUNT = 0 // number of names currently in LIST
-loop while NAMES.hasNext()
-DATA = NAMES.getNext()
-FOUND = false
-loop POS from 0 to COUNT-1
-if DATA = LIST[POS] then
-FOUND = true
-end if
-end loop
-if FOUND = false then
-LIST[COUNT] = DATA
-COUNT = COUNT + 1
-end if
-end loop
+output sj()
+output Math.sj()
+output new Math().show
+output Math.show
+output Math.shows(new a(), 8)
+output new ho().hh()
+//output new how().hh(A, 554)
+output new how().hh
 
-output LIST
-
-// TODO: add integers
 // TODO: check for duplicate names of methods and classes
 // TODO: add math tests

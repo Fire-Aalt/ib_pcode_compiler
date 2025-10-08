@@ -4,8 +4,8 @@ use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
 use crate::data::diagnostic::Diagnostic;
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
-use pest::iterators::Pair;
 use pest::Parser;
+use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::ops::AddAssign;
 use std::path::Path;
@@ -78,7 +78,7 @@ fn validate_ast(ast: &AST, should_panic: bool) {
 
     with_name_map(&ast.hash_to_name_map, || {
         let validator = ast.validate(&mut env);
-        show_compiler_errors(&ast, should_panic, &validator.errors);
+        show_compiler_errors(ast, should_panic, &validator.errors);
     });
 }
 

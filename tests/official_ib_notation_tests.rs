@@ -22,9 +22,10 @@ output "There are no non-zero values"
 end if
    "#;
 
-    compile_run_check_logs(code,
-                           r#""#,
-                           r#"
+    compile_run_check_logs(
+        code,
+        r#""#,
+        r#"
 Average = 5.222222222222222
 "#,
     );
@@ -62,14 +63,14 @@ end loop
 output LIST
    "#;
 
-    compile_run_check_logs(code,
-                           r#""#,
-                           r#"
+    compile_run_check_logs(
+        code,
+        r#""#,
+        r#"
 Alex,Boris,Tyy,SASAS,ddd
 "#,
     );
 }
-
 
 #[test]
 fn factors() {
@@ -97,7 +98,8 @@ end loop
 output NUM , " has " , FACTORS , " factors "
    "#;
 
-    compile_run_check_logs(code,
+    compile_run_check_logs(
+        code,
         r#""#,
         r#"
 140 = 1 * 140
@@ -137,12 +139,11 @@ end loop
 output MYARRAY
    "#;
 
-    compile_run_check_logs(code,
-                           r#""#,
-                           r#"
+    compile_run_check_logs(
+        code,
+        r#""#,
+        r#"
 Ope,Clark,Mud,Moe,Alex
 "#,
     );
 }
-
-

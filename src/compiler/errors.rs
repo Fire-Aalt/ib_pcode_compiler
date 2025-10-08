@@ -37,6 +37,35 @@ pub fn no_return_error(
     }
 }
 
+pub fn no_public_var_error(
+    line_info: &LineInfo,
+    var_name: &NameHash,
+    class_name: &NameHash,
+) -> Diagnostic {
+    Diagnostic {
+        line_info: line_info.clone(),
+        error_type: ErrorType::NoReturn,
+        message: format!(
+            "public variable `{}` was not found in class `{}` ",
+            var_name, class_name
+        ),
+        note: "undefined public variable".to_string(),
+    }
+}
+
+pub fn undefined_fn_in_class_error(
+    line_info: &LineInfo,
+    class_name: &NameHash,
+    fn_name: &NameHash,
+) -> Diagnostic {
+    Diagnostic {
+        line_info: line_info.clone(),
+        error_type: ErrorType::Uninitialized,
+        message: format!("undefined function `{}` in class `{}`", fn_name, class_name),
+        note: "undefined function".to_string(),
+    }
+}
+
 pub fn out_of_bounds_error(line_info: &LineInfo, index: i64, length: usize) -> Diagnostic {
     Diagnostic {
         line_info: line_info.clone(),

@@ -4,19 +4,21 @@ use crate::data::{NameHash, Value};
 use crate::env::Env;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct StmtNode {
     pub line_info: LineInfo,
     pub stmt: Stmt,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ExprNode {
     pub line_info: LineInfo,
     pub expr: Expr,
 }
 
 impl ExprNode {
+    /// # Safety
+    /// Only supports Number, Bool and Strings
     pub unsafe fn eval_as_bool_unchecked(
         &self,
         ast: &AST,
@@ -26,7 +28,7 @@ impl ExprNode {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Stmt {
     Assign(AssignTarget, AssignOperator, ExprNode),
     Increment(AssignTarget),
@@ -50,7 +52,7 @@ pub enum Stmt {
     EOI,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Expr {
     Ident(NameHash),
     Data(Value),
@@ -58,35 +60,36 @@ pub enum Expr {
     Unary(UnaryOp, Box<ExprNode>),
     BinOp(Box<ExprNode>, Operand, Box<ExprNode>),
     LocalMethodCall(NameHash, Vec<ExprNode>),
-    StaticMethodCall(NameHash, NameHash, Vec<ExprNode>),
-    StaticGetVar(NameHash, NameHash),
-    ClassGetVar(Box<ExprNode>, NameHash),
+    StaticMethodCall(LineInfo, NameHash, NameHash, Vec<ExprNode>),
+    StaticGetVar(LineInfo, NameHash, NameHash),
+    ClassGetVar(Box<ExprNode>, LineInfo, NameHash),
     ClassNew(NameHash, Vec<ExprNode>),
     ClassMethodCall {
         expr: Box<ExprNode>,
+        fn_line: LineInfo,
         fn_name: NameHash,
         params: Vec<ExprNode>,
     },
     Index(Box<ExprNode>, Box<ExprNode>),
-    NativeMethodCall(NativeMethod, Option<Box<ExprNode>>, Vec<ExprNode>),
+    NativeMethodCall(NativeMethod, Option<Box<ExprNode>>, LineInfo, Vec<ExprNode>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum NativeMethod {
     Div,
     Input,
     MathRandom,
     SubstringCall,
-    LengthCall
+    LengthCall,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum AssignTarget {
     Ident(NameHash),
     Array(ExprNode, ExprNode),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Operand {
     Add,
     Subtract,
@@ -128,13 +131,13 @@ impl Operand {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum UnaryOp {
     Neg,
     Not,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum AssignOperator {
     Assign,
     AssignAdd,
@@ -143,14 +146,14 @@ pub enum AssignOperator {
     AssignDivide,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Function {
     pub args: Vec<NameHash>,
     pub body: Vec<StmtNode>,
     pub returns: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Class {
     pub line_info: LineInfo,
     pub functions: HashMap<NameHash, Function>,
@@ -159,7 +162,7 @@ pub struct Class {
     pub is_static: bool,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct Constructor {
     pub line_info: LineInfo,
     pub constructors: Vec<(NameHash, ExprNode)>,
