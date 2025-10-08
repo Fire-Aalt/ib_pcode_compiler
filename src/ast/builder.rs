@@ -1,10 +1,10 @@
-use crate::ast::{hash_const, AST};
+use crate::ast::{AST, hash_const};
 use crate::compiler::Rule;
-use crate::data::{NameHash, Validator};
-use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
-use pest::iterators::{Pair, Pairs};
 use crate::compiler::errors::{compile_error, diagnostic};
+use crate::data::ast_nodes::{AssignTarget, Expr, ExprNode, Function, Stmt};
 use crate::data::diagnostic::ErrorType;
+use crate::data::{NameHash, Validator};
+use pest::iterators::{Pair, Pairs};
 
 mod build_expr;
 mod build_stmt;
@@ -65,7 +65,15 @@ fn get_assign_target(assignee: ExprNode, validator: &mut Validator) -> AssignTar
         Expr::Ident(name) => AssignTarget::Ident(name),
         Expr::Index(array, index) => AssignTarget::Array(*array, *index),
         _ => {
-            compile_error(diagnostic(&assignee.line_info, ErrorType::Unsupported, "can only assign into a local variable or an index expression".into(), "unsupported assign target"), validator);
+            compile_error(
+                diagnostic(
+                    &assignee.line_info,
+                    ErrorType::Unsupported,
+                    "can only assign into a local variable or an index expression".into(),
+                    "unsupported assign target",
+                ),
+                validator,
+            );
             AssignTarget::Ident(hash_const(""))
         }
     }

@@ -15,6 +15,7 @@ pub enum ErrorType {
     InvalidType,
     Uninitialized,
     Unsupported,
+    DuplicateName,
 }
 
 #[derive(Clone, Default)]
@@ -32,6 +33,7 @@ impl Debug for ErrorType {
             ErrorType::InvalidType => "Invalid Type",
             ErrorType::Uninitialized => "Uninitialized",
             ErrorType::Unsupported => "Unsupported",
+            ErrorType::DuplicateName => "Duplicate Name",
         };
         write!(f, "{}", raw)
     }

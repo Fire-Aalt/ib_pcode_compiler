@@ -155,7 +155,7 @@ impl AST {
         op: &AssignOperator,
         val: Value,
         env: &mut Env,
-    ) -> Result<Option<Value>, Diagnostic> {
+    ) -> Result<(), Diagnostic> {
         match target {
             AssignTarget::Ident(name) => {
                 match op {
@@ -173,61 +173,63 @@ impl AST {
                         env.assign(name, env.get(name).unwrap().div(&stmt_node.line_info, val)?)
                     }
                 }
-                Ok(None)
+                Ok(())
             }
             AssignTarget::Array(array_expr, index_expr) => {
                 let assign_val = self.eval_expr(array_expr, env)?;
-                if let Value::ArrayId(id) = assign_val {
-                    let index = self
-                        .eval_expr(index_expr, env)?
-                        .as_num(&index_expr.line_info)? as i64;
-                    let array = env.get_array_mut(&id);
+                match assign_val {
+                    Value::ArrayId(id) => {
+                        let index =
+                            self.eval_expr(index_expr, env)?
+                                .as_num(&index_expr.line_info)? as i64;
+                        let array = env.get_array_mut(&id);
 
-                    if index < 0 {
-                        return Err(diagnostic(
-                            &stmt_node.line_info,
-                            ErrorType::OutOfBounds,
-                            format!("tried to access a negative index `{}`", index),
-                            "",
-                        ));
+                        if index < 0 {
+                            return Err(diagnostic(
+                                &array_expr.line_info,
+                                ErrorType::OutOfBounds,
+                                format!("tried to access a negative index `{}`", index),
+                                "",
+                            ));
+                        }
+                        let index = index as usize;
+
+                        let needed = index + 1;
+                        let target_capacity = needed.next_power_of_two().max(1);
+
+                        if array.capacity() < target_capacity {
+                            array.reserve(target_capacity - array.capacity());
+                        }
+
+                        if array.len() < needed {
+                            array.resize(needed, Value::Undefined);
+                        }
+
+                        let res = match op {
+                            AssignOperator::Assign => val,
+                            AssignOperator::AssignAdd => {
+                                array[index].clone().add(&stmt_node.line_info, val)?
+                            }
+                            AssignOperator::AssignSubtract => {
+                                array[index].clone().sub(&stmt_node.line_info, val)?
+                            }
+                            AssignOperator::AssignMultiply => {
+                                array[index].clone().mul(&stmt_node.line_info, val)?
+                            }
+                            AssignOperator::AssignDivide => {
+                                array[index].clone().div(&stmt_node.line_info, val)?
+                            }
+                        };
+                        array[index] = res;
+                        Ok(())
                     }
-                    let index = index as usize;
-
-                    let needed = index + 1;
-                    let target_capacity = needed.next_power_of_two().max(1);
-
-                    if array.capacity() < target_capacity {
-                        array.reserve(target_capacity - array.capacity());
-                    }
-
-                    if array.len() < needed {
-                        array.resize(needed, Value::Undefined);
-                    }
-
-                    let res = match op {
-                        AssignOperator::Assign => val,
-                        AssignOperator::AssignAdd => {
-                            array[index].clone().add(&stmt_node.line_info, val)?
-                        }
-                        AssignOperator::AssignSubtract => {
-                            array[index].clone().sub(&stmt_node.line_info, val)?
-                        }
-                        AssignOperator::AssignMultiply => {
-                            array[index].clone().mul(&stmt_node.line_info, val)?
-                        }
-                        AssignOperator::AssignDivide => {
-                            array[index].clone().div(&stmt_node.line_info, val)?
-                        }
-                    };
-                    array[index] = res;
-                    Ok(None)
-                } else {
-                    Err(invalid_type_call_error(
+                    _ => Err(invalid_type_call_error(
                         &stmt_node.line_info,
-                        "index expression",
+                        "assignment into an index expression",
                         &assign_val,
                         "arrays",
-                    ))
+                        "invalid index expression",
+                    )),
                 }
             }
         }

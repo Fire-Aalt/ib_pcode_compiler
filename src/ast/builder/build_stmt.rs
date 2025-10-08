@@ -1,14 +1,14 @@
-use crate::ast::AST;
 use crate::ast::builder::get_assign_target;
+use crate::ast::{AST, MAIN_CLASS};
 use crate::compiler::Rule;
+use crate::data::Validator;
 use crate::data::ast_nodes::{AssignOperator, Class, Constructor, Stmt, StmtNode};
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
-use crate::data::Validator;
 
 impl AST {
     pub fn build_stmt(&mut self, pair: Pair<Rule>, validator: &mut Validator) -> StmtNode {
-        let line = self.as_line_info(&pair);
+        let line = &self.as_line_info(&pair);
         let stmt = match pair.as_rule() {
             Rule::assign_stmt => {
                 let mut inner = pair.into_inner();
@@ -79,7 +79,9 @@ impl AST {
             Rule::while_loop_stmt => {
                 let mut inner = pair.into_inner();
                 let cond = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
+                let body = inner
+                    .map(|inner| self.build_stmt(inner, validator))
+                    .collect();
                 Stmt::While(cond, body)
             }
             Rule::for_loop_stmt => {
@@ -87,13 +89,17 @@ impl AST {
                 let ident = inner.next().unwrap().as_str();
                 let start_num = self.build_expr(inner.next().unwrap());
                 let end_num = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
+                let body = inner
+                    .map(|inner| self.build_stmt(inner, validator))
+                    .collect();
                 Stmt::For(self.hash(ident), start_num, end_num, body)
             }
             Rule::loop_until_stmt => {
                 let mut inner = pair.into_inner();
                 let expr = self.build_expr(inner.next().unwrap());
-                let body = inner.map(|inner| self.build_stmt(inner, validator)).collect();
+                let body = inner
+                    .map(|inner| self.build_stmt(inner, validator))
+                    .collect();
                 Stmt::Until(expr, body)
             }
             Rule::input_stmt => {
@@ -114,7 +120,10 @@ impl AST {
             }
             Rule::method_decl => {
                 let (fn_name, function) = self.build_fn(pair, validator);
-                self.add_function(fn_name.clone(), function);
+
+                let functions = &mut self.class_map.get_mut(&MAIN_CLASS).unwrap().functions;
+                let fn_real_name = &self.hash_to_name_map[&fn_name];
+                Self::add_function(functions, line, &fn_name, fn_real_name, function, validator);
 
                 Stmt::FunctionDeclaration(fn_name)
             }
@@ -139,6 +148,8 @@ impl AST {
                 let mut public_vars = HashSet::new();
 
                 for stmt in inner {
+                    let line = &self.as_line_info(&stmt);
+
                     match stmt.as_rule() {
                         Rule::class_constructor_stmt => {
                             let mut inner = stmt.into_inner();
@@ -160,14 +171,24 @@ impl AST {
                         }
                         Rule::class_function => {
                             let (fn_name, function) = self.build_fn(stmt, validator);
-                            functions.insert(fn_name.clone(), function);
+
+                            let fn_real_name = &self.hash_to_name_map[&fn_name];
+                            Self::add_function(
+                                &mut functions,
+                                line,
+                                &fn_name,
+                                fn_real_name,
+                                function,
+                                validator,
+                            );
                         }
                         _ => unreachable!(),
                     }
                 }
 
                 self.add_class(
-                    class_name.clone(),
+                    line,
+                    &class_name,
                     Class {
                         line_info: line.clone(),
                         functions,
@@ -179,6 +200,7 @@ impl AST {
                         },
                         is_static,
                     },
+                    validator,
                 );
 
                 Stmt::ClassDeclaration(class_name)
@@ -196,7 +218,7 @@ impl AST {
             _ => unreachable!(),
         };
         StmtNode {
-            line_info: line,
+            line_info: line.clone(),
             stmt,
         }
     }

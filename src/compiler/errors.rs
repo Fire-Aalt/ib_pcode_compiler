@@ -96,6 +96,7 @@ pub fn invalid_type_call_error(
     method: &str,
     val: &Value,
     supported: &str,
+    note: &str,
 ) -> Diagnostic {
     Diagnostic {
         line_info: line_info.clone(),
@@ -104,7 +105,7 @@ pub fn invalid_type_call_error(
             "{} used on `{}`. Only {} are supported",
             method, val, supported
         ),
-        note: "method does not exist".to_string(),
+        note: note.to_string(),
     }
 }
 

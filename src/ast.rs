@@ -1,8 +1,8 @@
 use crate::compiler::Rule;
-use crate::data::Value;
 use crate::data::ast_nodes::{Class, Constructor, Function, StmtNode};
-use crate::data::diagnostic::LineInfo;
+use crate::data::diagnostic::{ErrorType, LineInfo};
 use crate::data::name_hash::{NameHash, with_name_map};
+use crate::data::{Validator, Value};
 use crate::env::Env;
 use pest::iterators::Pair;
 use std::collections::{HashMap, HashSet};
@@ -13,6 +13,7 @@ pub mod builder;
 pub mod evaluator;
 mod hasher;
 mod validator;
+use crate::compiler::errors::{compile_error, diagnostic};
 pub use hasher::hash_const;
 
 pub struct AST {
@@ -21,7 +22,7 @@ pub struct AST {
     pub nodes: Vec<StmtNode>,
     pub hash_to_name_map: HashMap<NameHash, String>,
     pub static_classes: HashSet<NameHash>,
-    class_map: HashMap<NameHash, Class>,
+    pub class_map: HashMap<NameHash, Class>,
 }
 
 impl Display for AST {
@@ -44,7 +45,8 @@ impl AST {
             hash_to_name_map: HashMap::new(),
             static_classes: HashSet::new(),
         };
-        ast.add_class(
+        ast.hash("main"); // add into the hash map
+        ast.class_map.insert(
             MAIN_CLASS,
             Class {
                 line_info: LineInfo::default(),
@@ -57,16 +59,53 @@ impl AST {
         ast
     }
 
-    pub fn add_class(&mut self, name_hash: NameHash, class: Class) {
-        self.class_map.insert(name_hash, class);
+    pub fn add_class(
+        &mut self,
+        line: &LineInfo,
+        class_name: &NameHash,
+        class: Class,
+        validator: &mut Validator,
+    ) {
+        if self.class_map.contains_key(class_name) {
+            let class_name = &self.hash_to_name_map[class_name];
+            compile_error(
+                diagnostic(
+                    line,
+                    ErrorType::DuplicateName,
+                    format!("class `{}` was already declared", class_name),
+                    "duplicate name used",
+                ),
+                validator,
+            )
+        } else {
+            self.class_map.insert(class_name.clone(), class);
+        }
     }
 
-    pub fn add_function(&mut self, name_hash: NameHash, function: Function) {
-        self.class_map
-            .get_mut(&MAIN_CLASS)
-            .unwrap()
-            .functions
-            .insert(name_hash, function);
+    pub fn add_function(
+        functions: &mut HashMap<NameHash, Function>,
+        line: &LineInfo,
+        fn_name: &NameHash,
+        fn_real_name: &str,
+        function: Function,
+        validator: &mut Validator,
+    ) {
+        if functions.contains_key(fn_name) {
+            compile_error(
+                diagnostic(
+                    line,
+                    ErrorType::DuplicateName,
+                    format!(
+                        "function `{}` was already declared in this scope",
+                        fn_real_name
+                    ),
+                    "duplicate name used",
+                ),
+                validator,
+            )
+        } else {
+            functions.insert(fn_name.clone(), function);
+        }
     }
 
     pub fn get_name(&self, name_hash: &NameHash) -> &str {

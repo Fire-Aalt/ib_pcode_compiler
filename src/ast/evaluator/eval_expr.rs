@@ -99,6 +99,7 @@ impl AST {
                             "`.substring(start, end)`",
                             val,
                             "strings",
+                            "method",
                         ))
                     }
                 }
@@ -113,6 +114,7 @@ impl AST {
                             "`.length`",
                             val,
                             "strings and arrays",
+                            "variable does not exist",
                         )),
                     }
                 }
@@ -161,6 +163,7 @@ impl AST {
                         "index expression",
                         val,
                         "strings and arrays",
+                        "invalid index expression",
                     )),
                 }
             }

@@ -66,18 +66,32 @@ end method
 
 
 Class how()
+    this.hi = function()
+    {
 
+    }
+
+    this.hi = function()
+    {
+        return 45
+    }
 end Class
 
 Class how()
 
 end Class
+Class how()
 
+end Class
 method how()
-
+return "sdasd"
 end method
 
-how() = 45
+method how()
+return "sdasd"
+end method
+
+how()[2] = 45
 
 //output sj()
 //output Math.sj()
@@ -88,5 +102,4 @@ how() = 45
 //output new how().hh(A, 554)
 //output new how().hh
 
-// TODO: check for duplicate names of methods and classes
 // TODO: add math tests
