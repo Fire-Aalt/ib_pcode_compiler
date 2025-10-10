@@ -1,4 +1,4 @@
-use crate::common::to_bool_str;
+use crate::common::{to_bool_str, to_num_bool};
 use crate::compiler::errors::{diagnostic, unsupported_operand_error};
 use crate::data::ast_nodes::Operand;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
@@ -168,8 +168,14 @@ impl PartialEq for Value {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Value::Number(a), Value::Number(b)) => a == b,
+            (Value::Number(a), Value::Bool(b)) => *a == to_num_bool(*b),
+            (Value::Bool(a), Value::Number(b)) => to_num_bool(*a) == *b,
             (Value::Bool(a), Value::Bool(b)) => a == b,
+
             (Value::String(a), Value::String(b)) => a == b,
+
+            (Value::ArrayId(a), Value::ArrayId(b)) => a == b,
+            (Value::InstanceId(a), Value::InstanceId(b)) => a == b,
             (Value::Undefined, Value::Undefined) => true,
             _ => false,
         }

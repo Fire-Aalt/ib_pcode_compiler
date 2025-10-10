@@ -28,3 +28,31 @@ output A
 "#,
     );
 }
+
+#[test]
+fn undefined() {
+    let code = r#"
+A = undefined
+
+output 1 / 0
+output -1 / 0
+output undefined == A
+output A == 1
+output true == A
+output A == "something"
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+Infinity
+-Infinity
+true
+false
+false
+false
+"#,
+    );
+}
+

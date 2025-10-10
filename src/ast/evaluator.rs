@@ -95,7 +95,7 @@ impl AST {
         }
     }
 
-    fn and_or_op(
+    fn and_or_operations(
         &self,
         l_val_line: &LineInfo,
         l_val: &Value,
@@ -104,15 +104,30 @@ impl AST {
         env: &mut Env,
     ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
-        match op {
-            Operand::And => Ok(Some(Value::Bool(
+        let res = match op {
+            Operand::And => Value::Bool(
                 l_val.as_bool(l_val_line)? && r_expr.eval_as_bool(self, env)?,
-            ))),
-            Operand::Or => Ok(Some(Value::Bool(
+            ),
+            Operand::Or => Value::Bool(
                 l_val.as_bool(l_val_line)? || r_expr.eval_as_bool(self, env)?,
-            ))),
-            _ => Ok(None),
-        }
+            ),
+            _ => return Ok(None),
+        };
+        Ok(Some(res))
+    }
+
+    fn equality_operations(
+        &self,
+        l_val: &Value,
+        op: &Operand,
+        r_val: &Value,
+    ) -> Option<Value> {
+        let res = match op {
+            Operand::Equal => Value::Bool(l_val == r_val),
+            Operand::NotEqual => Value::Bool(l_val != r_val),
+            _ => return None,
+        };
+        Some(res)
     }
 
     fn num_operations(&self, l: &Value, op: &Operand, r: &Value) -> Option<Value> {
@@ -120,7 +135,6 @@ impl AST {
             Value::Number(_) => self.num_op(l, op, r),
             Value::Bool(_) => self.num_op(l, op, r),
             Value::String(_) => self.str_op(l, op, r),
-            Value::Undefined => self.undefined_op(l, op, r),
             _ => None,
         }
     }
@@ -141,10 +155,7 @@ impl AST {
             Operand::Less => Value::Bool(l < r),
             Operand::GreaterEqual => Value::Bool(l >= r),
             Operand::LessEqual => Value::Bool(l <= r),
-            Operand::Equal => Value::Bool(l == r),
-            Operand::NotEqual => Value::Bool(l != r),
-            Operand::And => unreachable!(),
-            Operand::Or => unreachable!(),
+            Operand::And | Operand::Or | Operand::Equal | Operand::NotEqual => unreachable!(),
         };
         Some(res)
     }
@@ -159,19 +170,6 @@ impl AST {
             Operand::Less => Value::Bool(l < r),
             Operand::GreaterEqual => Value::Bool(l >= r),
             Operand::LessEqual => Value::Bool(l <= r),
-            Operand::Equal => Value::Bool(l == r),
-            Operand::NotEqual => Value::Bool(l != r),
-            _ => return None,
-        };
-        Some(res)
-    }
-
-    fn undefined_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
-        let res = match op {
-            Operand::Equal => Value::Bool(l_val == r_val),
-            Operand::NotEqual => Value::Bool(l_val != r_val),
-            Operand::And => unreachable!(),
-            Operand::Or => unreachable!(),
             _ => return None,
         };
         Some(res)

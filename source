@@ -1,3 +1,12 @@
 A = undefined
+B = new Array()
+C = new Array()
 
-output -4 / 0
+output B != C
+
+output 1 / 0
+output -1 / 0
+output undefined == A
+output A == 1
+output true == A
+output A == "something"

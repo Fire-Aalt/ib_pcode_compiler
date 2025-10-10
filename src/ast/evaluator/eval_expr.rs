@@ -34,32 +34,33 @@ impl AST {
                 })
             }
             Expr::BinOp(left, op, right) => {
-                let l = &self.eval_expr(left, env)?;
+                let left_val = self.eval_expr(left, env)?;
 
-                match self.and_or_op(&left.line_info, l, op, right, env)? {
-                    Some(val) => Ok(val),
-                    None => {
-                        let r = &self.eval_expr(right, env)?;
+                // First try short-circuit AND/OR handling
+                if let Some(v) = self.and_or_operations(&left.line_info, &left_val, op, right, env)? {
+                    return Ok(v);
+                }
+                let right_val = self.eval_expr(right, env)?;
 
-                        let res = match l {
-                            Value::Number(_) => self.num_operations(l, op, r),
-                            Value::Bool(_) => self.num_operations(l, op, r),
-                            Value::Undefined => self.undefined_op(l, op, r),
-                            Value::String(_) => match r {
-                                Value::Number(_) => self.str_op(l, op, r),
-                                Value::Bool(_) => self.str_op(l, op, r),
-                                Value::String(_) => self.str_op(l, op, r),
-                                Value::Undefined => self.undefined_op(l, op, r),
-                                _ => None,
-                            },
-                            _ => None,
-                        };
+                if let Some(v) = self.equality_operations(&left_val, op, &right_val) {
+                    return Ok(v);
+                }
 
-                        match res {
-                            Some(val) => Ok(val),
-                            None => Err(unsupported_operand_error(line, l, op, r)),
-                        }
+                let result = match (&left_val, &right_val) {
+                    (Value::Number(_), _) | (Value::Bool(_), _) => {
+                        self.num_operations(&left_val, op, &right_val)
                     }
+                    (Value::String(_), Value::Number(_))
+                    | (Value::String(_), Value::Bool(_))
+                    | (Value::String(_), Value::String(_)) => {
+                        self.str_op(&left_val, op, &right_val)
+                    }
+                    _ => None,
+                };
+
+                match result {
+                    Some(v) => Ok(v),
+                    None => Err(unsupported_operand_error(line, &left_val, op, &right_val)),
                 }
             }
             Expr::NativeMethodCall(native_method, target, fn_line, params) => match native_method {
