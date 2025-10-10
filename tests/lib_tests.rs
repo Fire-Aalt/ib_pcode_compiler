@@ -30,9 +30,14 @@ output A
 }
 
 #[test]
-fn undefined() {
+fn special_cases_eq() {
     let code = r#"
 A = undefined
+B = new Array()
+C = new Array()
+
+output B == B
+output B != C
 
 output 1 / 0
 output -1 / 0
@@ -40,18 +45,34 @@ output undefined == A
 output A == 1
 output true == A
 output A == "something"
+output A == 44
+output 1 == true
+output 0 == false
+output 1 == "1"
+output false == "false"
+output false >= "z"
+output 5 <= "z"
     "#;
 
     compile_run_check_logs(
         code,
         "",
         r#"
+true
+true
 Infinity
 -Infinity
 true
 false
 false
 false
+false
+true
+true
+true
+true
+false
+true
 "#,
     );
 }
