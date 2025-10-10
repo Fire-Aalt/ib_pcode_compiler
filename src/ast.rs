@@ -152,7 +152,13 @@ impl AST {
     pub fn format_val(&self, val: &Value, output: &mut String, env: &Env) {
         match val {
             Value::Number(n) => {
-                if n.abs() > 100000000000000000000.0 {
+                if n.is_infinite() {
+                    if n.is_sign_positive() {
+                        output.push_str("Infinity");
+                    } else {
+                        output.push_str("-Infinity");
+                    }
+                } else if n.abs() > 1e20 {
                     output.push_str(&format!("{:e}", n));
                 } else {
                     output.push_str(&format!("{}", n));

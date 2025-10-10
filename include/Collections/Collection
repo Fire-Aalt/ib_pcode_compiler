@@ -45,7 +45,7 @@ Class Collection()
 
     this.hasNext = function()
     {
-        return this.next < this.array.length
+        return this.next < this.index
     }
 
     this.getNext = function()

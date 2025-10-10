@@ -67,3 +67,171 @@ NaN
 "#,
     );
 }
+
+#[test]
+fn collection() {
+    let code = r#"
+C = new Collection()
+
+C.addItem(1)
+C.addItem(2)
+C.addItem(3)
+output C.isEmpty()
+C.addItem(4)
+C.remove(3)
+
+loop while C.hasNext()
+    output C.getNext()
+end loop
+
+C.remove(1)
+C.remove(4)
+C.remove(2)
+
+output C.isEmpty()
+C.resetNext()
+
+C.addItem(1)
+C.addItem(2)
+
+loop while C.hasNext()
+    output C.getNext()
+end loop
+
+output C.contains(2)
+output C.contains(4)
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+false
+1
+2
+4
+true
+1
+2
+true
+false
+"#,
+    );
+}
+
+#[test]
+fn queue() {
+    let code = r#"
+Q = new Queue()
+
+output Q.isEmpty()
+Q.enqueue(1)
+Q.enqueue(2)
+Q.enqueue(3)
+Q.enqueue(4)
+Q.enqueue(5)
+Q.enqueue(6)
+Q.enqueue(7)
+output Q.isEmpty()
+
+loop until Q.isEmpty()
+    output Q.dequeue()
+end loop
+
+Q.enqueue(1)
+Q.enqueue(2)
+Q.enqueue(3)
+Q.enqueue(4)
+Q.enqueue(5)
+Q.enqueue(6)
+Q.enqueue(7)
+output Q.isEmpty()
+
+loop until Q.isEmpty()
+    output Q.dequeue()
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+true
+false
+1
+2
+3
+4
+5
+6
+7
+false
+1
+2
+3
+4
+5
+6
+7
+"#,
+    );
+}
+
+#[test]
+fn stack() {
+    let code = r#"
+S = new Stack()
+
+output S.isEmpty()
+S.push(1)
+S.push(2)
+S.push(3)
+S.push(4)
+S.push(5)
+S.push(6)
+S.push(7)
+output S.isEmpty()
+
+loop until S.isEmpty()
+    output S.pop()
+end loop
+
+S.push(1)
+S.push(2)
+S.push(3)
+S.push(4)
+S.push(5)
+S.push(6)
+S.push(7)
+output S.isEmpty()
+
+loop until S.isEmpty()
+    output S.pop()
+end loop
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+true
+false
+7
+6
+5
+4
+3
+2
+1
+false
+7
+6
+5
+4
+3
+2
+1 
+"#,
+    );
+}
+

@@ -1,4 +1,4 @@
-use crate::common::{to_bool_num, to_bool_str};
+use crate::common::to_bool_str;
 use crate::compiler::errors::{diagnostic, unsupported_operand_error};
 use crate::data::ast_nodes::Operand;
 use crate::data::diagnostic::{Diagnostic, ErrorType, LineInfo};
