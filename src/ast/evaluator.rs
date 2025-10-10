@@ -40,7 +40,7 @@ impl AST {
         env: &mut Env,
     ) -> Result<Option<Value>, Diagnostic> {
         env.push_scope();
-        self.define_method_params(def, params, env);
+        Self::define_method_params(def, params, env);
         let returned = self.exec_body(&def.body, env)?;
         env.pop_scope();
 
@@ -51,7 +51,7 @@ impl AST {
         self.eval_expr(cond, env)?.as_bool(&cond.line_info)
     }
 
-    fn define_method_params(&self, method_def: &Function, params: &[Value], env: &mut Env) {
+    fn define_method_params(method_def: &Function, params: &[Value], env: &mut Env) {
         for (i, param) in params.iter().enumerate() {
             env.define(&method_def.args[i], param.clone());
         }
@@ -69,7 +69,7 @@ impl AST {
         Ok(None)
     }
 
-    fn exec_input(&self, ask_string: &str, env: &mut Env) -> Value {
+    fn exec_input(ask_string: &str, env: &mut Env) -> Value {
         let mut input;
 
         match &mut env.mode {
@@ -105,23 +105,18 @@ impl AST {
     ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
         let res = match op {
-            Operand::And => Value::Bool(
-                l_val.as_bool(l_val_line)? && r_expr.eval_as_bool(self, env)?,
-            ),
-            Operand::Or => Value::Bool(
-                l_val.as_bool(l_val_line)? || r_expr.eval_as_bool(self, env)?,
-            ),
+            Operand::And => {
+                Value::Bool(l_val.as_bool(l_val_line)? && r_expr.eval_as_bool(self, env)?)
+            }
+            Operand::Or => {
+                Value::Bool(l_val.as_bool(l_val_line)? || r_expr.eval_as_bool(self, env)?)
+            }
             _ => return Ok(None),
         };
         Ok(Some(res))
     }
 
-    fn equality_operations(
-        &self,
-        l_val: &Value,
-        op: &Operand,
-        r_val: &Value,
-    ) -> Option<Value> {
+    fn equality_operations(l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
         let res = match op {
             Operand::Equal => Value::Bool(l_val == r_val),
             Operand::NotEqual => Value::Bool(l_val != r_val),
@@ -130,16 +125,16 @@ impl AST {
         Some(res)
     }
 
-    fn num_operations(&self, l: &Value, op: &Operand, r: &Value) -> Option<Value> {
+    fn num_operations(l: &Value, op: &Operand, r: &Value) -> Option<Value> {
         match r {
-            Value::Number(_) => self.num_op(l, op, r),
-            Value::Bool(_) => self.num_op(l, op, r),
-            Value::String(_) => self.str_op(l, op, r),
+            Value::Number(_) => Self::num_op(l, op, r),
+            Value::Bool(_) => Self::num_op(l, op, r),
+            Value::String(_) => Self::str_op(l, op, r),
             _ => None,
         }
     }
 
-    fn num_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
+    fn num_op(l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
         let l = unsafe { l_val.as_num_unchecked() };
         let r = unsafe { r_val.as_num_unchecked() };
 
@@ -160,7 +155,7 @@ impl AST {
         Some(res)
     }
 
-    fn str_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
+    fn str_op(l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
         let l = l_val.as_string();
         let r = r_val.as_string();
 
@@ -170,6 +165,8 @@ impl AST {
             Operand::Less => Value::Bool(l < r),
             Operand::GreaterEqual => Value::Bool(l >= r),
             Operand::LessEqual => Value::Bool(l <= r),
+            Operand::Equal => Value::Bool(l == r),
+            Operand::NotEqual => Value::Bool(l != r),
             _ => return None,
         };
         Some(res)

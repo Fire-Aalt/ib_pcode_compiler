@@ -115,7 +115,7 @@ impl AST {
         }
     }
 
-    pub fn validate_class_get(
+    fn validate_class_get(
         &self,
         line_info: &LineInfo,
         class_name: &NameHash,
@@ -138,7 +138,7 @@ impl AST {
         }
     }
 
-    pub fn valid_number_of_args(
+    fn valid_number_of_args(
         line_info: &LineInfo,
         params: &[ExprNode],
         assert: fn(usize) -> bool,

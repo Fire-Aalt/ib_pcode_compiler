@@ -1,4 +1,3 @@
-use crate::ast::builder::get_assign_target;
 use crate::ast::{AST, MAIN_CLASS};
 use crate::compiler::Rule;
 use crate::data::Validator;
@@ -14,7 +13,7 @@ impl AST {
                 let mut inner = pair.into_inner();
 
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee, validator);
+                let assign_target = Self::get_assign_target(assignee, validator);
 
                 let op = match inner.next().unwrap().as_rule() {
                     Rule::assign => AssignOperator::Assign,
@@ -30,13 +29,13 @@ impl AST {
             Rule::increment_stmt => {
                 let mut inner = pair.into_inner();
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee, validator);
+                let assign_target = Self::get_assign_target(assignee, validator);
                 Stmt::Increment(assign_target)
             }
             Rule::decrement_stmt => {
                 let mut inner = pair.into_inner();
                 let assignee = self.build_expr(inner.next().unwrap());
-                let assign_target = get_assign_target(assignee, validator);
+                let assign_target = Self::get_assign_target(assignee, validator);
                 Stmt::Decrement(assign_target)
             }
             Rule::if_stmt => {

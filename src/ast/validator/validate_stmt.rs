@@ -95,7 +95,7 @@ impl AST {
     fn validate_body(&self, body: &Vec<StmtNode>, env: &mut Env, validator: &mut Validator) {
         env.push_scope();
         for stmt_node in body {
-            let _ = self.validate_stmt(stmt_node, env, validator);
+            self.validate_stmt(stmt_node, env, validator);
         }
         env.pop_scope();
     }

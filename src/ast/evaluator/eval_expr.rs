@@ -37,25 +37,38 @@ impl AST {
                 let left_val = self.eval_expr(left, env)?;
 
                 // First try short-circuit AND/OR handling
-                if let Some(v) = self.and_or_operations(&left.line_info, &left_val, op, right, env)? {
+                if let Some(v) =
+                    self.and_or_operations(&left.line_info, &left_val, op, right, env)?
+                {
                     return Ok(v);
                 }
                 let right_val = self.eval_expr(right, env)?;
 
-                if let Some(v) = self.equality_operations(&left_val, op, &right_val) {
-                    return Ok(v);
-                }
+                // Prioritize string specific operations
+                let result = if (matches!(left_val, Value::String(_))
+                    && matches!(
+                        right_val,
+                        Value::String(_) | Value::Number(_) | Value::Bool(_)
+                    ))
+                    || (matches!(
+                        left_val,
+                        Value::String(_) | Value::Number(_) | Value::Bool(_)
+                    ) && matches!(right_val, Value::String(_)))
+                {
+                    Self::str_op(&left_val, op, &right_val)
+                } else {
+                    // Anytype equality operations
+                    if let Some(v) = Self::equality_operations(&left_val, op, &right_val) {
+                        return Ok(v);
+                    }
 
-                let result = match (&left_val, &right_val) {
-                    (Value::Number(_), _) | (Value::Bool(_), _) => {
-                        self.num_operations(&left_val, op, &right_val)
+                    // Number operations
+                    match (&left_val, &right_val) {
+                        (Value::Number(_), _) | (Value::Bool(_), _) => {
+                            Self::num_operations(&left_val, op, &right_val)
+                        }
+                        _ => None,
                     }
-                    (Value::String(_), Value::Number(_))
-                    | (Value::String(_), Value::Bool(_))
-                    | (Value::String(_), Value::String(_)) => {
-                        self.str_op(&left_val, op, &right_val)
-                    }
-                    _ => None,
                 };
 
                 match result {
@@ -79,7 +92,7 @@ impl AST {
                     } else {
                         Value::String("".into())
                     };
-                    Ok(self.exec_input(&text.fmt(), env))
+                    Ok(Self::exec_input(&text.fmt(), env))
                 }
                 NativeMethod::MathRandom => {
                     let mut rng = rand::rng();

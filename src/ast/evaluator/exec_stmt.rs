@@ -105,7 +105,7 @@ impl AST {
                 Ok(None)
             }
             Stmt::Input(ident) => {
-                let input = self.exec_input(self.get_name(ident), env);
+                let input = Self::exec_input(self.get_name(ident), env);
                 env.assign(ident, input);
                 Ok(None)
             }

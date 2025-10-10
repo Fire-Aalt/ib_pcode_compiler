@@ -18,7 +18,7 @@ pub struct ExprNode {
 
 impl ExprNode {
     pub fn eval_as_bool(&self, ast: &AST, env: &mut Env) -> Result<bool, Diagnostic> {
-        Ok(ast.eval_expr(self, env)?.as_bool(&self.line_info)?)
+        ast.eval_expr(self, env)?.as_bool(&self.line_info)
     }
 }
 

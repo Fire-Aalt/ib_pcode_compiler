@@ -61,7 +61,7 @@ impl AST {
                 if class_name == MAIN_CLASS {
                     self.validate_fn_definition(class_name, fn_name, fn_def, env, validator);
                 }
-                self.validate_fn_call(line, class_name, fn_name, fn_def, params, validator);
+                Self::validate_fn_call(line, class_name, fn_name, fn_def, params, validator);
             }
             Expr::StaticMethodCall(fn_line, class_name, fn_name, params) => {
                 self.validate_class_get(line, class_name, validator);
@@ -78,7 +78,7 @@ impl AST {
                     return;
                 };
 
-                self.validate_fn_call(fn_line, class_name, fn_name, fn_def, params, validator);
+                Self::validate_fn_call(fn_line, class_name, fn_name, fn_def, params, validator);
             }
             Expr::StaticGetVar(var_line, class_name, var_name) => {
                 let Some(class_def) = self.validate_class_get(line, class_name, validator) else {
@@ -186,7 +186,6 @@ impl AST {
 
     #[allow(clippy::too_many_arguments)]
     fn validate_fn_call(
-        &self,
         line: &LineInfo,
         class_name: &NameHash,
         fn_name: &NameHash,

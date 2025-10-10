@@ -18,7 +18,6 @@ pub enum Value {
 
 impl Value {
     pub fn error_fmt(&self) -> String {
-        println!("{}", self);
         match self {
             Value::Number(n) => format!("Number({})", n),
             Value::Bool(b) => format!("Boolean({})", b),
@@ -171,9 +170,7 @@ impl PartialEq for Value {
             (Value::Number(a), Value::Bool(b)) => *a == to_num_bool(*b),
             (Value::Bool(a), Value::Number(b)) => to_num_bool(*a) == *b,
             (Value::Bool(a), Value::Bool(b)) => a == b,
-
             (Value::String(a), Value::String(b)) => a == b,
-
             (Value::ArrayId(a), Value::ArrayId(b)) => a == b,
             (Value::InstanceId(a), Value::InstanceId(b)) => a == b,
             (Value::Undefined, Value::Undefined) => true,

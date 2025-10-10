@@ -58,23 +58,23 @@ impl AST {
         }
         args
     }
-}
 
-fn get_assign_target(assignee: ExprNode, validator: &mut Validator) -> AssignTarget {
-    match assignee.expr {
-        Expr::Ident(name) => AssignTarget::Ident(name),
-        Expr::Index(array, index) => AssignTarget::Array(*array, *index),
-        _ => {
-            compile_error(
-                diagnostic(
-                    &assignee.line_info,
-                    ErrorType::Unsupported,
-                    "can only assign into a local variable or an index expression".into(),
-                    "unsupported assign target",
-                ),
-                validator,
-            );
-            AssignTarget::Ident(hash_const(""))
+    fn get_assign_target(assignee: ExprNode, validator: &mut Validator) -> AssignTarget {
+        match assignee.expr {
+            Expr::Ident(name) => AssignTarget::Ident(name),
+            Expr::Index(array, index) => AssignTarget::Array(*array, *index),
+            _ => {
+                compile_error(
+                    diagnostic(
+                        &assignee.line_info,
+                        ErrorType::Unsupported,
+                        "can only assign into a local variable or an index expression".into(),
+                        "unsupported assign target",
+                    ),
+                    validator,
+                );
+                AssignTarget::Ident(hash_const(""))
+            }
         }
     }
 }
