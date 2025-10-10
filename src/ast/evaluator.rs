@@ -1,7 +1,7 @@
 use crate::ast::AST;
 use crate::data::Value;
 use crate::data::ast_nodes::{ExprNode, Function, Operand, StmtNode};
-use crate::data::diagnostic::Diagnostic;
+use crate::data::diagnostic::{Diagnostic, LineInfo};
 use crate::env::{Env, EnvMode};
 use std::io;
 use std::io::Write;
@@ -97,6 +97,7 @@ impl AST {
 
     fn and_or_op(
         &self,
+        l_val_line: &LineInfo,
         l_val: &Value,
         op: &Operand,
         r_expr: &ExprNode,
@@ -104,12 +105,12 @@ impl AST {
     ) -> Result<Option<Value>, Diagnostic> {
         // On demand evaluation: `&&` fails if just first check fails, `||` succeeds if first check succeeds
         match op {
-            Operand::And => Ok(Some(Value::Bool(unsafe {
-                l_val.as_bool_unchecked() && r_expr.eval_as_bool_unchecked(self, env)?
-            }))),
-            Operand::Or => Ok(Some(Value::Bool(unsafe {
-                l_val.as_bool_unchecked() || r_expr.eval_as_bool_unchecked(self, env)?
-            }))),
+            Operand::And => Ok(Some(Value::Bool(
+                l_val.as_bool(l_val_line)? && r_expr.eval_as_bool(self, env)?,
+            ))),
+            Operand::Or => Ok(Some(Value::Bool(
+                l_val.as_bool(l_val_line)? || r_expr.eval_as_bool(self, env)?,
+            ))),
             _ => Ok(None),
         }
     }
@@ -119,6 +120,7 @@ impl AST {
             Value::Number(_) => self.num_op(l, op, r),
             Value::Bool(_) => self.num_op(l, op, r),
             Value::String(_) => self.str_op(l, op, r),
+            Value::Undefined => self.undefined_op(l, op, r),
             _ => None,
         }
     }
@@ -152,15 +154,26 @@ impl AST {
         let r = r_val.as_string();
 
         let res = match op {
-            Operand::Add => Some(Value::String(l + r.as_str())),
-            Operand::Greater => Some(Value::Bool(l > r)),
-            Operand::Less => Some(Value::Bool(l < r)),
-            Operand::GreaterEqual => Some(Value::Bool(l >= r)),
-            Operand::LessEqual => Some(Value::Bool(l <= r)),
-            Operand::Equal => Some(Value::Bool(l == r)),
-            Operand::NotEqual => Some(Value::Bool(l != r)),
-            _ => None,
+            Operand::Add => Value::String(l + r.as_str()),
+            Operand::Greater => Value::Bool(l > r),
+            Operand::Less => Value::Bool(l < r),
+            Operand::GreaterEqual => Value::Bool(l >= r),
+            Operand::LessEqual => Value::Bool(l <= r),
+            Operand::Equal => Value::Bool(l == r),
+            Operand::NotEqual => Value::Bool(l != r),
+            _ => return None,
         };
-        res
+        Some(res)
+    }
+
+    fn undefined_op(&self, l_val: &Value, op: &Operand, r_val: &Value) -> Option<Value> {
+        let res = match op {
+            Operand::Equal => Value::Bool(l_val == r_val),
+            Operand::NotEqual => Value::Bool(l_val != r_val),
+            Operand::And => unreachable!(),
+            Operand::Or => unreachable!(),
+            _ => return None,
+        };
+        Some(res)
     }
 }

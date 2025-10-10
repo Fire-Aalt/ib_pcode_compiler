@@ -36,7 +36,7 @@ impl AST {
             Expr::BinOp(left, op, right) => {
                 let l = &self.eval_expr(left, env)?;
 
-                match self.and_or_op(l, op, right, env)? {
+                match self.and_or_op(&left.line_info, l, op, right, env)? {
                     Some(val) => Ok(val),
                     None => {
                         let r = &self.eval_expr(right, env)?;
@@ -44,10 +44,12 @@ impl AST {
                         let res = match l {
                             Value::Number(_) => self.num_operations(l, op, r),
                             Value::Bool(_) => self.num_operations(l, op, r),
+                            Value::Undefined => self.undefined_op(l, op, r),
                             Value::String(_) => match r {
                                 Value::Number(_) => self.str_op(l, op, r),
                                 Value::Bool(_) => self.str_op(l, op, r),
                                 Value::String(_) => self.str_op(l, op, r),
+                                Value::Undefined => self.undefined_op(l, op, r),
                                 _ => None,
                             },
                             _ => None,

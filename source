@@ -21,77 +21,47 @@
 
 
 
-loop I from 0 to 10
-
-    output I
-end loop
-
-A = "sss"
-A++
-
-
-output Math.log(8)
-output Math.expm1(8)
-output Math.exp(8)
-output Math.log1p(8)
-output Math.log10(8)
-output Math.log2(8)
-
-output Math.sin(8)
-output Math.cos(8)
-output Math.asin(8)
-output Math.acos(8)
-output Math.atan(8)
-output Math.atan2(8, 6)
-
-output Math.pow(8, 6)
-output Math.sqrt(8)
-output Math.cbrt(8)
-
-output Math.sinh(8)
-output Math.cosh(8)
-output Math.tanh(8)
-output Math.asinh(8)
-output Math.atanh(8)
-output Math.acosh(8)
-
-output Math.PI
-output Math.random() + Math.random() + A.length
-output div(4.5, 2)
-
-method in(A)
-
-    return 5
+method norm(x)
+    //if x == "NaN" then
+    if x == undefined then
+        return "NaN"
+    end if
+    return Math.round(x * 1e15) / 1e15
 end method
 
+output norm(Math.log(8))
+output norm(Math.expm1(8))
+output norm(Math.exp(8))
+output norm(Math.log1p(8))
+output norm(Math.log10(8))
+output norm(Math.log2(8))
 
-Class how()
-    this.hi = function()
-    {
+output norm(Math.sin(8))
+output norm(Math.cos(8))
+output norm(Math.asin(8))
+output norm(Math.acos(8))
+output norm(Math.atan(8))
+output norm(Math.atan2(8, 6))
 
-    }
+output norm(Math.pow(8, 6))
+output norm(Math.sqrt(8))
+output norm(Math.cbrt(8))
 
-    this.hi = function()
-    {
-        return 45
-    }
-end Class
+output norm(Math.sinh(8))
+output norm(Math.cosh(8))
+output norm(Math.tanh(8))
+output norm(Math.asinh(8))
+output norm(Math.atanh(8))
+output norm(Math.acosh(8))
 
-Class how()
-
-end Class
-Class how()
-
-end Class
-method how()
-return "sdasd"
-end method
-
-method how()
-return "sdasd"
-end method
-
-how()[2] = 45
+output true || new Array()
+output undefined && undefined
+output undefined == undefined
+output undefined != undefined
+output undefined == 1
+output 1 == undefined
+output "sdasd" == undefined
+output undefined == true
 
 //output sj()
 //output Math.sj()

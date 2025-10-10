@@ -17,14 +17,8 @@ pub struct ExprNode {
 }
 
 impl ExprNode {
-    /// # Safety
-    /// Only supports Number, Bool and Strings
-    pub unsafe fn eval_as_bool_unchecked(
-        &self,
-        ast: &AST,
-        env: &mut Env,
-    ) -> Result<bool, Diagnostic> {
-        unsafe { Ok(ast.eval_expr(self, env)?.as_bool_unchecked()) }
+    pub fn eval_as_bool(&self, ast: &AST, env: &mut Env) -> Result<bool, Diagnostic> {
+        Ok(ast.eval_expr(self, env)?.as_bool(&self.line_info)?)
     }
 }
 

@@ -90,7 +90,7 @@ impl Value {
         self.only_number_with_number_op(line_info, Operand::Divide, rhs, |lhs, rhs| lhs / rhs)
     }
 
-    pub fn only_number_with_number_op(
+    fn only_number_with_number_op(
         self,
         line_info: &LineInfo,
         operand: Operand,
@@ -145,21 +145,11 @@ impl Value {
         }
     }
 
-    /// # Safety
-    /// Can only convert Number, Bool and String into a bool, otherwise panics
-    pub unsafe fn as_bool_unchecked(&self) -> bool {
-        match self {
-            Value::Number(n) => to_bool_num(*n),
-            Value::Bool(b) => *b,
-            Value::String(s) => to_bool_str(s),
-            _ => panic!("{}", self.error_fmt()),
-        }
-    }
-
     pub fn as_bool(&self, line_info: &LineInfo) -> Result<bool, Diagnostic> {
         match self {
             Value::Number(n) => Ok(*n != 0.0),
             Value::Bool(b) => Ok(*b),
+            Value::String(s) => Ok(to_bool_str(s)),
             _ => Err(diagnostic(
                 line_info,
                 ErrorType::InvalidType,
@@ -180,6 +170,7 @@ impl PartialEq for Value {
             (Value::Number(a), Value::Number(b)) => a == b,
             (Value::Bool(a), Value::Bool(b)) => a == b,
             (Value::String(a), Value::String(b)) => a == b,
+            (Value::Undefined, Value::Undefined) => true,
             _ => false,
         }
     }
