@@ -20,40 +20,6 @@
 //output Show()
 
 
-
-method norm(x)
-    //if x == "NaN" then
-    if x == undefined then
-        return "NaN"
-    end if
-    return Math.round(x * 1e15) / 1e15
-end method
-
-output norm(Math.log(8))
-output norm(Math.expm1(8))
-output norm(Math.exp(8))
-output norm(Math.log1p(8))
-output norm(Math.log10(8))
-output norm(Math.log2(8))
-
-output norm(Math.sin(8))
-output norm(Math.cos(8))
-output norm(Math.asin(8))
-output norm(Math.acos(8))
-output norm(Math.atan(8))
-output norm(Math.atan2(8, 6))
-
-output norm(Math.pow(8, 6))
-output norm(Math.sqrt(8))
-output norm(Math.cbrt(8))
-
-output norm(Math.sinh(8))
-output norm(Math.cosh(8))
-output norm(Math.tanh(8))
-output norm(Math.asinh(8))
-output norm(Math.atanh(8))
-output norm(Math.acosh(8))
-
 output true || new Array()
 output undefined && undefined
 output undefined == undefined
@@ -71,5 +37,3 @@ output undefined == true
 //output new ho().hh()
 //output new how().hh(A, 554)
 //output new how().hh
-
-// TODO: add math tests
