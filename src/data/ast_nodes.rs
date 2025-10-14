@@ -70,7 +70,6 @@ pub enum Expr {
 
 #[derive(Debug)]
 pub enum NativeMethod {
-    Div,
     Input,
     MathRandom,
     SubstringCall,

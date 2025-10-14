@@ -110,11 +110,9 @@ impl AST {
                     .map(|inner| self.build_expr(inner))
                     .collect();
 
-                const DIV: NameHash = hash_const("div");
                 const INPUT: NameHash = hash_const("input");
 
                 match method_name {
-                    DIV => Expr::NativeMethodCall(NativeMethod::Div, None, fn_line, params),
                     INPUT => Expr::NativeMethodCall(NativeMethod::Input, None, fn_line, params),
                     _ => Expr::LocalMethodCall(method_name, params),
                 }

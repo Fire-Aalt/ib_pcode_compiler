@@ -1,0 +1,3 @@
+method div(a, b)
+    return a div b
+end method

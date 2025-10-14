@@ -135,15 +135,6 @@ impl AST {
             }
             Expr::NativeMethodCall(native_method, target, fn_line, params) => {
                 match native_method {
-                    NativeMethod::Div => {
-                        Self::valid_number_of_args(
-                            fn_line,
-                            params,
-                            |len| len == 2,
-                            &"2",
-                            validator,
-                        );
-                    }
                     NativeMethod::Input => {
                         Self::valid_number_of_args(
                             fn_line,

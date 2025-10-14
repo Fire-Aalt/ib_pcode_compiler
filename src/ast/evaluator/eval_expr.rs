@@ -77,15 +77,6 @@ impl AST {
                 }
             }
             Expr::NativeMethodCall(native_method, target, fn_line, params) => match native_method {
-                NativeMethod::Div => {
-                    let left = &params[0];
-                    let right = &params[1];
-
-                    let left = self.eval_expr(left, env)?.as_num(&left.line_info)?;
-                    let right = self.eval_expr(right, env)?.as_num(&right.line_info)?;
-
-                    Ok(Value::Number((left as i64 / right as i64) as f64))
-                }
                 NativeMethod::Input => {
                     let text = if params.len() == 1 {
                         self.eval_expr(&params[0], env)?
