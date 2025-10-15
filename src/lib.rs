@@ -26,6 +26,10 @@ pub fn compile_release_and_run(code: &str) {
     });*/
 }
 
+pub fn ensure_link() {
+    // Does nothing
+}
+
 pub fn run(ast: &AST, env: &mut Env) {
     with_name_map(&ast.hash_to_name_map, || {
         match ast.traverse(env) {

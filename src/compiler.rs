@@ -1,5 +1,4 @@
 use crate::ast::AST;
-use crate::common::get_all_file_paths_at;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
 use crate::data::Validator;
 use crate::data::diagnostic::Diagnostic;
@@ -9,11 +8,13 @@ use pest::Parser;
 use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::collections::HashMap;
-use std::ops::AddAssign;
-use std::path::Path;
+use include_dir::{include_dir, Dir};
+use crate::common::combine_all_paths_at;
 
 pub mod error_print;
 pub mod errors;
+
+static INCLUDE_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/include");
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -48,21 +49,14 @@ fn construct_program_string(code: &str) -> (String, u32) {
     let user_code_start_line = includes.lines().count() as u32;
 
     let mut program = includes.clone();
-    program.add_assign(code);
-    program.add_assign("\n");
+    program.push_str(code);
+    program.push('\n');
     (program, user_code_start_line)
 }
 
 fn load_includes() -> String {
     let mut output = "".to_string();
-
-    let mut contents_vec = Vec::new();
-    get_all_file_paths_at(Path::new("include/"), &mut contents_vec);
-
-    for contents in contents_vec {
-        output.add_assign(contents.as_str());
-        output.add_assign("\n");
-    }
+    combine_all_paths_at(&INCLUDE_DIR, &mut output);
     output
 }
 

@@ -1,5 +1,4 @@
-use std::fs;
-use std::path::Path;
+use include_dir::Dir;
 
 pub fn fix_quotes_plain(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
@@ -24,18 +23,15 @@ pub fn fix_quotes_plain(s: &str) -> String {
     out
 }
 
-pub fn get_all_file_paths_at(dir_path: &Path, contents_vec: &mut Vec<String>) {
-    if let Ok(dir) = fs::read_dir(dir_path) {
-        for entry in dir {
-            let entry_path = entry.unwrap().path();
-            if entry_path.is_dir() {
-                get_all_file_paths_at(entry_path.as_path(), contents_vec)
-            } else {
-                let contents =
-                    fs::read_to_string(entry_path).expect("Should have been able to read the file");
-                contents_vec.push(contents);
-            }
-        }
+pub fn combine_all_paths_at(dir: &Dir, contents_combined: &mut String) {
+    for dir in dir.dirs() {
+        combine_all_paths_at(dir, contents_combined)
+    }
+    for file in dir.files() {
+        let contents =
+            std::str::from_utf8(file.contents()).expect("Should have been able to read the file");
+        contents_combined.push_str(contents);
+        contents_combined.push('\n');
     }
 }
 
