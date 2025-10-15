@@ -12,7 +12,7 @@ use std::io::Write;
 #[wasm_bindgen]
 extern "C" {
     fn blocking_request_input(prompt: &str) -> JsValue;
-    fn write_output(s: &str);
+    pub fn write_output(s: &str);
 }
 
 impl AST {

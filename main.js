@@ -47,7 +47,7 @@ worker.onmessage = (ev) => {
         promptArea.style.display = 'block';
         promptInput.focus();
     } else if (msg.type === 'output') {
-        outEl.textContent += msg.text + '\n';
+        outEl.innerHTML += msg.text + '\n';
     } else if (msg.type === 'error') {
         outEl.textContent += 'ERROR: ' + msg.message + '\n';
     } else {

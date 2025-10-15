@@ -13,21 +13,10 @@ pub mod compiler;
 pub mod data;
 pub mod env;
 
-pub fn compile_release_and_run(code: &str) {
+pub fn run_program_native(code: &str) {
     let ast = compile(code, false);
-    //println!("{}", ast);
-
     let mut env = Env::release();
-
     run(&ast, &mut env);
-
-    /*    with_name_map(&ast.hash_to_name_map, || {
-        println!("Final env: {}", env);
-    });*/
-}
-
-pub fn ensure_link() {
-    // Does nothing
 }
 
 pub fn run(ast: &AST, env: &mut Env) {
@@ -48,13 +37,16 @@ pub fn run(ast: &AST, env: &mut Env) {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn run_program_wasm(source: &str) {
-    let ast = compile(source, false);
-    let mut env = Env::release();
-    run(&ast, &mut env);
+    run_program_native(source)
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn setup_panic_hook() {
     console_error_panic_hook::set_once();
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn ensure_link() {
+    // Does nothing
 }

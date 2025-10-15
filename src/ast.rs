@@ -17,6 +17,7 @@ mod ast_io;
 
 use crate::compiler::errors::{compile_error, diagnostic};
 pub use hasher::hash_const;
+pub use ast_io::write_output;
 
 pub struct AST {
     pub source: String,

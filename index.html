@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>In-browser compiler (blocking worker)</title>
+    <title>IB Pseudocode Compiler</title>
     <style>
         body { font-family: system-ui, sans-serif; margin: 12px; }
         #editor { width: 100%; height: 40vh; font-family: monospace; }
@@ -11,8 +11,30 @@
     </style>
 </head>
 <body>
-<h2>My Compiler — Worker Blocking Input Demo</h2>
-<textarea id="editor">// write program that will request input and print output</textarea>
+<h2>IB Pseudocode Compiler</h2>
+<textarea id="editor">
+output "Welcome"
+loop COUNT from 1 to 5
+  output COUNT
+end loop
+
+// === EZ Pcode =================================
+//
+// This tool is intended to help teachers prepare 
+// Pseudocode that is consistent with the
+// IB Computer Science standards for the 2014 syllabus.
+// This tool is a comprehensive compiler that
+// translates Pcode into an Abstract Syntax Tree (AST) in Rust.
+// This is done with Pest Parser, AST Builder, AST Validator,
+// and AST Evaluator. So it is very sophisticated and it's
+// quite hard to write code that won't show proper errors.
+// One warning - the keyword NOT should never be used 
+// as part of a variable name, e.g. NOTHING would be
+// a bad variable name, as it will translate to !HING.
+// Suggestions for improvement are welcome - 
+// send an eMail to the author at  krasutskimaksim@gmail.com 
+// ==============================================
+</textarea>
 <br/>
 <button id="run">Run</button>
 

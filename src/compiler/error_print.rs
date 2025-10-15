@@ -1,11 +1,17 @@
-use crate::ast::AST;
+use crate::ast::{write_output, AST};
 use crate::compiler::Rule;
 use crate::data::diagnostic::Diagnostic;
 use pest::error::{Error, ErrorVariant, InputLocation};
 use std::cmp::max;
-use std::ops::AddAssign;
 
+#[cfg(target_arch = "wasm32")]
+const RED: &str = "<span style=\"color:red;\">";
+#[cfg(not(target_arch = "wasm32"))]
 const RED: &str = "\x1b[31m";
+
+#[cfg(target_arch = "wasm32")]
+const RESET: &str = "</span>";
+#[cfg(not(target_arch = "wasm32"))]
 const RESET: &str = "\x1b[0m";
 
 struct ErrorLine {
@@ -24,11 +30,14 @@ pub fn print_diagnostic_error(ast: &AST, error_category: &str, diagnostic: Diagn
         start_col: diagnostic.line_info.start_col as usize,
         end_col: diagnostic.line_info.end_col as usize,
     };
+    
+    let msg = &mut String::new();
 
-    eprint!("{}", RED);
-    eprintln!("{} error: {}", error_category, diagnostic.message);
-    print_line_info(&ast.source, diagnostic.note.as_str(), &error_line);
-    eprint!("{}", RESET);
+    msg.push_str(RED);
+    msg.push_str(format!("{} error: {}\n", error_category, diagnostic.message).as_str());
+    push_line_info(&ast.source, diagnostic.note.as_str(), &error_line, msg);
+    msg.push_str(RESET);
+    print_to_console(msg);
 }
 
 pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<Rule>) {
@@ -73,18 +82,21 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
         end_col: end_col + 1,
     };
 
-    eprint!("{}", RED);
-    eprintln!("Parsing error");
-    print_line_info(program, "", &error_line);
-    eprintln!("Expected grammar: {:?}", positives);
-    eprint!("{}", RESET);
+
+    let msg = &mut String::new();
+
+    msg.push_str(RED);
+    msg.push_str("Parsing error\n");
+    push_line_info(program, "", &error_line, msg);
+    msg.push_str(format!("Expected grammar: {:?}\n", positives).as_str());
+    msg.push_str(RESET);
+    print_to_console(msg);
 }
 
-fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
+fn push_line_info(source: &str, note: &str, info: &ErrorLine, msg: &mut String) {
     let lines: Vec<&str> = source.lines().collect();
 
-    let mut msg = String::new();
-    msg.add_assign(format!("At line: {}\n", info.user_start_line).as_str());
+    msg.push_str(format!("At line: {}\n", info.user_start_line).as_str());
 
     if let Some(line_text) = lines.get(info.start_line - 1) {
         let indent_len = info.user_start_line.to_string().chars().count();
@@ -94,8 +106,8 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
             ident.push(' ');
         }
         
-        msg.add_assign(format!("{} | \n", ident).as_str());
-        msg.add_assign(format!("{} | {}\n", info.user_start_line, line_text).as_str());
+        msg.push_str(format!("{} | \n", ident).as_str());
+        msg.push_str(format!("{} | {}\n", info.user_start_line, line_text).as_str());
 
         let mut underline = String::new();
         for _ in 1..info.start_col {
@@ -104,19 +116,21 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
 
         let width = max(1, info.end_col.saturating_sub(info.start_col));
 
-        msg.add_assign(format!("{} | ", ident).as_str());
+        msg.push_str(format!("{} | ", ident).as_str());
         for _ in 0..width {
             underline.push('^');
         }
-        msg.add_assign(format!("{} {}\n", underline, note).as_str());
+        msg.push_str(format!("{} {}\n", underline, note).as_str());
+    }
+}
 
-        #[cfg(target_arch = "wasm32")]
-        {
-            web_sys::console::error_1(&msg.into());
-        }
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            eprintln!("{}", msg);
-        }
+fn print_to_console(msg: &str) {
+    #[cfg(target_arch = "wasm32")]
+    {
+        write_output(msg);
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        eprintln!("{}", msg);
     }
 }
