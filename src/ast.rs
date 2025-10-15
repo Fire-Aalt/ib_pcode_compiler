@@ -13,6 +13,8 @@ pub mod builder;
 pub mod evaluator;
 mod hasher;
 mod validator;
+mod ast_io;
+
 use crate::compiler::errors::{compile_error, diagnostic};
 pub use hasher::hash_const;
 

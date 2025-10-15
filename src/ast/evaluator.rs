@@ -1,10 +1,8 @@
 use crate::ast::AST;
-use crate::data::Value;
 use crate::data::ast_nodes::{ExprNode, Function, Operand, StmtNode};
 use crate::data::diagnostic::{Diagnostic, LineInfo};
-use crate::env::{Env, EnvMode};
-use std::io;
-use std::io::Write;
+use crate::data::Value;
+use crate::env::Env;
 
 mod eval_expr;
 mod exec_stmt;
@@ -67,32 +65,6 @@ impl AST {
         }
         env.pop_scope();
         Ok(None)
-    }
-
-    fn exec_input(ask_string: &str, env: &mut Env) -> Value {
-        let mut input;
-
-        match &mut env.mode {
-            EnvMode::Release => {
-                print!("{}: ", ask_string);
-                io::stdout().flush().unwrap();
-
-                input = String::new();
-                io::stdin().read_line(&mut input).unwrap();
-            }
-            EnvMode::Test {
-                mock_inputs,
-                logs: _,
-            } => {
-                input = mock_inputs.pop_front().unwrap();
-            }
-        }
-        let input = input.trim();
-
-        match input.parse::<f64>() {
-            Ok(f) => Value::Number(f),
-            Err(_) => Value::String(input.to_string()),
-        }
     }
 
     fn and_or_operations(

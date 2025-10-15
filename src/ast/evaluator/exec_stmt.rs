@@ -1,9 +1,9 @@
 use crate::ast::AST;
 use crate::compiler::errors::{diagnostic, invalid_type_call_error};
-use crate::data::Value;
 use crate::data::ast_nodes::{AssignOperator, AssignTarget, Stmt, StmtNode};
 use crate::data::diagnostic::{Diagnostic, ErrorType};
-use crate::env::{Env, EnvMode};
+use crate::data::Value;
+use crate::env::Env;
 
 impl AST {
     pub fn exec_stmt(
@@ -121,13 +121,7 @@ impl AST {
                     self.format_val(&val, &mut output, env);
                 }
 
-                match &mut env.mode {
-                    EnvMode::Release => println!("{}", &output),
-                    EnvMode::Test {
-                        mock_inputs: _,
-                        logs,
-                    } => Env::record_log(logs, output),
-                }
+                Self::exec_output(output, env);
                 Ok(None)
             }
             Stmt::Assert(expr, expected) => {
