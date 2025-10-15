@@ -1,6 +1,5 @@
 extern crate core;
 
-use wasm_bindgen::prelude::wasm_bindgen;
 use crate::ast::AST;
 use crate::compiler::compile;
 use crate::compiler::error_print::print_diagnostic_error;
@@ -33,6 +32,9 @@ pub fn run(ast: &AST, env: &mut Env) {
         };
     });
 }
+
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]

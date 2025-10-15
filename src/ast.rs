@@ -17,6 +17,8 @@ mod ast_io;
 
 use crate::compiler::errors::{compile_error, diagnostic};
 pub use hasher::hash_const;
+
+#[cfg(target_arch = "wasm32")]
 pub use ast_io::write_output;
 
 pub struct AST {

@@ -1,4 +1,4 @@
-use crate::ast::{write_output, AST};
+use crate::ast::AST;
 use crate::compiler::Rule;
 use crate::data::diagnostic::Diagnostic;
 use pest::error::{Error, ErrorVariant, InputLocation};
@@ -127,7 +127,7 @@ fn push_line_info(source: &str, note: &str, info: &ErrorLine, msg: &mut String) 
 fn print_to_console(msg: &str) {
     #[cfg(target_arch = "wasm32")]
     {
-        write_output(msg);
+        crate::ast::write_output(msg);
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
