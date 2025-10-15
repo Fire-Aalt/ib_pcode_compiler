@@ -3,6 +3,7 @@ use crate::compiler::Rule;
 use crate::data::diagnostic::Diagnostic;
 use pest::error::{Error, ErrorVariant, InputLocation};
 use std::cmp::max;
+use std::ops::AddAssign;
 
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
@@ -82,7 +83,8 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
 fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
     let lines: Vec<&str> = source.lines().collect();
 
-    eprintln!("At line: {}", info.user_start_line);
+    let mut msg = String::new();
+    msg.add_assign(format!("At line: {}\n", info.user_start_line).as_str());
 
     if let Some(line_text) = lines.get(info.start_line - 1) {
         let indent_len = info.user_start_line.to_string().chars().count();
@@ -91,8 +93,9 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
         for _ in 0..indent_len {
             ident.push(' ');
         }
-        eprintln!("{} | ", ident);
-        eprintln!("{} | {}", info.user_start_line, line_text);
+        
+        msg.add_assign(format!("{} | \n", ident).as_str());
+        msg.add_assign(format!("{} | {}\n", info.user_start_line, line_text).as_str());
 
         let mut underline = String::new();
         for _ in 1..info.start_col {
@@ -101,10 +104,19 @@ fn print_line_info(source: &str, note: &str, info: &ErrorLine) {
 
         let width = max(1, info.end_col.saturating_sub(info.start_col));
 
-        eprint!("{} | ", ident);
+        msg.add_assign(format!("{} | ", ident).as_str());
         for _ in 0..width {
             underline.push('^');
         }
-        eprintln!("{} {}", underline, note);
+        msg.add_assign(format!("{} {}\n", underline, note).as_str());
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            web_sys::console::error_1(&msg.into());
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            eprintln!("{}", msg);
+        }
     }
 }

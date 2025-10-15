@@ -5,6 +5,7 @@ use std::ops::AddAssign;
 const SOURCE: &str = "source";
 
 fn main() {
+    return;
     let mut contents = fs::read_to_string(SOURCE).expect("Should have been able to read the file");
     contents.add_assign("\n");
 

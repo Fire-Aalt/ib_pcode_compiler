@@ -1,46 +1,73 @@
 use crate::ast::AST;
 use crate::data::Value;
 use crate::env::{Env, EnvMode};
-use std::io::{self, Write};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(not(target_arch = "wasm32"))]
+use std::io::Write;
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+extern "C" {
+    fn blocking_request_input(prompt: &str) -> JsValue;
+    fn write_output(s: &str);
+}
 
 impl AST {
     pub fn exec_input(ask_string: &str, env: &mut Env) -> Value {
-        let mut input;
-
-        match &mut env.mode {
+        let user_string = match &mut env.mode {
             EnvMode::Release => {
-                print!("{}: ", ask_string);
-                io::stdout().flush().unwrap();
+                #[cfg(target_arch = "wasm32")]
+                {
+                    let jsv = blocking_request_input(ask_string);
+                    jsv.as_string().unwrap_or_default()
+                }
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    print!("{}: ", ask_string);
+                    std::io::stdout().flush().unwrap();
 
-                input = String::new();
-                io::stdin().read_line(&mut input).unwrap();
+                    let mut input = String::new();
+                    std::io::stdin().read_line(&mut input).unwrap();
+                    input
+                }
             }
             EnvMode::Test {
                 mock_inputs,
                 logs: _,
             } => {
-                input = mock_inputs.pop_front().unwrap();
+                mock_inputs.pop_front().expect("no mock input available")
             }
-        }
-        Self::parse_input_to_value(input.trim())
+        };
+        parse_input_to_value(user_string.trim())
     }
 
     pub fn exec_output(output: String, env: &mut Env) {
         match &mut env.mode {
-            EnvMode::Release => println!("{}", &output),
+            EnvMode::Release => {
+                #[cfg(target_arch = "wasm32")]
+                {
+                    write_output(&output);
+                }
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    println!("{}", &output);
+                }
+            }
             EnvMode::Test {
                 mock_inputs: _,
                 logs,
             } => Env::record_log(logs, output),
         }
     }
+}
 
-    fn parse_input_to_value(input: &str) -> Value {
-        let input = input.trim();
-        match input.parse::<f64>() {
-            Ok(f) => Value::Number(f),
-            Err(_) => Value::String(input.to_string()),
-        }
+fn parse_input_to_value(input: &str) -> Value {
+    let input = input.trim();
+    match input.parse::<f64>() {
+        Ok(f) => Value::Number(f),
+        Err(_) => Value::String(input.to_string()),
     }
 }

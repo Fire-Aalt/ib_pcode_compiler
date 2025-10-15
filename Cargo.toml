@@ -3,7 +3,17 @@ name = "ib_pseudocompiler"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib", "lib"]
+
 [dependencies]
 pest = "2.8.2"
 pest_derive = "2.8.2"
 rand = "0.10.0-rc.0"
+wasm-bindgen = "0.2.104"
+console_error_panic_hook = "0.1"
+web-sys = { version = "0.3.81", features = ["console"] }
+getrandom = { version = "0.3.4", features = ["wasm_js"] }
+
+[target.wasm32-unknown-unknown]
+rustflags = ['--cfg', 'getrandom_backend="wasm_js"', '-C debuginfo=2']

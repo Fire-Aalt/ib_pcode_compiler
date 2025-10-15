@@ -49,6 +49,7 @@ fn construct_program_string(code: &str) -> (String, u32) {
 
     let mut program = includes.clone();
     program.add_assign(code);
+    program.add_assign("\n");
     (program, user_code_start_line)
 }
 

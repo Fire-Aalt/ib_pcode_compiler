@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>In-browser compiler (blocking worker)</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 12px; }
+        #editor { width: 100%; height: 40vh; font-family: monospace; }
+        #out { white-space: pre-wrap; border: 1px solid #ddd; padding: 8px; height: 30vh; overflow:auto; background:#f9f9f9 }
+        #prompt-area { display:none; border:1px solid #ccc; padding:8px; margin-top:8px; }
+    </style>
+</head>
+<body>
+<h2>My Compiler — Worker Blocking Input Demo</h2>
+<textarea id="editor">// write program that will request input and print output</textarea>
+<br/>
+<button id="run">Run</button>
+
+
+<h3>Output</h3>
+<pre id="out"></pre>
+
+
+<div id="prompt-area">
+    <label id="prompt-text"></label><br>
+    <input id="prompt-input" />
+    <button id="prompt-submit">Send</button>
+</div>
+
+<script src="sw.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 extern crate core;
 
+use wasm_bindgen::prelude::wasm_bindgen;
 use crate::ast::AST;
 use crate::compiler::compile;
 use crate::compiler::error_print::print_diagnostic_error;
@@ -38,4 +39,18 @@ pub fn run(ast: &AST, env: &mut Env) {
             }
         };
     });
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn run_program_wasm(source: &str) {
+    let ast = compile(source, false);
+    let mut env = Env::release();
+    run(&ast, &mut env);
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn setup_panic_hook() {
+    console_error_panic_hook::set_once();
 }
