@@ -11,17 +11,6 @@
 <div class="app">
     <div class="toolbar">
         <div class="logo">IB Pseudocode</div>
-
-        <nav class="tabs" role="tablist" aria-label="Main tabs">
-            <button class="tab active" data-tab="editor" role="tab" aria-selected="true">Editor</button>
-            <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
-            <!-- Report now just a button (opens GitHub issues) -->
-            <button id="reportBtn" class="tab" title="Open GitHub issues">Report Issue</button>
-            <button id="githubBtn" class="tab" title="Open GitHub repository">GitHub</button>
-        </nav>
-
-        <div class="spacer"></div>
-
         <div class="controls">
             <select id="sampleSelect" title="Sample programs">
                 <option value="">- Sample Programs -</option>
@@ -34,10 +23,18 @@
             </label>
 
             <button id="runBtn">Run</button>
-
-            <!-- theme toggle -->
-            <button id="themeToggle" class="ghost" aria-label="Toggle theme" title="Toggle theme">🌙</button>
         </div>
+
+        <div class="spacer"></div>
+        
+        <nav class="tabs" role="tablist" aria-label="Main tabs">
+            <button class="tab active" data-tab="editor" role="tab" aria-selected="true">Editor</button>
+            <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
+            <!-- Report now just a button (opens GitHub issues) -->
+            <button id="reportBtn" class="tab" title="Open GitHub issues">Report Issue</button>
+            <button id="githubBtn" class="tab" title="Open GitHub repository">GitHub</button>
+            <button id="themeToggle" class="ghost" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+        </nav>
     </div>
 
     <div class="content">

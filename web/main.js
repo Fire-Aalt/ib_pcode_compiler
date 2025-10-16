@@ -133,8 +133,10 @@ githubBtn.addEventListener('click', () => {
 /* ---- Samples: apply and reset to default ---- */
 const samples = {
     welcome: `output "Welcome"\nloop COUNT from 1 to 5\n  output COUNT\nend loop`,
-    input_demo: `output "Enter something"\ninput "Your value:"\noutput "Done"`,
+    input_demo: `output "Enter something"\nA = input("Your value:")\noutput "Done: ", A`,
 };
+
+
 for (const k of Object.keys(samples)) {
     const opt = document.createElement('option');
     opt.value = k; opt.textContent = k;
@@ -220,11 +222,21 @@ updateGutter();
 /* Save/Load/Run wiring (unchanged) */
 saveBtn.addEventListener('click', () => {
     const blob = new Blob([editor.value], { type: 'text/plain' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'program.pseudo'; a.click(); URL.revokeObjectURL(a.href);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'program.pseudo';
+    a.click();
+    URL.revokeObjectURL(a.href);
 });
 document.getElementById('fileInput').addEventListener('change', (ev) => {
-    const f = ev.target.files[0]; if (!f) return;
-    const r = new FileReader(); r.onload = () => { editor.value = r.result; updateGutter(); }; r.readAsText(f);
+    const f = ev.target.files[0]; 
+    if (!f) return;
+    const r = new FileReader(); 
+    r.onload = () => { 
+        editor.value = r.result;
+        updateGutter();
+    }; 
+    r.readAsText(f);
 });
 runBtn.addEventListener('click', () => {
     currentRunWindow = null;
