@@ -72,6 +72,5 @@ globalThis.blocking_request_input = function (prompt) {
 };
 
 globalThis.write_output = function (s) {
-    console.log(`[worker] Output: ${s}`);
     self.postMessage({ type: 'output', text: s });
 };
