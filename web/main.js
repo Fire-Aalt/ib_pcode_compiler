@@ -28,6 +28,7 @@ const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'modu
 
 /* DOM handles */
 const terminal = document.getElementById('terminal');
+const terminalLines = document.getElementById('terminalLines');
 const editor = document.getElementById('editor');
 const gutter = document.getElementById('gutter');
 const sampleSelect = document.getElementById('sampleSelect');
@@ -227,7 +228,7 @@ document.getElementById('fileInput').addEventListener('change', (ev) => {
 });
 runBtn.addEventListener('click', () => {
     currentRunWindow = null;
-    terminal.innerHTML = '';
+    terminalLines.innerHTML = '';
     Atomics.store(control, 0, 0);
     Atomics.notify(control, 0, 1);
     const src = editor.value;
@@ -279,10 +280,7 @@ function showModalPrompt(promptText) {
 }
 
 function appendOutput(text) {
-    const div = document.createElement('div');
-    div.className = 'line';
-    div.innerHTML = text;
-    terminal.appendChild(div);
+    terminalLines.innerHTML += text + '\n';
     terminal.scrollTop = terminal.scrollHeight;
 }
 

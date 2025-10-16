@@ -11,7 +11,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix colored terminal output">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add GitHub and report issue links">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
@@ -157,7 +157,7 @@
       <option name="presentableId" value="Default" />
       <updated>1760603408018</updated>
       <workItem from="1760603410024" duration="2671000" />
-      <workItem from="1760636618616" duration="11835000" />
+      <workItem from="1760636618616" duration="12542000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -231,7 +231,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760649209091</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add GitHub and report issue links">
+      <option name="closed" value="true" />
+      <created>1760650385737</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1760650385737</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,6 +255,7 @@
     <MESSAGE value="Fix links jumping in docs" />
     <MESSAGE value="Fix started whitespace in code blocks in docs" />
     <MESSAGE value="Fix colored terminal output" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix colored terminal output" />
+    <MESSAGE value="Add GitHub and report issue links" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GitHub and report issue links" />
   </component>
 </project>

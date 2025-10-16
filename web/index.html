@@ -55,7 +55,9 @@
 
                 <div class="panel">
                     <div class="header"><h3>Output</h3></div>
-                    <div id="terminal" class="terminal" aria-live="polite"></div>
+                    <div id="terminal" class="terminal" aria-live="polite">
+                        <div id="terminalLines" class="line"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -84,7 +86,6 @@
 
 <script src="sw.js"></script>
 <script src="marked.js"></script>
-<script src="ansi_up.js"></script>
 <script type="module" src="main.js"></script>
 </body>
 </html>
