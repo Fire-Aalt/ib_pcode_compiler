@@ -11,8 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix code blocks styling in docs">
-      <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix links jumping in docs">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +156,7 @@
       <option name="presentableId" value="Default" />
       <updated>1760603408018</updated>
       <workItem from="1760603410024" duration="2671000" />
-      <workItem from="1760636618616" duration="9071000" />
+      <workItem from="1760636618616" duration="9755000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -205,7 +206,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760647246436</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fix links jumping in docs">
+      <option name="closed" value="true" />
+      <created>1760647926642</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1760647926642</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -218,6 +227,7 @@
     <MESSAGE value="Add rough docs tab" />
     <MESSAGE value="Fix scrolls + fix some styling + add light/dark themes" />
     <MESSAGE value="Fix code blocks styling in docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix code blocks styling in docs" />
+    <MESSAGE value="Fix links jumping in docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix links jumping in docs" />
   </component>
 </project>

@@ -217,22 +217,34 @@ textarea.editor{
     background: var(--code-bg) !important;
     color: var(--code-text) !important;
     border: 1px solid var(--code-border) !important;
-    padding: 12px;
     border-radius: calc(var(--radius, 6px) - 2px);
-    overflow: auto;
     box-sizing: border-box;
+    padding: 10px 12px;              /* tighter top padding */
     margin: 0 0 16px 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     font-size: 13px;
     line-height: 1.45;
     white-space: pre;
+    overflow: auto;
+}
+
+/* prevent extra offset/indent added by <code> */
+.docs-container pre code {
+    display: block;
+    background: none;
+    margin: 0;
+    padding: 0;                      /* remove internal padding */
+    border: none;
+    color: inherit;
+    font: inherit;                   /* inherit from pre */
+    line-height: inherit;
 }
 
 /* Inline code */
 .docs-container code {
     background: var(--code-inline-bg) !important;
     color: var(--code-text) !important;
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 4px;
     font-size: 0.95em;
     white-space: pre-wrap;
