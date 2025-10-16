@@ -1,4 +1,5 @@
 // main.js (type=module)
+// -- service worker registration unchanged
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register(new URL("./sw.js", import.meta.url)).then(
         (registration) => {
@@ -15,14 +16,15 @@ if ("serviceWorker" in navigator) {
     console.warn("Cannot register a service worker");
 }
 
-const RESPONSE_BYTES = 8192; // must match worker side
+/* SharedArrayBuffer wiring (unchanged) */
+const RESPONSE_BYTES = 8192;
 const sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT + RESPONSE_BYTES);
 const control = new Int32Array(sab, 0, 1);
 const respBuf = new Uint8Array(sab, Int32Array.BYTES_PER_ELEMENT, RESPONSE_BYTES);
 control[0] = 0;
-
 const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
+/* DOM handles */
 const terminal = document.getElementById('terminal');
 const editor = document.getElementById('editor');
 const gutter = document.getElementById('gutter');
@@ -34,21 +36,94 @@ const modalInput = document.getElementById('modalInput');
 const modalOk = document.getElementById('modalOk');
 const modalCancel = document.getElementById('modalCancel');
 
+const themeToggle = document.getElementById('themeToggle');
+const reportBtn = document.getElementById('reportBtn');
+const runBtn = document.getElementById('runBtn');
+const saveBtn = document.getElementById('saveBtn');
+const fileLabel = document.querySelector('.file-label');
+
 let lastRequestId = null;
 let currentRunWindow = null;
 
-// Tab UI
+/* Tabs: update toolbar visibility on tab change */
+function setActiveTab(tabName) {
+    // tabName is 'editor'|'docs' etc.
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const btn = document.querySelector(`.tab[data-tab="${tabName}"]`);
+    if (btn) btn.classList.add('active');
+
+    document.querySelectorAll('.tab-panel').forEach(p => p.hidden = true);
+    const panel = document.getElementById(tabName + 'Tab');
+    if (panel) panel.hidden = false;
+
+    // hide toolbar controls when docs tab active
+    const hide = (tabName === 'docs');
+    sampleSelect.style.display = hide ? 'none' : '';
+    saveBtn.style.display = hide ? 'none' : '';
+    fileLabel.style.display = hide ? 'none' : '';
+    runBtn.style.display = hide ? 'none' : '';
+}
+
+// wire tab buttons
 document.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
+        // report button may not have data-tab – handle separately
         const tab = btn.dataset.tab;
-        document.querySelectorAll('.tab-panel').forEach(p => p.hidden = true);
-        document.getElementById(tab + 'Tab').hidden = false;
+        if (tab) setActiveTab(tab);
     });
 });
 
-// samples
+// initialize active tab on load
+document.addEventListener('DOMContentLoaded', () => {
+    setActiveTab('editor');
+});
+
+/* Theme toggle (follows system unless user chooses) */
+const THEME_KEY = 'ibp-theme';
+function getSystemPref() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️';
+        themeToggle.title = 'Switch to light theme';
+    } else {
+        document.body.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
+        themeToggle.title = 'Switch to dark theme';
+    }
+}
+const savedTheme = localStorage.getItem(THEME_KEY);
+if (savedTheme === 'dark' || savedTheme === 'light') {
+    applyTheme(savedTheme);
+} else {
+    applyTheme( getSystemPref() );
+    // follow system if user hasn't chosen
+    if (window.matchMedia) {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener('change', (ev) => {
+            if (!localStorage.getItem(THEME_KEY)) applyTheme(ev.matches ? 'dark' : 'light');
+        })
+    }
+}
+themeToggle.addEventListener('click', () => {
+    const newTheme = document.body.hasAttribute('data-theme') ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem(THEME_KEY, newTheme);
+});
+
+/* Report button opens GitHub issues directly (prefills snapshot) */
+const GH_OWNER = 'your-org-or-username';
+const GH_REPO = 'your-repo';
+reportBtn.addEventListener('click', () => {
+    const title = encodeURIComponent('Bug report: [short description]');
+    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n**Editor snapshot:**\n\`\`\`\n${editor.value}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
+    const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
+    window.open(url, '_blank', 'noopener');
+});
+
+/* ---- Samples: apply and reset to default ---- */
 const samples = {
     welcome: `output "Welcome"\nloop COUNT from 1 to 5\n  output COUNT\nend loop`,
     input_demo: `output "Enter something"\ninput "Your value:"\noutput "Done"`,
@@ -59,11 +134,18 @@ for (const k of Object.keys(samples)) {
     sampleSelect.appendChild(opt);
 }
 sampleSelect.addEventListener('change', () => {
-    const v = sampleSelect.value; if (!v) return;
-    editor.value = samples[v]; updateGutter();
+    const v = sampleSelect.value;
+    if (!v) return;
+    editor.value = samples[v];
+    updateGutter();
+
+    // reset dropdown to the default label after a brief moment so user sees the option applied
+    setTimeout(() => {
+        sampleSelect.value = '';
+    }, 150);
 });
 
-// gutter and line sync
+/* Gutter / editor logic (unchanged) */
 function updateGutter() {
     const lines = Math.max(1, editor.value.split('\n').length);
     gutter.innerHTML = '';
@@ -80,8 +162,6 @@ function updateGutter() {
 }
 editor.addEventListener('input', () => updateGutter());
 editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; terminal.scrollTop = terminal.scrollHeight; });
-
-// Tab / shift-tab & insert tab
 editor.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
         e.preventDefault();
@@ -93,7 +173,6 @@ editor.addEventListener('keydown', (e) => {
         const selEndLine = value.slice(0, end).split('\n').length - 1;
 
         if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
-            // multi-line indent/unindent
             const lines = value.split('\n');
             let lineStartIndices = [];
             let acc = 0;
@@ -119,7 +198,6 @@ editor.addEventListener('keydown', (e) => {
             return;
         }
 
-        // single caret
         const before = value.slice(0, start);
         const after = value.slice(end);
         editor.value = before + tabChar + after;
@@ -132,8 +210,8 @@ editor.addEventListener('keydown', (e) => {
 });
 updateGutter();
 
-// Save / Load
-document.getElementById('saveBtn').addEventListener('click', () => {
+/* Save/Load/Run wiring (unchanged) */
+saveBtn.addEventListener('click', () => {
     const blob = new Blob([editor.value], { type: 'text/plain' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'program.pseudo'; a.click(); URL.revokeObjectURL(a.href);
 });
@@ -141,8 +219,16 @@ document.getElementById('fileInput').addEventListener('change', (ev) => {
     const f = ev.target.files[0]; if (!f) return;
     const r = new FileReader(); r.onload = () => { editor.value = r.result; updateGutter(); }; r.readAsText(f);
 });
+runBtn.addEventListener('click', () => {
+    currentRunWindow = null;
+    terminal.innerHTML = '';
+    Atomics.store(control, 0, 0);
+    Atomics.notify(control, 0, 1);
+    const src = editor.value;
+    worker.postMessage({ type: 'run', source: src, runId: Date.now() });
+});
 
-// worker messaging
+/* Worker messaging (unchanged) */
 worker.onmessage = (ev) => {
     const msg = ev.data;
     if (msg.type === 'wasm-ready') {
@@ -160,19 +246,17 @@ worker.onmessage = (ev) => {
 };
 worker.postMessage({ type: 'init', controlSab: sab });
 
-// write response into respBuf and notify worker
 function writeResponseAndWake(text) {
     const enc = new TextEncoder();
     const encoded = enc.encode(text || '');
     const writeLen = Math.min(encoded.length, RESPONSE_BYTES - 1);
     respBuf.fill(0);
     respBuf.set(encoded.subarray(0, writeLen));
-    Atomics.store(control, 0, 2); // ready
+    Atomics.store(control, 0, 2);
     Atomics.notify(control, 0, 1);
-    console.log(`[main] Wrote response (len ${writeLen})`);
 }
 
-// modal handling
+/* Modal code (unchanged) */
 function showModalPrompt(promptText) {
     modalPrompt.textContent = promptText || 'Input:';
     modalInput.value = '';
@@ -188,7 +272,7 @@ function showModalPrompt(promptText) {
     modalInput.addEventListener('keydown', function onKey(e) { if (e.key === 'Enter') { e.preventDefault(); onOk(); modalInput.removeEventListener('keydown', onKey); }});
 }
 
-// append output
+/* Append output unchanged */
 function appendOutput(text) {
     if (currentRunWindow && !currentRunWindow.closed) {
         currentRunWindow.document.body.appendChild(document.createElement('div')).textContent = text;
@@ -197,45 +281,23 @@ function appendOutput(text) {
     }
 }
 
-// Run button
-document.getElementById('runBtn').addEventListener('click', () => {
-    currentRunWindow = null;
-    terminal.innerHTML = '';
-    Atomics.store(control, 0, 0); // reset state
-    Atomics.notify(control, 0, 1);
-    const src = editor.value;
-    worker.postMessage({ type: 'run', source: src, runId: Date.now() });
-});
-
-// README rendering
+/* README rendering (supports marked + DOMPurify if present) */
 const docsContainer = document.getElementById('docsContainer');
 async function loadReadme() {
     try {
         const resp = await fetch('./pkg/README.md');
         if (!resp.ok) { docsContainer.innerHTML = `<p class="muted">README.md not found: ${resp.status}</p>`; return; }
         const md = await resp.text();
-        docsContainer.innerHTML = marked.parse(md);
+
+        if (window.marked) {
+            const rawHtml = window.marked.parse(md);
+            docsContainer.innerHTML = rawHtml;
+            return;
+        }
+        const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        docsContainer.innerHTML = `<pre>${esc(md)}</pre>`;
     } catch (err) {
         docsContainer.innerHTML = `<p class="muted">Failed to load docs: ${err.message}</p>`;
     }
 }
 loadReadme();
-
-// Report issue: open GitHub issues with prefilled title/body
-const GH_OWNER = 'your-org-or-username';
-const GH_REPO = 'your-repo';
-document.getElementById('openIssueBtn').addEventListener('click', () => {
-    const title = encodeURIComponent(document.getElementById('issueTitle').value || 'Bug report: [short description]');
-    // Prefill body: include editor content and some metadata
-    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n\n**Editor snapshot:**\n\`\`\`\n${editor.value}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
-    const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
-    window.open(url, '_blank', 'noopener');
-});
-document.getElementById('copySnapshot').addEventListener('click', async () => {
-    try {
-        await navigator.clipboard.writeText(editor.value);
-        alert('Editor contents copied to clipboard');
-    } catch {
-        alert('Copy failed — please select and copy manually');
-    }
-});

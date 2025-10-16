@@ -15,7 +15,8 @@
         <nav class="tabs" role="tablist" aria-label="Main tabs">
             <button class="tab active" data-tab="editor" role="tab" aria-selected="true">Editor</button>
             <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
-            <button class="tab" data-tab="report" role="tab" aria-selected="false">Report Issue</button>
+            <!-- Report now just a button (opens GitHub issues) -->
+            <button id="reportBtn" class="tab" title="Open GitHub issues">Report Issue</button>
         </nav>
 
         <div class="spacer"></div>
@@ -32,12 +33,15 @@
             </label>
 
             <button id="runBtn">Run</button>
+
+            <!-- theme toggle -->
+            <button id="themeToggle" class="ghost" aria-label="Toggle theme" title="Toggle theme">🌙</button>
         </div>
     </div>
 
     <div class="content">
         <!-- Editor tab content -->
-        <section id="editorTab" class="tab-panel">
+        <section id="editorTab" class="tab-panel add_scroll">
             <div class="workspace">
                 <div class="panel editor-panel">
                     <div class="header"><h3>Editor</h3></div>
@@ -63,24 +67,6 @@
             <div class="panel docs-panel">
                 <div class="header"><h3>Documentation</h3></div>
                 <div id="docsContainer" class="docs-container">Loading docs...</div>
-                <div class="footer"><div class="small">README.md rendered as HTML</div></div>
-            </div>
-        </section>
-
-        <!-- Report issue tab -->
-        <section id="reportTab" class="tab-panel" hidden>
-            <div class="panel report-panel">
-                <div class="header"><h3>Report a bug / Feedback</h3></div>
-                <div class="report-body" style="padding:16px">
-                    <p>Open a GitHub issue with the current editor contents prefilled:</p>
-                    <input id="issueTitle" placeholder="Issue title (short)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;margin-bottom:8px" />
-                    <div style="display:flex;gap:8px">
-                        <button id="openIssueBtn">Open Issue (prefill)</button>
-                        <button id="copySnapshot" class="secondary">Copy snapshot</button>
-                    </div>
-                    <p style="margin-top:12px;color:#6b7280">This will open GitHub in a new tab. Customize owner/repo in <code>main.js</code>.</p>
-                </div>
-                <div class="footer"><div class="small">Report issues on GitHub</div></div>
             </div>
         </section>
     </div>
