@@ -9,11 +9,11 @@ use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
+mod ast_io;
 pub mod builder;
 pub mod evaluator;
 mod hasher;
 mod validator;
-mod ast_io;
 
 use crate::compiler::errors::{compile_error, diagnostic};
 pub use hasher::hash_const;

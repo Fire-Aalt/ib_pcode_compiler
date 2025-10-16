@@ -1,7 +1,7 @@
 use crate::ast::AST;
+use crate::data::Value;
 use crate::data::ast_nodes::{ExprNode, Function, Operand, StmtNode};
 use crate::data::diagnostic::{Diagnostic, LineInfo};
-use crate::data::Value;
 use crate::env::Env;
 
 mod eval_expr;

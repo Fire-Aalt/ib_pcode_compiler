@@ -37,9 +37,7 @@ impl AST {
             EnvMode::Test {
                 mock_inputs,
                 logs: _,
-            } => {
-                mock_inputs.pop_front().expect("no mock input available")
-            }
+            } => mock_inputs.pop_front().expect("no mock input available"),
         };
         parse_input_to_value(user_string.trim())
     }

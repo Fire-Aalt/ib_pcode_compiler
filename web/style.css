@@ -23,9 +23,11 @@ button.ghost{background:transparent;color:var(--muted);border:1px solid transpar
 /* Editor area */
 .editor-container{display:flex;flex:1;min-height:0}
 .gutter{background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);padding:8px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;color:#9ca3af;user-select:none;overflow:auto}
-.gutter div{line-height:1.45;padding:0 6px;text-align:right}
-textarea.editor{flex:1;border:0;padding:12px 14px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;font-size:13px;line-height:1.45;color:#0f172a;resize:none;outline:none;background:transparent}
+.gutter{background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);padding:12px 10px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;color:#9ca3af;user-select:none;overflow:auto;box-sizing:border-box}
+.gutter div{padding:0 6px;text-align:right;box-sizing:border-box}
+textarea.editor{flex:1;border:0;padding:12px 12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;font-size:13px;line-height:20px;color:#0f172a;resize:none;outline:none;background:transparent;box-sizing:border-box;white-space:pre;tab-size: 4;}
 
+textarea.editor, .gutter div { font-size:13px; line-height:20px; }
 /* Output area */
 .terminal{padding:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;color:#0f172a;background:linear-gradient(180deg,#fbfdff,#f8fbff);height:100%;overflow:auto}
 .terminal .line{white-space:pre-wrap}

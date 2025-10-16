@@ -30,7 +30,7 @@ pub fn print_diagnostic_error(ast: &AST, error_category: &str, diagnostic: Diagn
         start_col: diagnostic.line_info.start_col as usize,
         end_col: diagnostic.line_info.end_col as usize,
     };
-    
+
     let msg = &mut String::new();
 
     msg.push_str(RED);
@@ -82,7 +82,6 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
         end_col: end_col + 1,
     };
 
-
     let msg = &mut String::new();
 
     msg.push_str(RED);
@@ -105,7 +104,7 @@ fn push_line_info(source: &str, note: &str, info: &ErrorLine, msg: &mut String) 
         for _ in 0..indent_len {
             ident.push(' ');
         }
-        
+
         msg.push_str(format!("{} | \n", ident).as_str());
         msg.push_str(format!("{} | {}\n", info.user_start_line, line_text).as_str());
 

@@ -1,15 +1,15 @@
 use crate::ast::AST;
+use crate::common::combine_all_paths_at;
 use crate::compiler::error_print::{print_diagnostic_error, print_parsing_error};
 use crate::data::Validator;
 use crate::data::diagnostic::Diagnostic;
 use crate::data::name_hash::with_name_map;
 use crate::env::Env;
+use include_dir::{Dir, include_dir};
 use pest::Parser;
 use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::collections::HashMap;
-use include_dir::{include_dir, Dir};
-use crate::common::combine_all_paths_at;
 
 pub mod error_print;
 pub mod errors;

@@ -28,7 +28,6 @@ const terminal = document.getElementById('terminal');
 const editor = document.getElementById('editor');
 const gutter = document.getElementById('gutter');
 const sampleSelect = document.getElementById('sampleSelect');
-const lineNumberEl = document.getElementById('lineNumber');
 
 const modal = document.getElementById('modal');
 const modalPrompt = document.getElementById('modalPrompt');
@@ -51,24 +50,97 @@ for (const k of Object.keys(samples)) {
 }
 sampleSelect.addEventListener('change', () => {
     const v = sampleSelect.value; if (!v) return;
-    editor.value = samples[v]; updateGutter(); updateLineNumber();
+    editor.value = samples[v]; updateGutter();
 });
 
 // gutter and line sync
 function updateGutter() {
     const lines = Math.max(1, editor.value.split('\n').length);
     gutter.innerHTML = '';
+    
+    // compute exact line height from the textarea computed style (robust for zoom / fonts)
+    const cs = getComputedStyle(editor);
+    let lineHeight = parseFloat(cs.lineHeight);
+    if (!Number.isFinite(lineHeight) || lineHeight === 0) {
+        // fallback to a sensible default px
+        lineHeight = 20;
+    }
+    
     for (let i = 1; i <= lines; i++) {
-        const d = document.createElement('div'); d.textContent = i; gutter.appendChild(d);
+        const d = document.createElement('div');
+        d.textContent = i.toString();
+        d.style.height = lineHeight + 'px';
+        d.style.lineHeight = lineHeight + 'px';
+        gutter.appendChild(d);
     }
 }
-editor.addEventListener('input', () => { updateGutter(); updateLineNumber(); });
+editor.addEventListener('input', () => { updateGutter(); });
 editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; terminal.scrollTop = terminal.scrollHeight; });
-editor.addEventListener('keydown', (e) => { setTimeout(updateGutter, 0); setTimeout(updateLineNumber, 0); });
-function updateLineNumber() {
-    const pos = editor.selectionStart; const before = editor.value.slice(0, pos); const ln = before.split('\n').length;
-    lineNumberEl.textContent = ln;
-}
+
+
+// supports Tab insertion, Shift+Tab unindent, and block indent/unindent
+editor.addEventListener('keydown', (e) => {
+      // handle Tab / Shift+Tab
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const value = editor.value;
+        const tabChar = '\t'; // change to '  ' if you prefer spaces
+        
+        // if there is a multi-line selection, indent/unindent each selected line
+        const selStartLine = value.slice(0, start).split('\n').length - 1;
+        const selEndLine = value.slice(0, end).split('\n').length - 1;
+        
+        if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
+            // operate on full lines
+            const lines = value.split('\n');
+            // compute index of line starts
+            let lineStartIndices = [];
+            let acc = 0;
+            for (let i = 0; i < lines.length; i++) {
+                lineStartIndices.push(acc);
+                acc += lines[i].length + 1; // +1 for newline
+            }
+            
+            // apply indent or unindent to each line in range
+            const isUnindent = e.shiftKey;
+            for (let li = selStartLine; li <= selEndLine; li++) {
+                if (!isUnindent) {
+                    lines[li] = tabChar + lines[li];
+                } else {
+                    if (lines[li].startsWith('\t')) lines[li] = lines[li].slice(1);
+                    else if (lines[li].startsWith('    ')) lines[li] = lines[li].slice(4);
+                }
+            }
+            
+            const newValue = lines.join('\n');
+            // compute new selection range
+            const newStart = lineStartIndices[selStartLine] + (isUnindent ? 0 : tabChar.length);
+            const newEnd = lineStartIndices[selEndLine] + lines[selEndLine].length + 1; // approximate end
+            
+            editor.value = newValue;
+            editor.selectionStart = newStart;
+            editor.selectionEnd = newEnd - 1;
+            setTimeout(() => { updateGutter(); }, 0);
+            return;
+        }
+        
+        // single caret (no line breaks): insert a tab char
+        const before = value.slice(0, start);
+        const after = value.slice(end);
+        editor.value = before + tabChar + after;
+        const caret = start + tabChar.length;
+        editor.selectionStart = editor.selectionEnd = caret;
+        setTimeout(() => { updateGutter(); }, 0);
+        return;
+    }
+    
+    // non-tab keys: let previous behavior update gutter/line after input
+    setTimeout(updateGutter, 0);
+});
+
 updateGutter();
 
 // Save / Load
@@ -78,7 +150,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 });
 document.getElementById('fileInput').addEventListener('change', (ev) => {
     const f = ev.target.files[0]; if (!f) return;
-    const r = new FileReader(); r.onload = () => { editor.value = r.result; updateGutter(); updateLineNumber(); }; r.readAsText(f);
+    const r = new FileReader(); r.onload = () => { editor.value = r.result; updateGutter(); }; r.readAsText(f);
 });
 document.getElementById('clearBtn').addEventListener('click', () => { editor.value=''; updateGutter(); terminal.innerHTML=''; });
 
