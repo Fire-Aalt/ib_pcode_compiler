@@ -25,7 +25,6 @@ const respBuf = new Uint8Array(sab, Int32Array.BYTES_PER_ELEMENT, RESPONSE_BYTES
 
 control[0] = 0; // 0 = idle, 1 = waiting (worker), 2 = ready (main wrote response)
 
-// create worker (path: worker.js). Must be module worker to use import.
 const worker = new Worker('./worker.js', { type: 'module' });
 
 const outEl = document.getElementById('out');
@@ -58,7 +57,6 @@ worker.onmessage = (ev) => {
 // send the SharedArrayBuffer in an init message
 worker.postMessage({ type: 'init', controlSab: sab });
 
-// When user submits, write into shared response buffer and wake worker via Atomics.notify
 promptSubmit.addEventListener('click', () => {
     if (lastRequestId == null) return;
     const text = promptInput.value || '';
@@ -69,22 +67,23 @@ promptSubmit.addEventListener('click', () => {
     const writeLen = Math.min(encoded.length, RESPONSE_BYTES - 1);
     respBuf.fill(0); // clear
     respBuf.set(encoded.subarray(0, writeLen));
-    // Optionally, write length into a control slot if needed (not required here)
 
     // signal worker that response is ready
-    Atomics.store(control, 0, 2);       // 2 = ready
-    const woken = Atomics.notify(control, 0, 1);
-    // debug log
-    console.log(`[main] Wrote response (len ${writeLen}), Atomics.notify woke ${woken}`);
+    Atomics.store(control, 0, 2); // 2 = ready
+    Atomics.notify(control, 0, 1);
+    console.log(`[main] Wrote response (len ${writeLen})`);
+    
     // hide UI
     lastRequestId = null;
     promptInput.value = '';
     promptArea.style.display = 'none';
 });
 
-// Run button: send source to worker to run. Adjust where your editor stores program text.
 const runBtn = document.getElementById('run');
 runBtn.addEventListener('click', () => {
+    Atomics.store(control, 0, 0); // 0 = idle - reset
+    Atomics.notify(control, 0, 1);
+    
     const src = document.getElementById('editor').value;
     outEl.textContent = '';
     worker.postMessage({ type: 'run', source: src });
