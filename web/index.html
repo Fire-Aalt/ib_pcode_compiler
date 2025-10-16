@@ -4,12 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>IB Pseudocode Compiler</title>
+
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <div class="app">
     <div class="toolbar">
         <div class="logo">IB Pseudocode</div>
+
+        <nav class="tabs" role="tablist" aria-label="Main tabs">
+            <button class="tab active" data-tab="editor" role="tab" aria-selected="true">Editor</button>
+            <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
+            <button class="tab" data-tab="report" role="tab" aria-selected="false">Report Issue</button>
+        </nav>
+
+        <div class="spacer"></div>
 
         <div class="controls">
             <select id="sampleSelect" title="Sample programs">
@@ -22,28 +31,58 @@
                 Load
             </label>
 
-            <button id="runBtn">Run in Box (at right)</button>
-            <button id="clearBtn" class="ghost">Clear Page</button>
+            <button id="runBtn">Run</button>
         </div>
     </div>
 
-    <div class="workspace">
-        <div class="panel">
-            <div class="header"><h3>Editor</h3></div>
+    <div class="content">
+        <!-- Editor tab content -->
+        <section id="editorTab" class="tab-panel">
+            <div class="workspace">
+                <div class="panel editor-panel">
+                    <div class="header"><h3>Editor</h3></div>
 
-            <div class="editor-container">
-                <div class="gutter" id="gutter"></div>
-                <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
+                    <div class="editor-container">
+                        <div class="gutter" id="gutter"></div>
+                        <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
+                    </div>
+
+                    <div class="footer"><div class="small">Edit your pseudocode here</div></div>
+                </div>
+
+                <div class="panel">
+                    <div class="header"><h3>Output</h3></div>
+                    <div id="terminal" class="terminal" aria-live="polite"></div>
+                    <div class="footer"><div class="small">Output terminal</div></div>
+                </div>
             </div>
+        </section>
 
-            <div class="footer"><div class="small">Edit your pseudocode here</div></div>
-        </div>
+        <!-- Docs tab content (Markdown README) -->
+        <section id="docsTab" class="tab-panel" hidden>
+            <div class="panel docs-panel">
+                <div class="header"><h3>Documentation</h3></div>
+                <div id="docsContainer" class="docs-container">Loading docs...</div>
+                <div class="footer"><div class="small">README.md rendered as HTML</div></div>
+            </div>
+        </section>
 
-        <div class="panel">
-            <div class="header"><h3>Output</h3></div>
-            <div id="terminal" class="terminal" aria-live="polite"></div>
-            <div class="footer"><div class="small">Output terminal</div></div>
-        </div>
+        <!-- Report issue tab -->
+        <section id="reportTab" class="tab-panel" hidden>
+            <div class="panel report-panel">
+                <div class="header"><h3>Report a bug / Feedback</h3></div>
+                <div class="report-body" style="padding:16px">
+                    <p>Open a GitHub issue with the current editor contents prefilled:</p>
+                    <input id="issueTitle" placeholder="Issue title (short)" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8;margin-bottom:8px" />
+                    <div style="display:flex;gap:8px">
+                        <button id="openIssueBtn">Open Issue (prefill)</button>
+                        <button id="copySnapshot" class="secondary">Copy snapshot</button>
+                    </div>
+                    <p style="margin-top:12px;color:#6b7280">This will open GitHub in a new tab. Customize owner/repo in <code>main.js</code>.</p>
+                </div>
+                <div class="footer"><div class="small">Report issues on GitHub</div></div>
+            </div>
+        </section>
     </div>
 </div>
 
@@ -60,6 +99,7 @@
 </div>
 
 <script src="sw.js"></script>
+<script src="marked.js"></script>
 <script type="module" src="main.js"></script>
 </body>
 </html>

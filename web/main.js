@@ -1,4 +1,4 @@
-/* main.js — module */
+// main.js (type=module)
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register(new URL("./sw.js", import.meta.url)).then(
         (registration) => {
@@ -15,12 +15,11 @@ if ("serviceWorker" in navigator) {
     console.warn("Cannot register a service worker");
 }
 
-/* SharedArrayBuffer layout: first Int32 (control slot) then RESPONSE_BYTES bytes for response */
-const RESPONSE_BYTES = 8192; // increase if you expect longer inputs
+const RESPONSE_BYTES = 8192; // must match worker side
 const sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT + RESPONSE_BYTES);
 const control = new Int32Array(sab, 0, 1);
 const respBuf = new Uint8Array(sab, Int32Array.BYTES_PER_ELEMENT, RESPONSE_BYTES);
-control[0] = 0; // 0 = idle, 1 = waiting, 2 = ready
+control[0] = 0;
 
 const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
@@ -36,9 +35,20 @@ const modalOk = document.getElementById('modalOk');
 const modalCancel = document.getElementById('modalCancel');
 
 let lastRequestId = null;
-let currentRunWindow = null; // popup window when using Run In New Window
+let currentRunWindow = null;
 
-// sample programs for convenience
+// Tab UI
+document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-panel').forEach(p => p.hidden = true);
+        document.getElementById(tab + 'Tab').hidden = false;
+    });
+});
+
+// samples
 const samples = {
     welcome: `output "Welcome"\nloop COUNT from 1 to 5\n  output COUNT\nend loop`,
     input_demo: `output "Enter something"\ninput "Your value:"\noutput "Done"`,
@@ -57,15 +67,9 @@ sampleSelect.addEventListener('change', () => {
 function updateGutter() {
     const lines = Math.max(1, editor.value.split('\n').length);
     gutter.innerHTML = '';
-    
-    // compute exact line height from the textarea computed style (robust for zoom / fonts)
     const cs = getComputedStyle(editor);
     let lineHeight = parseFloat(cs.lineHeight);
-    if (!Number.isFinite(lineHeight) || lineHeight === 0) {
-        // fallback to a sensible default px
-        lineHeight = 20;
-    }
-    
+    if (!Number.isFinite(lineHeight) || lineHeight === 0) lineHeight = 20;
     for (let i = 1; i <= lines; i++) {
         const d = document.createElement('div');
         d.textContent = i.toString();
@@ -74,73 +78,58 @@ function updateGutter() {
         gutter.appendChild(d);
     }
 }
-editor.addEventListener('input', () => { updateGutter(); });
+editor.addEventListener('input', () => updateGutter());
 editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; terminal.scrollTop = terminal.scrollHeight; });
 
-
-// supports Tab insertion, Shift+Tab unindent, and block indent/unindent
+// Tab / shift-tab & insert tab
 editor.addEventListener('keydown', (e) => {
-      // handle Tab / Shift+Tab
     if (e.key === 'Tab') {
         e.preventDefault();
-        
         const start = editor.selectionStart;
         const end = editor.selectionEnd;
         const value = editor.value;
-        const tabChar = '\t'; // change to '  ' if you prefer spaces
-        
-        // if there is a multi-line selection, indent/unindent each selected line
+        const tabChar = '\t';
         const selStartLine = value.slice(0, start).split('\n').length - 1;
         const selEndLine = value.slice(0, end).split('\n').length - 1;
-        
+
         if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
-            // operate on full lines
+            // multi-line indent/unindent
             const lines = value.split('\n');
-            // compute index of line starts
             let lineStartIndices = [];
             let acc = 0;
             for (let i = 0; i < lines.length; i++) {
                 lineStartIndices.push(acc);
-                acc += lines[i].length + 1; // +1 for newline
+                acc += lines[i].length + 1;
             }
-            
-            // apply indent or unindent to each line in range
             const isUnindent = e.shiftKey;
             for (let li = selStartLine; li <= selEndLine; li++) {
-                if (!isUnindent) {
-                    lines[li] = tabChar + lines[li];
-                } else {
+                if (!isUnindent) lines[li] = tabChar + lines[li];
+                else {
                     if (lines[li].startsWith('\t')) lines[li] = lines[li].slice(1);
                     else if (lines[li].startsWith('    ')) lines[li] = lines[li].slice(4);
                 }
             }
-            
             const newValue = lines.join('\n');
-            // compute new selection range
             const newStart = lineStartIndices[selStartLine] + (isUnindent ? 0 : tabChar.length);
-            const newEnd = lineStartIndices[selEndLine] + lines[selEndLine].length + 1; // approximate end
-            
+            const newEnd = lineStartIndices[selEndLine] + lines[selEndLine].length + 1;
             editor.value = newValue;
             editor.selectionStart = newStart;
             editor.selectionEnd = newEnd - 1;
-            setTimeout(() => { updateGutter(); }, 0);
+            setTimeout(updateGutter, 0);
             return;
         }
-        
-        // single caret (no line breaks): insert a tab char
+
+        // single caret
         const before = value.slice(0, start);
         const after = value.slice(end);
         editor.value = before + tabChar + after;
         const caret = start + tabChar.length;
         editor.selectionStart = editor.selectionEnd = caret;
-        setTimeout(() => { updateGutter(); }, 0);
+        setTimeout(updateGutter, 0);
         return;
     }
-    
-    // non-tab keys: let previous behavior update gutter/line after input
     setTimeout(updateGutter, 0);
 });
-
 updateGutter();
 
 // Save / Load
@@ -152,29 +141,23 @@ document.getElementById('fileInput').addEventListener('change', (ev) => {
     const f = ev.target.files[0]; if (!f) return;
     const r = new FileReader(); r.onload = () => { editor.value = r.result; updateGutter(); }; r.readAsText(f);
 });
-document.getElementById('clearBtn').addEventListener('click', () => { editor.value=''; updateGutter(); terminal.innerHTML=''; });
 
-// worker messages
+// worker messaging
 worker.onmessage = (ev) => {
     const msg = ev.data;
     if (msg.type === 'wasm-ready') {
-        console.log('worker wasm ready', msg.exports || '');
+        console.log('wasm-ready', msg);
     } else if (msg.type === 'request-input') {
-        // show modal prompt to user
         lastRequestId = msg.id;
         showModalPrompt(msg.prompt);
     } else if (msg.type === 'output') {
-        // append to UI or to a popup window if opened
         appendOutput(msg.text);
     } else if (msg.type === 'error') {
         appendOutput('ERROR: ' + msg.message);
     } else {
-        // fallback generic text
         if (msg.text) appendOutput(msg.text);
     }
 };
-
-// send the SAB to worker
 worker.postMessage({ type: 'init', controlSab: sab });
 
 // write response into respBuf and notify worker
@@ -205,17 +188,16 @@ function showModalPrompt(promptText) {
     modalInput.addEventListener('keydown', function onKey(e) { if (e.key === 'Enter') { e.preventDefault(); onOk(); modalInput.removeEventListener('keydown', onKey); }});
 }
 
-// append output to terminal or popup
+// append output
 function appendOutput(text) {
     if (currentRunWindow && !currentRunWindow.closed) {
-        // write into popup document (simple append)
         currentRunWindow.document.body.appendChild(document.createElement('div')).textContent = text;
     } else {
         const div = document.createElement('div'); div.className = 'line'; div.textContent = text; terminal.appendChild(div); terminal.scrollTop = terminal.scrollHeight;
     }
 }
 
-/* Run buttons */
+// Run button
 document.getElementById('runBtn').addEventListener('click', () => {
     currentRunWindow = null;
     terminal.innerHTML = '';
@@ -223,4 +205,37 @@ document.getElementById('runBtn').addEventListener('click', () => {
     Atomics.notify(control, 0, 1);
     const src = editor.value;
     worker.postMessage({ type: 'run', source: src, runId: Date.now() });
+});
+
+// README rendering
+const docsContainer = document.getElementById('docsContainer');
+async function loadReadme() {
+    try {
+        const resp = await fetch('./pkg/README.md');
+        if (!resp.ok) { docsContainer.innerHTML = `<p class="muted">README.md not found: ${resp.status}</p>`; return; }
+        const md = await resp.text();
+        docsContainer.innerHTML = marked.parse(md);
+    } catch (err) {
+        docsContainer.innerHTML = `<p class="muted">Failed to load docs: ${err.message}</p>`;
+    }
+}
+loadReadme();
+
+// Report issue: open GitHub issues with prefilled title/body
+const GH_OWNER = 'your-org-or-username';
+const GH_REPO = 'your-repo';
+document.getElementById('openIssueBtn').addEventListener('click', () => {
+    const title = encodeURIComponent(document.getElementById('issueTitle').value || 'Bug report: [short description]');
+    // Prefill body: include editor content and some metadata
+    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n\n**Editor snapshot:**\n\`\`\`\n${editor.value}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
+    const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
+    window.open(url, '_blank', 'noopener');
+});
+document.getElementById('copySnapshot').addEventListener('click', async () => {
+    try {
+        await navigator.clipboard.writeText(editor.value);
+        alert('Editor contents copied to clipboard');
+    } catch {
+        alert('Copy failed — please select and copy manually');
+    }
 });
