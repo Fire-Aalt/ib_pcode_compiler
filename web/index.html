@@ -17,6 +17,7 @@
             <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
             <!-- Report now just a button (opens GitHub issues) -->
             <button id="reportBtn" class="tab" title="Open GitHub issues">Report Issue</button>
+            <button id="githubBtn" class="tab" title="Open GitHub repository">GitHub</button>
         </nav>
 
         <div class="spacer"></div>
@@ -50,14 +51,11 @@
                         <div class="gutter" id="gutter"></div>
                         <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
                     </div>
-
-                    <div class="footer"><div class="small">Edit your pseudocode here</div></div>
                 </div>
 
                 <div class="panel">
                     <div class="header"><h3>Output</h3></div>
                     <div id="terminal" class="terminal" aria-live="polite"></div>
-                    <div class="footer"><div class="small">Output terminal</div></div>
                 </div>
             </div>
         </section>

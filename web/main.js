@@ -16,7 +16,9 @@ if ("serviceWorker" in navigator) {
     console.warn("Cannot register a service worker");
 }
 
-/* SharedArrayBuffer wiring (unchanged) */
+const GH_OWNER = 'Fire-Aalt';
+const GH_REPO = 'ib_pcode_compiler';
+
 const RESPONSE_BYTES = 8192;
 const sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT + RESPONSE_BYTES);
 const control = new Int32Array(sab, 0, 1);
@@ -38,6 +40,7 @@ const modalCancel = document.getElementById('modalCancel');
 
 const themeToggle = document.getElementById('themeToggle');
 const reportBtn = document.getElementById('reportBtn');
+const githubBtn = document.getElementById('githubBtn');
 const runBtn = document.getElementById('runBtn');
 const saveBtn = document.getElementById('saveBtn');
 const fileLabel = document.querySelector('.file-label');
@@ -114,12 +117,15 @@ themeToggle.addEventListener('click', () => {
 });
 
 /* Report button opens GitHub issues directly (prefills snapshot) */
-const GH_OWNER = 'your-org-or-username';
-const GH_REPO = 'your-repo';
 reportBtn.addEventListener('click', () => {
     const title = encodeURIComponent('Bug report: [short description]');
     const body = encodeURIComponent(`**Describe the bug or feedback**\n\n**Editor snapshot:**\n\`\`\`\n${editor.value}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
     const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
+    window.open(url, '_blank', 'noopener');
+});
+
+githubBtn.addEventListener('click', () => {
+    const url = `https://github.com/${GH_OWNER}/${GH_REPO}`;
     window.open(url, '_blank', 'noopener');
 });
 
