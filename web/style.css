@@ -15,6 +15,10 @@
     --border-color: rgba(0,0,0,0.06);
     --tab-active-bg: rgba(0,0,0,0.06);
     --radius: 6px;
+    --code-bg: #dcdada;
+    --code-text: #0b1726;
+    --code-border: rgba(0,0,0,0.06);
+    --code-inline-bg: rgba(0,0,0,0.04);
 }
 
 /* Dark theme */
@@ -33,6 +37,10 @@ body[data-theme="dark"]{
     --scroll-track: rgba(255,255,255,0.02);
     --border-color: rgba(255,255,255,0.06);
     --tab-active-bg: rgba(255,255,255,0.04);
+    --code-bg: #212124;
+    --code-text: #dbeafe;
+    --code-border: rgba(255,255,255,0.04);
+    --code-inline-bg: rgba(255,255,255,0.03);
 }
 
 /* global layout */
@@ -198,19 +206,59 @@ textarea.editor{
     padding:18px;
     line-height:1.6;
     color:var(--text);
-    /* fill available panel space and be the only scroller */
     flex:1;
     height:calc(100% - 0px);
     overflow:auto;
     box-sizing:border-box;
 }
 
+/* Strongly enforce the background and colors for code blocks and pre */
+.docs-container pre {
+    background: var(--code-bg) !important;
+    color: var(--code-text) !important;
+    border: 1px solid var(--code-border) !important;
+    padding: 12px;
+    border-radius: calc(var(--radius, 6px) - 2px);
+    overflow: auto;
+    box-sizing: border-box;
+    margin: 0 0 16px 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre;
+}
+
+/* Inline code */
+.docs-container code {
+    background: var(--code-inline-bg) !important;
+    color: var(--code-text) !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.95em;
+    white-space: pre-wrap;
+}
+
+.docs-container pre[class*="language-"],
+.docs-container .hljs,
+.docs-container code[class*="language-"],
+.docs-container .token {
+    background: transparent !important; 
+    color: inherit !important;
+}
+
+.docs-container pre[class*="language-"] {
+    background: var(--code-bg) !important;
+    color: var(--code-text) !important;
+}
+
+@media (max-width: 700px) {
+    .docs-container pre { font-size: 12px; padding: 10px; }
+}
+
 /* ensure the docs panel children create a column layout so .docs-container can flex */
 .docs-panel { display:flex; flex-direction:column; min-height:0; }
 .docs-panel .header, .docs-panel .footer { flex: 0 0 auto; }
 .docs-panel .docs-container { flex: 1 1 auto; }
-
-
 
 /* modal input */
 .modal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(2,6,23,0.48); z-index:60; }
