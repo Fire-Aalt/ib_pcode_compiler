@@ -272,13 +272,12 @@ function showModalPrompt(promptText) {
     modalInput.addEventListener('keydown', function onKey(e) { if (e.key === 'Enter') { e.preventDefault(); onOk(); modalInput.removeEventListener('keydown', onKey); }});
 }
 
-/* Append output unchanged */
 function appendOutput(text) {
-    if (currentRunWindow && !currentRunWindow.closed) {
-        currentRunWindow.document.body.appendChild(document.createElement('div')).textContent = text;
-    } else {
-        const div = document.createElement('div'); div.className = 'line'; div.textContent = text; terminal.appendChild(div); terminal.scrollTop = terminal.scrollHeight;
-    }
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.innerHTML = text;
+    terminal.appendChild(div);
+    terminal.scrollTop = terminal.scrollHeight;
 }
 
 /* README rendering + anchor scrolling inside docsContainer */
