@@ -1,52 +1,65 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>IB Pseudocode Compiler</title>
-    <style>
-        body { font-family: system-ui, sans-serif; margin: 12px; }
-        #editor { width: 100%; height: 40vh; font-family: monospace; }
-        #out { white-space: pre-wrap; border: 1px solid #ddd; padding: 8px; height: 30vh; overflow:auto; background:#f9f9f9 }
-        #prompt-area { display:none; border:1px solid #ccc; padding:8px; margin-top:8px; }
-    </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<h2>IB Pseudocode Compiler</h2>
-<textarea id="editor">
-output "Welcome"
-loop COUNT from 1 to 5
-  output COUNT
-end loop
+<div class="app">
+    <div class="toolbar">
+        <div class="logo">IB Pseudocode</div>
 
-// === EZ Pcode =================================
-//
-// This tool is intended to help teachers prepare 
-// Pseudocode that is consistent with the
-// IB Computer Science standards for the 2014 syllabus.
-// This tool is a comprehensive compiler that
-// translates Pcode into an Abstract Syntax Tree (AST) in Rust.
-// This is done with Pest Parser, AST Builder, AST Validator,
-// and AST Evaluator. So it is very sophisticated and it's
-// quite hard to write code that won't show proper errors.
-// One warning - the keyword NOT should never be used 
-// as part of a variable name, e.g. NOTHING would be
-// a bad variable name, as it will translate to !HING.
-// Suggestions for improvement are welcome - 
-// send an eMail to the author at  krasutskimaksim@gmail.com 
-// ==============================================
-</textarea>
-<br/>
-<button id="run">Run</button>
+        <div class="controls">
+            <select id="sampleSelect" title="Sample programs">
+                <option value="">- Sample Programs -</option>
+            </select>
 
+            <button id="saveBtn" class="secondary">Save</button>
+            <label class="ghost file-label">
+                <input id="fileInput" type="file" />
+                Load
+            </label>
 
-<h3>Output</h3>
-<pre id="out"></pre>
+            <button id="runBtn">Run in Box (at right)</button>
+            <button id="clearBtn" class="ghost">Clear Page</button>
 
+            <div class="spacer"></div>
+            <div class="line-info">line: <span id="lineNumber">1</span></div>
+        </div>
+    </div>
 
-<div id="prompt-area">
-    <label id="prompt-text"></label><br>
-    <input id="prompt-input" />
-    <button id="prompt-submit">Send</button>
+    <div class="workspace">
+        <div class="panel">
+            <div class="header"><h3>Editor</h3></div>
+
+            <div class="editor-container">
+                <div class="gutter" id="gutter"></div>
+                <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
+            </div>
+
+            <div class="footer"><div class="small">Edit your pseudocode here</div></div>
+        </div>
+
+        <div class="panel">
+            <div class="header"><h3>Output</h3></div>
+            <div id="terminal" class="terminal" aria-live="polite"></div>
+            <div class="footer"><div class="small">Output terminal</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- modal for input prompt (popup) -->
+<div id="modal" class="modal" style="display:none">
+    <div class="sheet">
+        <label id="modalPrompt">Enter input:</label>
+        <input id="modalInput" />
+        <div class="actions">
+            <button id="modalCancel" class="secondary">Cancel</button>
+            <button id="modalOk">OK</button>
+        </div>
+    </div>
 </div>
 
 <script src="sw.js"></script>

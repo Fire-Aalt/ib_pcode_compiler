@@ -1,0 +1,49 @@
+:root{
+    --bg:#eef2f6; --card:#ffffff; --muted:#6b7280; --accent:#2563eb;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#f6fafc 0%,#eef2f6 100%);}
+.app{display:grid;grid-template-rows:64px 1fr;padding:18px;gap:14px;max-width:1300px;margin:10px auto;}
+.toolbar{display:flex;align-items:center;gap:8px;background:var(--card);padding:10px;border-radius:10px;box-shadow:0 4px 18px rgba(12,20,30,0.06);}
+.logo{font-weight:700;color:var(--accent);padding:6px 12px;border-radius:8px;background:linear-gradient(90deg,rgba(37,99,235,0.08),transparent);}
+.controls{display:flex;align-items:center;gap:8px;margin-left:12px;flex-wrap:wrap}
+select,input[type=file]{height:36px;border-radius:8px;padding:6px 10px;border:1px solid #e6eef8;background:#fbfdff}
+button{height:36px;border-radius:8px;border:0;padding:6px 12px;background:var(--accent);color:#fff;font-weight:600;box-shadow:0 4px 10px rgba(37,99,235,0.12);cursor:pointer}
+button.secondary{background:#fff;color:var(--accent);border:1px solid #dbeafe;box-shadow:none}
+button.ghost{background:transparent;color:var(--muted);border:1px solid transparent}
+.spacer{flex:1}
+.line-info{color:var(--muted);font-size:13px}
+
+/* Editor + Output layout */
+.workspace{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:520px}
+.panel{background:var(--card);border-radius:10px;box-shadow:0 8px 30px rgba(20,30,50,0.06);overflow:hidden;display:flex;flex-direction:column}
+.panel .header{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid #f2f6fb}
+.panel .header h3{margin:0;font-size:14px;color:#111827}
+
+/* Editor area */
+.editor-container{display:flex;flex:1;min-height:0}
+.gutter{background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);padding:8px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;color:#9ca3af;user-select:none;overflow:auto}
+.gutter div{line-height:1.45;padding:0 6px;text-align:right}
+textarea.editor{flex:1;border:0;padding:12px 14px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;font-size:13px;line-height:1.45;color:#0f172a;resize:none;outline:none;background:transparent}
+
+/* Output area */
+.terminal{padding:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;color:#0f172a;background:linear-gradient(180deg,#fbfdff,#f8fbff);height:100%;overflow:auto}
+.terminal .line{white-space:pre-wrap}
+
+/* footer */
+.panel .footer{display:flex;align-items:center;gap:8px;padding:10px;border-top:1px solid #f2f6fb}
+.small{font-size:13px;color:var(--muted)}
+
+/* modal input */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.48);z-index:60}
+.modal .sheet{background:#fff;padding:20px;border-radius:12px;min-width:320px;box-shadow:0 30px 80px rgba(2,6,23,0.4)}
+.modal label{display:block;color:#111827;margin-bottom:8px}
+.modal input{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+/* responsive */
+@media (max-width:900px){ .workspace{grid-template-columns:1fr} .spacer{display:none} }
+
+/* file-label: nicer file input */
+.file-label input{display:none}
+.file-label{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#fff;border:1px dashed #e6eef8;cursor:pointer}
