@@ -1,6 +1,6 @@
 # IB Pseudocode Compiler — User Documentation
 
-This README explains how to **write pseudocode** programs for the Rust-based pseudocode compiler. It describes the language features implemented in the grammar and shows short examples for each feature.
+This documentation explains how to **write pseudocode** programs for the Rust-based pseudocode compiler. It describes the language features implemented in the grammar and shows short examples for each feature.
 
 ---
 
@@ -261,7 +261,7 @@ Stores user input in the variable `name`.
 output "Result:", x + y
 ```
 
-Multiple values may be provided separated by whitespace.
+Multiple values may be provided separated by commas. The output string will join the values by whitespace. If any of the values produce strings which start or end with spaces — these spaces are trimmed.
 
 ---
 
