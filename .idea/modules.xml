@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ib_pseudocompiler.iml" filepath="$PROJECT_DIR$/.idea/ib_pseudocompiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ib_pcode_compiler.iml" filepath="$PROJECT_DIR$/.idea/ib_pcode_compiler.iml" />
     </modules>
   </component>
 </project>

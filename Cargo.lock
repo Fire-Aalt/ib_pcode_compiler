@@ -98,7 +98,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ib_pseudocompiler"
+name = "ib_pcode_compiler"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",

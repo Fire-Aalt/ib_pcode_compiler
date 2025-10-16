@@ -1,5 +1,5 @@
 // worker.js (module)
-import init, * as wasm from './pkg/ib_pseudocompiler.js';
+import init, * as wasm from './pkg/ib_pcode_compiler.js';
 
 let controlSab = null;
 let control = null;
