@@ -11,7 +11,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Improve performance of outputting lines">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix popup prompt + rearrange buttons for easier navigation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
@@ -158,7 +158,8 @@
       <option name="presentableId" value="Default" />
       <updated>1760603408018</updated>
       <workItem from="1760603410024" duration="2671000" />
-      <workItem from="1760636618616" duration="13655000" />
+      <workItem from="1760636618616" duration="13727000" />
+      <workItem from="1760683962015" duration="624000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -248,7 +249,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760651153670</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Fix popup prompt + rearrange buttons for easier navigation">
+      <option name="closed" value="true" />
+      <created>1760652221165</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1760652221165</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,6 +275,7 @@
     <MESSAGE value="Fix colored terminal output" />
     <MESSAGE value="Add GitHub and report issue links" />
     <MESSAGE value="Improve performance of outputting lines" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improve performance of outputting lines" />
+    <MESSAGE value="Fix popup prompt + rearrange buttons for easier navigation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix popup prompt + rearrange buttons for easier navigation" />
   </component>
 </project>

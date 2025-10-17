@@ -19,6 +19,8 @@
     --code-text: #0b1726;
     --code-border: rgba(0,0,0,0.06);
     --code-inline-bg: rgba(0,0,0,0.04);
+    --link-color: #0a84ff;
+    --link-hover-color: #005ce6;
 }
 
 /* Dark theme */
@@ -41,6 +43,8 @@ body[data-theme="dark"] {
     --code-text: #dbeafe;
     --code-border: rgba(255,255,255,0.04);
     --code-inline-bg: rgba(255,255,255,0.03);
+    --link-color: #5696ff;
+    --link-hover-color: #91b8ff;
 }
 
 /* global layout */
@@ -293,6 +297,21 @@ textarea.editor {
     height: calc(100% - 0px);
     overflow: auto;
     box-sizing: border-box;
+}
+
+.docs-container a {
+    color: var(--link-color);
+    text-decoration: underline;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+
+.docs-container a:hover {
+    color: var(--link-hover-color);
+}
+
+.docs-container a:visited {
+    opacity: 0.85;
 }
 
 /* Strongly enforce the background and colors for code blocks and pre */

@@ -37,7 +37,6 @@ const modal = document.getElementById('modal');
 const modalPrompt = document.getElementById('modalPrompt');
 const modalInput = document.getElementById('modalInput');
 const modalOk = document.getElementById('modalOk');
-const modalCancel = document.getElementById('modalCancel');
 
 const themeToggle = document.getElementById('themeToggle');
 const reportBtn = document.getElementById('reportBtn');
@@ -275,20 +274,26 @@ function writeResponseAndWake(text) {
     Atomics.notify(control, 0, 1);
 }
 
-/* Modal code (unchanged) */
 function showModalPrompt(promptText) {
     modalPrompt.textContent = promptText || 'Input:';
     modalInput.value = '';
     modal.style.display = 'flex';
     modalInput.focus();
 
-    const cleanup = () => { modal.style.display = 'none'; modalOk.removeEventListener('click', onOk); modalCancel.removeEventListener('click', onCancel); };
+    const cleanup = () => { 
+        modal.style.display = 'none';
+        modalOk.removeEventListener('click', onOk);
+    };
     const onOk = () => { cleanup(); writeResponseAndWake(modalInput.value || ''); lastRequestId = null; };
-    const onCancel = () => { cleanup(); writeResponseAndWake(''); lastRequestId = null; };
 
     modalOk.addEventListener('click', onOk);
-    modalCancel.addEventListener('click', onCancel);
-    modalInput.addEventListener('keydown', function onKey(e) { if (e.key === 'Enter') { e.preventDefault(); onOk(); modalInput.removeEventListener('keydown', onKey); }});
+    modalInput.addEventListener('keydown', function onKey(e) { 
+        if (e.key === 'Enter') { 
+            e.preventDefault();
+            onOk();
+            modalInput.removeEventListener('keydown', onKey);
+        }
+    });
 }
 
 function appendOutput(text) {
