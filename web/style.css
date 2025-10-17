@@ -305,7 +305,7 @@ button.ghost {
 
 .gutter {
     background: var(--gutter-bg);
-    padding: 12px;
+    padding: 6px 12px 6px 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     color: var(--muted-2);
     user-select: none;
@@ -323,7 +323,7 @@ button.ghost {
 textarea.editor {
     flex: 1;
     border: 0;
-    padding: 12px;
+    padding-top: 6px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     font-size: 13px;
     line-height: 20px;
