@@ -183,52 +183,81 @@ function updateGutter() {
 editor.addEventListener('input', () => updateGutter());
 
 editor.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        const value = editor.value;
-        const tabChar = '\t';
-        const selStartLine = value.slice(0, start).split('\n').length - 1;
-        const selEndLine = value.slice(0, end).split('\n').length - 1;
-
-        if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
-            const lines = value.split('\n');
-            let lineStartIndices = [];
-            let acc = 0;
-            for (let i = 0; i < lines.length; i++) {
-                lineStartIndices.push(acc);
-                acc += lines[i].length + 1;
-            }
-            const isUnindent = e.shiftKey;
-            for (let li = selStartLine; li <= selEndLine; li++) {
-                if (!isUnindent) lines[li] = tabChar + lines[li];
-                else {
-                    if (lines[li].startsWith('\t')) lines[li] = lines[li].slice(1);
-                    else if (lines[li].startsWith('    ')) lines[li] = lines[li].slice(4);
-                }
-            }
-            const newValue = lines.join('\n');
-            const newStart = lineStartIndices[selStartLine] + (isUnindent ? 0 : tabChar.length);
-            const newEnd = lineStartIndices[selEndLine] + lines[selEndLine].length + 1;
-            editor.value = newValue;
-            editor.selectionStart = newStart;
-            editor.selectionEnd = newEnd - 1;
-            setTimeout(updateGutter, 0);
-            return;
-        }
-
-        const before = value.slice(0, start);
-        const after = value.slice(end);
-        editor.value = before + tabChar + after;
-        const caret = start + tabChar.length;
-        editor.selectionStart = editor.selectionEnd = caret;
+    if (e.key !== 'Tab') {
         setTimeout(updateGutter, 0);
         return;
     }
+    e.preventDefault();
+
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const value = editor.value;
+    const tabChar = '\t';
+
+    // Line numbers for selection
+    const selStartLine = value.slice(0, start).split('\n').length - 1;
+    const selEndLine = value.slice(0, end).split('\n').length - 1;
+
+    // compute line start indices
+    const lines = value.split('\n');
+    const lineStartIndices = [];
+    let acc = 0;
+    for (let i = 0; i < lines.length; i++) {
+        lineStartIndices.push(acc);
+        acc += lines[i].length + 1; // +1 for newline
+    }
+
+    // Multi-line indent/unindent
+    if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
+        const isUnindent = e.shiftKey;
+
+        // Build replacement for the exact block from first affected line start
+        const blockStart = lineStartIndices[selStartLine];
+        const blockEnd = lineStartIndices[selEndLine] + lines[selEndLine].length; // exclusive end index
+
+        // Extract the block lines and modify them
+        const blockText = value.slice(blockStart, blockEnd);
+        const blockLines = blockText.split('\n');
+
+        for (let li = 0; li < blockLines.length; li++) {
+            if (!isUnindent) {
+                blockLines[li] = tabChar + blockLines[li];
+            } else {
+                if (blockLines[li].startsWith('\t')) blockLines[li] = blockLines[li].slice(1);
+                else if (blockLines[li].startsWith('    ')) blockLines[li] = blockLines[li].slice(4);
+            }
+        }
+
+        const replacement = blockLines.join('\n');
+        
+        // Replace only the block range so undo works properly
+        editor.setRangeText(replacement, blockStart, blockEnd, 'select');
+
+        // After 'select' the selection is the inserted block; adjust to expected selection (same lines)
+        const newSelStart = blockStart;
+        const newSelEnd = blockStart + replacement.length;
+
+        editor.selectionStart = newSelStart;
+        editor.selectionEnd = newSelEnd;
+
+        // notify listeners and update gutter
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+        setTimeout(updateGutter, 0);
+        return;
+    }
+
+    // Single-caret insertion (no line breaks in selection)
+    // Use setRangeText to insert tab and preserve undo
+    editor.setRangeText(tabChar, start, end, 'end');
+
+    // ensure caret placed after inserted tab
+    const caret = start + tabChar.length;
+    editor.selectionStart = editor.selectionEnd = caret;
+
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
     setTimeout(updateGutter, 0);
 });
-updateGutter();
+
 
 /* Save/Load/Run wiring */
 saveBtn.addEventListener('click', () => {

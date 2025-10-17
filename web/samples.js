@@ -3,6 +3,21 @@ const samples = {
 loop COUNT from 1 to 5
   output COUNT
 end loop
+
+// === IB Pcode Compiler =================================
+//
+// This tool is intended to help teachers prepare 
+// Pseudocode that is consistent with the
+// IB Computer Science standards for the 2014 syllabus.
+// This tool is a comprehensive compiler that
+// translates Pcode into an Abstract Syntax Tree (AST) in Rust.
+// This is done with a Pest Parser, an AST Builder, an AST Validator,
+// and an AST Evaluator. The tool is very sophisticated and it
+// follows how real compilers work. Both compile and runtime errors
+// are properly displayed with a line number, cause, and a note.
+// For the IB Pseudocode documentation refer to the "Docs" tab
+// This makes writing pseudocode not frustrating at all ^^
+// ==============================================
 `,
     calculations: `output "=== Simple Calculations ==="
 

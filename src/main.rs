@@ -16,7 +16,7 @@ fn main() {
     }
 }
 
-// TODO: add undo support for tabs
+// TODO: add "Program finished" output in the terminal
 
 // TODO: tabs
 // At line: 2
