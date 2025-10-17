@@ -11,12 +11,14 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Nicify dropdown names">
-      <change afterPath="$PROJECT_DIR$/web/samples.js" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add all samples to web">
+      <change afterPath="$PROJECT_DIR$/web/docs.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/marked.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/modules/marked.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/sw.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/modules/sw.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/modules/worker.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +88,12 @@
     "wasm-pack.Build.executor": "Run"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web\modules" />
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web" />
+    </key>
+  </component>
   <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
@@ -162,7 +170,7 @@
       <updated>1760603408018</updated>
       <workItem from="1760603410024" duration="2671000" />
       <workItem from="1760636618616" duration="13727000" />
-      <workItem from="1760683962015" duration="15341000" />
+      <workItem from="1760683962015" duration="16358000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -292,7 +300,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760701041270</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Add all samples to web">
+      <option name="closed" value="true" />
+      <created>1760702015527</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1760702015527</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -315,6 +331,7 @@
     <MESSAGE value="Fix usings to ib_pcode_compiler" />
     <MESSAGE value="Fix scrolls" />
     <MESSAGE value="Nicify dropdown names" />
-    <option name="LAST_COMMIT_MESSAGE" value="Nicify dropdown names" />
+    <MESSAGE value="Add all samples to web" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add all samples to web" />
   </component>
 </project>

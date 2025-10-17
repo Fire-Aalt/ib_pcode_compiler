@@ -16,7 +16,6 @@ fn main() {
     }
 }
 
-// TODO: wrap lines when exceeding the width of the terminal
 // TODO: add undo support for tabs
 
 // TODO: tabs
