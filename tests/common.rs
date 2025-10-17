@@ -1,7 +1,7 @@
-use ib_pseudocompiler::ast::AST;
-use ib_pseudocompiler::compiler::compile;
-use ib_pseudocompiler::env::{Env, EnvMode};
-use ib_pseudocompiler::run;
+use ib_pcode_compiler::ast::AST;
+use ib_pcode_compiler::compiler::compile;
+use ib_pcode_compiler::env::{Env, EnvMode};
+use ib_pcode_compiler::run;
 use std::collections::VecDeque;
 
 pub fn compile_test(code: &str) -> AST {
