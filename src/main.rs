@@ -12,6 +12,9 @@ fn main() {
     }
     #[cfg(target_arch = "wasm32")]
     {
-        ib_pcode_compiler::ensure_link();
+        ib_pcode_compiler::ensure_dependency();
     }
 }
+
+// TODO: wrap lines when exceeding the width of the terminal
+// TODO: add undo support for tabs

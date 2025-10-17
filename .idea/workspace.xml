@@ -11,11 +11,15 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix links color in docs + simplify input prompt element">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix usings to ib_pcode_compiler">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/common.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/pcode_compiler_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/pcode_compiler_tests.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,28 +65,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
-    &quot;wasm-pack.Build.executor&quot;: &quot;Run&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "JavaScript Debug.index.html.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.first.attach.projects": "true",
+    "vue.rearranger.settings.migration": "true",
+    "wasm-pack.Build.executor": "Run"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
@@ -159,7 +165,7 @@
       <updated>1760603408018</updated>
       <workItem from="1760603410024" duration="2671000" />
       <workItem from="1760636618616" duration="13727000" />
-      <workItem from="1760683962015" duration="742000" />
+      <workItem from="1760683962015" duration="8165000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -265,7 +271,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760684657604</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Fix usings to ib_pcode_compiler">
+      <option name="closed" value="true" />
+      <created>1760684734398</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1760684734398</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,6 +299,7 @@
     <MESSAGE value="Improve performance of outputting lines" />
     <MESSAGE value="Fix popup prompt + rearrange buttons for easier navigation" />
     <MESSAGE value="Fix links color in docs + simplify input prompt element" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix links color in docs + simplify input prompt element" />
+    <MESSAGE value="Fix usings to ib_pcode_compiler" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix usings to ib_pcode_compiler" />
   </component>
 </project>

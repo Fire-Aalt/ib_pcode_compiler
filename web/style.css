@@ -15,12 +15,14 @@
     --border-color: rgba(0,0,0,0.06);
     --tab-active-bg: rgba(0,0,0,0.06);
     --radius: 6px;
-    --code-bg: #dcdada;
+    --code-bg: #eae9e9;
     --code-text: #0b1726;
     --code-border: rgba(0,0,0,0.06);
     --code-inline-bg: rgba(0,0,0,0.04);
     --link-color: #0a84ff;
     --link-hover-color: #005ce6;
+    --hover-bg: #f1f5f9;
+    select { background-color: var(--panel); }
 }
 
 /* Dark theme */
@@ -45,6 +47,74 @@ body[data-theme="dark"] {
     --code-inline-bg: rgba(255,255,255,0.03);
     --link-color: #5696ff;
     --link-hover-color: #91b8ff;
+    --hover-bg: #2a2a2a;
+    select { background-color: var(--panel); }
+}
+
+/* Base look */
+select {
+    -webkit-appearance: none;
+    appearance: auto;
+    font: inherit;
+    color: var(--text);
+    background-color: var(--panel);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 32px 6px 10px;
+    cursor: pointer;
+    transition: background 0.15s, border 0.15s;
+}
+
+/* Themed arrow made with CSS (no image) */
+select {
+    background-image:
+            linear-gradient(45deg, transparent 50%, currentColor 50%),
+            linear-gradient(135deg, currentColor 50%, transparent 50%),
+            linear-gradient(to right, transparent, transparent);
+    background-position:
+            calc(100% - 16px) calc(50% - 3px),
+            calc(100% - 11px) calc(50% - 3px),
+            100% 0;
+    background-size: 6px 6px, 6px 6px, 2.5em 100%;
+    background-repeat: no-repeat;
+}
+
+/* Focus + hover */
+select:hover {
+    background-color: var(--hover-bg);
+}
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* Firefox: thin scrollbar colors inside dropdown */
+select {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+/* WebKit (Chrome, Edge): styled scrollbar */
+select::-webkit-scrollbar {
+    width: 10px;
+}
+select::-webkit-scrollbar-track {
+    background: var(--scroll-track);
+    border-radius: 6px;
+}
+select::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+select::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.9);
+}
+
+/* Hide the default arrow in old IE/Edge */
+select::-ms-expand {
+    display: none;
 }
 
 /* global layout */
@@ -172,12 +242,6 @@ button.ghost {
 
 .tab-panel {
     height: 100%;
-    overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-}
-
-.add_scroll {
-    overflow: auto;
 }
 
 /* workspace */
@@ -245,7 +309,6 @@ button.ghost {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     color: var(--muted-2);
     user-select: none;
-    overflow: auto;
     box-sizing: border-box;
     width: 62px;
     border-right: 1px solid var(--border-color);
@@ -271,7 +334,8 @@ textarea.editor {
     box-sizing: border-box;
     white-space: pre;
     tab-size: 4;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 /* Terminal */
@@ -287,6 +351,18 @@ textarea.editor {
 .terminal .line {
     white-space: pre-wrap;
 }
+
+.editor-tab {
+    overflow: auto;
+}
+
+/* webkit: hide gutter scrollbar */
+.gutter::-webkit-scrollbar { display: none; }
+
+/* ---------- Selection color fixes (Firefox + others) ---------- */
+/* Explicit selection styles so Firefox highlights newline areas consistently */
+textarea.editor::selection { background: rgba(10,132,255,0.18); }
+textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
 
 /* Docs: docs-container is the single scroller for docs panel */
 .docs-container {
@@ -335,10 +411,10 @@ textarea.editor {
     display: block;
     background: none;
     margin: 0;
-    padding: 0; /* remove internal padding */
+    padding: 0;
     border: none;
     color: inherit;
-    font: inherit; /* inherit from pre */
+    font: inherit;
     line-height: inherit;
 }
 
@@ -458,49 +534,39 @@ textarea.editor {
 }
 
 /* Scrollbar styling for internal elements (WebKit + Firefox) */
-.gutter,
-textarea.editor,
 .terminal,
 .docs-container,
-.tab-panel {
+.editor-tab {
     scrollbar-width: thin;
     scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
 
-.gutter::-webkit-scrollbar,
-textarea.editor::-webkit-scrollbar,
 .terminal::-webkit-scrollbar,
 .docs-container::-webkit-scrollbar,
-.tab-panel::-webkit-scrollbar {
+.editor-tab::-webkit-scrollbar {
     width: 12px;
     height: 12px;
 }
 
-.gutter::-webkit-scrollbar-track,
-textarea.editor::-webkit-scrollbar-track,
 .terminal::-webkit-scrollbar-track,
 .docs-container::-webkit-scrollbar-track,
-.tab-panel::-webkit-scrollbar-track {
+.editor-tab::-webkit-scrollbar-track {
     background: var(--scroll-track);
     border-radius: 8px;
 }
 
-.gutter::-webkit-scrollbar-thumb,
-textarea.editor::-webkit-scrollbar-thumb,
 .terminal::-webkit-scrollbar-thumb,
 .docs-container::-webkit-scrollbar-thumb,
-.tab-panel::-webkit-scrollbar-thumb {
+.editor-tab::-webkit-scrollbar-thumb {
     background: var(--scroll-thumb);
     border-radius: 8px;
     border: 3px solid transparent;
     background-clip: padding-box;
 }
 
-.gutter::-webkit-scrollbar-thumb:hover,
-textarea.editor::-webkit-scrollbar-thumb:hover,
 .terminal::-webkit-scrollbar-thumb:hover,
 .docs-container::-webkit-scrollbar-thumb:hover,
-.tab-panel::-webkit-scrollbar-thumb:hover {
+.editor-tab::-webkit-scrollbar-thumb:hover {
     filter: brightness(0.95);
 }
 

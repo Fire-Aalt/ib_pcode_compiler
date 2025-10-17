@@ -49,6 +49,6 @@ pub fn setup_panic_hook() {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn ensure_link() {
-    // Does nothing
+pub fn ensure_dependency() {
+    // Needed for wasm-bindgen
 }
