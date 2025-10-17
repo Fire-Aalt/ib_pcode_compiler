@@ -28,7 +28,6 @@ const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'modu
 
 /* DOM handles */
 const terminal = document.getElementById('terminal');
-const terminalLines = document.getElementById('terminalLines');
 const editor = document.getElementById('editor');
 const gutter = document.getElementById('gutter');
 const sampleSelect = document.getElementById('sampleSelect');
@@ -794,15 +793,23 @@ output "Entire square is " , OK
 `,
 };
 
-
-
-
+function nicifyKey(key) {
+    if (!key) return key;
+    let s = key.replace(/[_-]+/g, ' ');
+    s = s.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+    s = s.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
+    s = s.replace(/\s+/g, ' ').trim();
+    s = s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    return s;
+}
 
 for (const k of Object.keys(samples)) {
     const opt = document.createElement('option');
-    opt.value = k; opt.textContent = k;
+    opt.value = k;
+    opt.textContent = nicifyKey(k);
     sampleSelect.appendChild(opt);
 }
+
 sampleSelect.addEventListener('change', () => {
     const v = sampleSelect.value;
     if (!v) return;
@@ -901,7 +908,7 @@ document.getElementById('fileInput').addEventListener('change', (ev) => {
 });
 runBtn.addEventListener('click', () => {
     currentRunWindow = null;
-    terminalLines.innerHTML = '';
+    terminal.innerHTML = '';
     Atomics.store(control, 0, 0);
     Atomics.notify(control, 0, 1);
     const src = editor.value;
@@ -959,7 +966,7 @@ function showModalPrompt(promptText) {
 }
 
 function appendOutput(text) {
-    terminalLines.innerHTML += text + '\n';
+    terminal.innerHTML += text + '\n';
     terminal.scrollTop = terminal.scrollHeight;
 }
 

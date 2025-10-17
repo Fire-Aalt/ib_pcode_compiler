@@ -72,8 +72,8 @@ select {
             linear-gradient(135deg, currentColor 50%, transparent 50%),
             linear-gradient(to right, transparent, transparent);
     background-position:
-            calc(100% - 16px) calc(50% - 3px),
-            calc(100% - 11px) calc(50% - 3px),
+            calc(100%) calc(50% - 3px),
+            calc(100%) calc(50% - 3px),
             100% 0;
     background-size: 6px 6px, 6px 6px, 2.5em 100%;
     background-repeat: no-repeat;
@@ -336,35 +336,33 @@ textarea.editor {
     tab-size: 4;
     overflow-x: auto;
     overflow-y: hidden;
+    background-clip: padding-box;
+    max-width: 650px;
 }
 
 /* Terminal */
 .terminal {
     padding: 12px;
+    min-width: 0;
+    min-height: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 13px;
+    line-height: 20px;
     color: var(--editor-text);
     background: transparent;
+    box-sizing: border-box;
+    white-space: pre;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-clip: padding-box;
+    max-width: 650px;
     height: 100%;
-    overflow: auto;
-}
-
-.terminal .line {
-    white-space: pre-wrap;
 }
 
 .editor-tab {
     overflow: auto;
 }
 
-/* webkit: hide gutter scrollbar */
-.gutter::-webkit-scrollbar { display: none; }
-
-/* ---------- Selection color fixes (Firefox + others) ---------- */
-/* Explicit selection styles so Firefox highlights newline areas consistently */
-textarea.editor::selection { background: rgba(10,132,255,0.18); }
-textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
-
-/* Docs: docs-container is the single scroller for docs panel */
 .docs-container {
     padding: 18px;
     line-height: 1.6;
@@ -534,6 +532,7 @@ textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
 }
 
 /* Scrollbar styling for internal elements (WebKit + Firefox) */
+.editor-container,
 .terminal,
 .docs-container,
 .editor-tab {
@@ -541,6 +540,7 @@ textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
     scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
 
+.editor-container::-webkit-scrollbar,
 .terminal::-webkit-scrollbar,
 .docs-container::-webkit-scrollbar,
 .editor-tab::-webkit-scrollbar {
@@ -548,6 +548,7 @@ textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
     height: 12px;
 }
 
+.editor-container::-webkit-scrollbar-track,
 .terminal::-webkit-scrollbar-track,
 .docs-container::-webkit-scrollbar-track,
 .editor-tab::-webkit-scrollbar-track {
@@ -555,6 +556,7 @@ textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
     border-radius: 8px;
 }
 
+.editor-container::-webkit-scrollbar-thumb,
 .terminal::-webkit-scrollbar-thumb,
 .docs-container::-webkit-scrollbar-thumb,
 .editor-tab::-webkit-scrollbar-thumb {
@@ -564,6 +566,7 @@ textarea.editor::-moz-selection { background: rgba(10,132,255,0.18); }
     background-clip: padding-box;
 }
 
+.editor-container::-webkit-scrollbar-thumb:hover,
 .terminal::-webkit-scrollbar-thumb:hover,
 .docs-container::-webkit-scrollbar-thumb:hover,
 .editor-tab::-webkit-scrollbar-thumb:hover {
