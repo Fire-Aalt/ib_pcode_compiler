@@ -11,35 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Reorganize files">
-      <change afterPath="$PROJECT_DIR$/www/docs.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/editor.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/modules/worker.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/samples.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/sw.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Successfully switch to using webpack">
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/docs.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/modules/marked.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/modules/sw.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/modules/worker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/samples.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/.bin/create-wasm-app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/LICENSE-APACHE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/LICENSE-MIT" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +30,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/www" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -98,7 +72,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "22.20.0",
     "javascript.nodejs.core.library.typings.version": "22.18.11",
@@ -114,7 +88,7 @@
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
     "ts.external.directory.path": "C:\\Program Files\\JetBrains\\RustRover 2024.3.7\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true",
     "wasm-pack.Build.executor": "Run"
@@ -234,7 +208,7 @@
       <workItem from="1760857661695" duration="763000" />
       <workItem from="1760858469884" duration="150000" />
       <workItem from="1760858647904" duration="5234000" />
-      <workItem from="1760867244454" duration="11101000" />
+      <workItem from="1760867244454" duration="11546000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -380,13 +354,24 @@
       <option name="project" value="LOCAL" />
       <updated>1760703242199</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Successfully switch to using webpack">
+      <option name="closed" value="true" />
+      <created>1760879199531</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1760879199531</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/www" />
+    </ignored-roots>
     <MESSAGE value="Update the repository name" />
     <MESSAGE value="Update rough UI" />
     <MESSAGE value="Fix editor line height + add tabs support + remove line info" />
@@ -405,6 +390,7 @@
     <MESSAGE value="Nicify dropdown names" />
     <MESSAGE value="Add all samples to web" />
     <MESSAGE value="Reorganize files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reorganize files" />
+    <MESSAGE value="Successfully switch to using webpack" />
+    <option name="LAST_COMMIT_MESSAGE" value="Successfully switch to using webpack" />
   </component>
 </project>
