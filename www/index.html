@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>IB Pseudocode Compiler</title>
+
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+    <div class="toolbar">
+        <div class="logo">IB Pseudocode</div>
+        <div class="controls">
+            <select id="sampleSelect" title="Sample programs">
+                <option value="">- Sample Programs -</option>
+            </select>
+
+            <button id="saveBtn" class="secondary">Save</button>
+            <label class="ghost file-label">
+                <input id="fileInput" type="file" />
+                Load
+            </label>
+
+            <button id="runBtn">Run</button>
+        </div>
+
+        <div class="spacer"></div>
+        
+        <nav class="tabs" role="tablist" aria-label="Main tabs">
+            <button class="tab active" data-tab="editor" role="tab" aria-selected="true">Editor</button>
+            <button class="tab" data-tab="docs" role="tab" aria-selected="false">Docs</button>
+            <!-- Report now just a button (opens GitHub issues) -->
+            <button id="reportBtn" class="tab" title="Open GitHub issues">Report Issue</button>
+            <button id="githubBtn" class="tab" title="Open GitHub repository">GitHub</button>
+            <button id="themeToggle" class="ghost" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+        </nav>
+    </div>
+
+    <div class="content">
+        <!-- Editor tab content -->
+        <section id="editorTab" class="tab-panel editor-tab">
+            <div class="workspace">
+                <div class="panel">
+                    <div class="header"><h3>Editor</h3></div>
+
+                    <div class="editor-container">
+                        <div class="gutter" id="gutter"></div>
+<!--                        <div id="editor" style="height:400px;border:1px solid #ddd;"></div>-->
+<!--                        <script type="module" src="./editor.js"></script>-->
+                        <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="header"><h3>Output</h3></div>
+                    <div id="terminal" class="terminal" aria-live="polite" wrap="off"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Docs tab content (Markdown) -->
+        <section id="docsTab" class="tab-panel" hidden>
+            <div class="panel docs-panel">
+                <div class="header"><h3>Documentation</h3></div>
+                <div id="docsContainer" class="docs-container">Loading docs...</div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- modal for input prompt (popup) -->
+<div id="modal" class="modal" style="display:none">
+    <div class="sheet">
+        <label id="modalPrompt">Enter input:</label>
+        <input id="modalInput" />
+        <div class="actions">
+            <button id="modalOk">Submit</button>
+        </div>
+    </div>
+</div>
+<script type="module" src="index.js"></script>
+</body>
+</html>
