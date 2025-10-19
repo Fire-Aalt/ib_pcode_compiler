@@ -12,16 +12,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Reorganize files">
+      <change afterPath="$PROJECT_DIR$/www/docs.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/editor.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/modules/worker.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/samples.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/sw.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/samples.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/samples.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/docs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/main.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/modules/marked.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/modules/sw.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/modules/worker.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/samples.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/.bin/create-wasm-app.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/LICENSE-APACHE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/LICENSE-MIT" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -31,7 +56,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/www" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -66,34 +91,47 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "JavaScript Debug.index.html (1).executor": "Run",
     "JavaScript Debug.index.html.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
+    "javascript.nodejs.core.library.configured.version": "22.20.0",
+    "javascript.nodejs.core.library.typings.version": "22.18.11",
+    "last_opened_file_path": "C:/Users/forty/Documents/RustProjects/ib_pcode_compiler/www",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.serve.executor": "Run",
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\RustRover 2024.3.7\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true",
     "wasm-pack.Build.executor": "Run"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web\modules" />
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web" />
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web\modules" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.index.html">
+  <component name="RunManager" selected="npm.serve">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pseudocompiler --bin ib_pseudocompiler" />
@@ -130,13 +168,13 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ib_pcode_compiler/web/index.html" useBuiltInWebServerPort="true">
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ib_pcode_compiler/www/index.html" useBuiltInWebServerPort="true">
       <method v="2">
         <option name="RunConfigurationTask" enabled="true" run_configuration_name="Build" run_configuration_type="WasmPackCommandRunConfiguration" />
       </method>
     </configuration>
     <configuration name="Build" type="WasmPackCommandRunConfiguration" factoryName="wasm-pack" nameIsGenerated="true">
-      <option name="command" value="build --target web --out-dir ./web/pkg" />
+      <option name="command" value="build --target bundler --out-dir ./www/pkg" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -144,14 +182,37 @@
         <option name="WASM_PACK.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/www/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="serve" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/www/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="serve" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Cargo.Run ib_pcode_compiler" />
       <item itemvalue="Cargo.Test ib_pcode_compiler" />
       <item itemvalue="JavaScript Debug.index.html" />
+      <item itemvalue="npm.serve" />
+      <item itemvalue="npm.build" />
       <item itemvalue="wasm-pack.Build" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.build" />
         <item itemvalue="JavaScript Debug.index.html" />
       </list>
     </recent_temporary>
@@ -170,6 +231,10 @@
       <workItem from="1760603410024" duration="2671000" />
       <workItem from="1760636618616" duration="13727000" />
       <workItem from="1760683962015" duration="18391000" />
+      <workItem from="1760857661695" duration="763000" />
+      <workItem from="1760858469884" duration="150000" />
+      <workItem from="1760858647904" duration="5234000" />
+      <workItem from="1760867244454" duration="11101000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
