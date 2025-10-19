@@ -19,6 +19,14 @@ if ("serviceWorker" in navigator) {
     console.warn("Cannot register a service worker");
 }
 
+
+
+import { createMinimalEditor } from "./editor.js";
+import {EditorState} from "@codemirror/state";
+
+const container = document.getElementById("editor");
+const editorView = createMinimalEditor(container, `fn main() {\n  println!("Hello");\n}`);
+
 const GH_OWNER = 'Fire-Aalt';
 const GH_REPO = 'ib_pcode_compiler';
 
@@ -31,8 +39,6 @@ const worker = new Worker(new URL('./modules/worker.js', import.meta.url), { typ
 
 /* DOM handles */
 const terminal = document.getElementById('terminal');
-const editor = document.getElementById('editor');
-const gutter = document.getElementById('gutter');
 const sampleSelect = document.getElementById('sampleSelect');
 
 const modal = document.getElementById('modal');
@@ -126,7 +132,7 @@ themeToggle.addEventListener('click', () => {
 /* Report button opens GitHub issues directly (prefills snapshot) */
 reportBtn.addEventListener('click', () => {
     const title = encodeURIComponent('Bug report: [short description]');
-    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n**Editor snapshot:**\n\`\`\`\n${editor.value}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
+    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n**Editor snapshot:**\n\`\`\`\n${editorView.state.doc.toString()}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
     const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
     window.open(url, '_blank', 'noopener');
 });
@@ -156,115 +162,26 @@ for (const k of Object.keys(samples)) {
 sampleSelect.addEventListener('change', () => {
     const v = sampleSelect.value;
     if (!v) return;
-    editor.value = samples[v];
-    updateGutter();
+    setEditorCodeText(samples[v]);
 
     setTimeout(() => {
         sampleSelect.value = '';
     }, 150);
 });
 
-editor.value = samples["welcome"];
-updateGutter();
 
+setEditorCodeText(samples["welcome"]);
 
-/* Gutter / editor logic */
-function updateGutter() {
-    const lines = Math.max(1, editor.value.split('\n').length);
-    gutter.innerHTML = '';
-    const cs = getComputedStyle(editor);
-    let lineHeight = parseFloat(cs.lineHeight);
-    if (!Number.isFinite(lineHeight) || lineHeight === 0) lineHeight = 20;
-    for (let i = 1; i <= lines; i++) {
-        const d = document.createElement('div');
-        d.textContent = i.toString();
-        d.style.height = lineHeight + 'px';
-        d.style.lineHeight = lineHeight + 'px';
-        gutter.appendChild(d);
-    }
+function setEditorCodeText(text) {
+    editorView.dispatch({
+        changes: { from: 0, to: editorView.state.doc.length, insert: text },
+        selection: { anchor: 0 }
+    });
 }
-editor.addEventListener('input', () => updateGutter());
-
-editor.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab') {
-        setTimeout(updateGutter, 0);
-        return;
-    }
-    e.preventDefault();
-
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const value = editor.value;
-    const tabChar = '\t';
-
-    // Line numbers for selection
-    const selStartLine = value.slice(0, start).split('\n').length - 1;
-    const selEndLine = value.slice(0, end).split('\n').length - 1;
-
-    // compute line start indices
-    const lines = value.split('\n');
-    const lineStartIndices = [];
-    let acc = 0;
-    for (let i = 0; i < lines.length; i++) {
-        lineStartIndices.push(acc);
-        acc += lines[i].length + 1; // +1 for newline
-    }
-
-    // Multi-line indent/unindent
-    if (selStartLine !== selEndLine || (start !== end && value.slice(start, end).includes('\n'))) {
-        const isUnindent = e.shiftKey;
-
-        // Build replacement for the exact block from first affected line start
-        const blockStart = lineStartIndices[selStartLine];
-        const blockEnd = lineStartIndices[selEndLine] + lines[selEndLine].length; // exclusive end index
-
-        // Extract the block lines and modify them
-        const blockText = value.slice(blockStart, blockEnd);
-        const blockLines = blockText.split('\n');
-
-        for (let li = 0; li < blockLines.length; li++) {
-            if (!isUnindent) {
-                blockLines[li] = tabChar + blockLines[li];
-            } else {
-                if (blockLines[li].startsWith('\t')) blockLines[li] = blockLines[li].slice(1);
-                else if (blockLines[li].startsWith('    ')) blockLines[li] = blockLines[li].slice(4);
-            }
-        }
-
-        const replacement = blockLines.join('\n');
-        
-        // Replace only the block range so undo works properly
-        editor.setRangeText(replacement, blockStart, blockEnd, 'select');
-
-        // After 'select' the selection is the inserted block; adjust to expected selection (same lines)
-        const newSelStart = blockStart;
-        const newSelEnd = blockStart + replacement.length;
-
-        editor.selectionStart = newSelStart;
-        editor.selectionEnd = newSelEnd;
-
-        // notify listeners and update gutter
-        editor.dispatchEvent(new Event('input', { bubbles: true }));
-        setTimeout(updateGutter, 0);
-        return;
-    }
-
-    // Single-caret insertion (no line breaks in selection)
-    // Use setRangeText to insert tab and preserve undo
-    editor.setRangeText(tabChar, start, end, 'end');
-
-    // ensure caret placed after inserted tab
-    const caret = start + tabChar.length;
-    editor.selectionStart = editor.selectionEnd = caret;
-
-    editor.dispatchEvent(new Event('input', { bubbles: true }));
-    setTimeout(updateGutter, 0);
-});
-
 
 /* Save/Load/Run wiring */
 saveBtn.addEventListener('click', () => {
-    const blob = new Blob([editor.value], { type: 'text/plain' });
+    const blob = new Blob([editorView.state.doc.toString()], { type: 'text/plain' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'program.pseudo';
@@ -276,9 +193,8 @@ document.getElementById('fileInput').addEventListener('change', (ev) => {
     const f = ev.target.files[0]; 
     if (!f) return;
     const r = new FileReader(); 
-    r.onload = () => { 
-        editor.value = r.result;
-        updateGutter();
+    r.onload = () => {
+        setEditorCodeText(r.result);
     }; 
     r.readAsText(f);
 });
@@ -288,7 +204,7 @@ runBtn.addEventListener('click', () => {
     terminal.innerHTML = '';
     Atomics.store(control, 0, 0);
     Atomics.notify(control, 0, 1);
-    const src = editor.value;
+    const src = editorView.state.doc.toString();
     worker.postMessage({ type: 'run', source: src, runId: Date.now() });
 });
 
