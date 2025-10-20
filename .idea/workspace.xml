@@ -11,31 +11,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix small issues">
-      <change afterPath="$PROJECT_DIR$/www/styles/_variables.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/base.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/controls.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/docs.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/editor.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/file-label.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/modal.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/panels.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/tables.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/terminal.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/components/toolbar.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/index.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/src/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/worker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles.css" beforeDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Separate styles">
       <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -232,7 +208,7 @@
       <workItem from="1760858647904" duration="5234000" />
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
-      <workItem from="1760956300828" duration="18147000" />
+      <workItem from="1760956300828" duration="18757000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -466,7 +442,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760975352362</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Separate styles">
+      <option name="closed" value="true" />
+      <created>1760986485072</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1760986485072</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -476,7 +460,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Add rough docs tab" />
     <MESSAGE value="Fix scrolls + fix some styling + add light/dark themes" />
     <MESSAGE value="Fix code blocks styling in docs" />
     <MESSAGE value="Fix links jumping in docs" />
@@ -501,6 +484,7 @@
     <MESSAGE value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
     <MESSAGE value="Add bootstrap.js + fix prod build" />
     <MESSAGE value="Fix small issues" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix small issues" />
+    <MESSAGE value="Separate styles" />
+    <option name="LAST_COMMIT_MESSAGE" value="Separate styles" />
   </component>
 </project>

@@ -1,8 +1,7 @@
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const RemarkHTML = require('remark-html');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isDev = argv.mode === 'development' || env.WEBPACK_SERVE;
@@ -56,7 +55,6 @@ module.exports = (env, argv) => {
     experiments: {
       asyncWebAssembly: true,
     },
-
     plugins: [
       new HtmlWebpackPlugin({ template: 'index.html' }),
       new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' })
