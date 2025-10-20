@@ -258,7 +258,6 @@ button.ghost {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     min-height: 520px;
-    padding: 12px;
     box-sizing: border-box;
 }
 
@@ -270,7 +269,8 @@ button.ghost {
     flex-direction: column;
     height: 100%;
     border: 1px solid var(--border-color);
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 .panel .header {
@@ -304,29 +304,19 @@ button.ghost {
     color: var(--muted);
 }
 
-/* container style analogous to .editor-container */
-.editor-container {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-}
-.cm-editor .cm-scroller .cm-content {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-}
-/*.editor {*/
-/*    display: flex;*/
-/*    flex: 1;*/
-/*    min-height: 0;*/
-/*}*/
 
-/*.cm-editor {*/
-/*    display: flex;*/
-/*    flex: 1;*/
-/*    min-height: 0;*/
-/*}*/
-
+/* Content area */
+.cm-editor .cm-content {
+    border: none;
+    padding-top: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    line-height: 19px;
+    /*background: var(--editor-bg);*/
+    white-space: pre;
+    /*overflow-x: auto;*/
+    /*overflow-y: hidden;*/
+    background-clip: padding-box;
+}
 
 /* Gutter container */
 .cm-editor .cm-gutters {
@@ -342,29 +332,11 @@ button.ghost {
     box-sizing: border-box;
 }
 
-/* Content area */
-.cm-editor .cm-content {
-    flex: 1;
-    border: none;
-    padding-top: 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    line-height: 19px;
-    
-    /*background: var(--editor-bg); /* SELECTION*/ 
-    white-space: pre;
-    overflow-x: auto;
-    overflow-y: hidden;
-    background-clip: padding-box;
-    max-width: 600px;
-}
 .cm-editor .cm-scroller .cm-content .cm-line {
-    /*display: flex;*/
-    /*overflow: hidden;*/
-    /*flex-grow: 1;*/
-    /*min-height: 20px;*/
+    padding: 0 0 0 1px !important;
 }
 
-.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
+.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, /* unfocused selection */
 .cm-editor .cm-selectionBackground {
     background-color: var(--cm-selection-bg) !important;
     color: var(--cm-selection-text) !important;
@@ -387,15 +359,9 @@ button.ghost {
     border-left: 2px solid var(--cm-cursor) !important;
 }
 
-
 .cm-editor .cm-gutters .cm-gutterElement {
-    color: var(--muted);
     padding-left: 8px;
-    padding-right: 8px;
-}
-
-.cm-editor::selection {
-    background: rgb(255, 255, 255);
+    padding-right: 24px;
 }
 
 /* Terminal */
@@ -412,8 +378,6 @@ button.ghost {
     overflow-x: auto;
     overflow-y: hidden;
     background-clip: padding-box;
-    max-width: 650px;
-    height: 100%;
 }
 
 .editor-tab {
