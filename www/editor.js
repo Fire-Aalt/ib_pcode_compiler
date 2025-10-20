@@ -8,9 +8,6 @@ import {
     bracketMatching, foldKeymap
 } from "@codemirror/language"
 import {
-    searchKeymap, highlightSelectionMatches
-} from "@codemirror/search"
-import {
     defaultKeymap, history, historyKeymap, indentWithTab
 } from "@codemirror/commands"
 
@@ -46,8 +43,6 @@ export function createMinimalEditor(parentElement, initialText = "") {
             highlightActiveLine(),
             // Style the gutter for current line specially
             highlightActiveLineGutter(),
-            // Highlight text that matches the selected text
-            highlightSelectionMatches(),
             keymap.of([
                 indentWithTab,
                 // A large set of basic bindings

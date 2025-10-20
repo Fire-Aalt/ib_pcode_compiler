@@ -22,6 +22,10 @@
     --link-color: #0a84ff;
     --link-hover-color: #005ce6;
     --hover-bg: #f1f5f9;
+    --cm-selection-bg: rgba(10, 132, 255, 0.15);
+    --cm-selection-text: #0b1726;
+    --cm-activeline-bg: rgba(80, 80, 80, 0.1);
+    --cm-cursor: black;
     select { background-color: var(--panel); }
 }
 
@@ -48,6 +52,10 @@ body[data-theme="dark"] {
     --link-color: #5696ff;
     --link-hover-color: #91b8ff;
     --hover-bg: #2a2a2a;
+    --cm-selection-bg: rgba(86, 150, 255, 0.30);
+    --cm-selection-text: #d4d4d4;
+    --cm-activeline-bg: rgba(159, 159, 159, 0.2);
+    --cm-cursor: white;
     select { background-color: var(--panel); }
 }
 
@@ -296,58 +304,107 @@ button.ghost {
     color: var(--muted);
 }
 
-/* Editor area */
+/* container style analogous to .editor-container */
 .editor-container {
     display: flex;
     flex: 1;
     min-height: 0;
 }
+.cm-editor .cm-scroller .cm-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+/*.editor {*/
+/*    display: flex;*/
+/*    flex: 1;*/
+/*    min-height: 0;*/
+/*}*/
 
-.gutter {
+/*.cm-editor {*/
+/*    display: flex;*/
+/*    flex: 1;*/
+/*    min-height: 0;*/
+/*}*/
+
+
+/* Gutter container */
+.cm-editor .cm-gutters {
     background: var(--gutter-bg);
-    padding: 6px 12px 6px 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     color: var(--muted-2);
-    user-select: none;
     box-sizing: border-box;
-    width: 62px;
     border-right: 1px solid var(--border-color);
 }
 
-.gutter div {
-    padding: 0 6px;
+.cm-editor .cm-gutters .cm-gutterElement {
     text-align: right;
     box-sizing: border-box;
 }
 
-textarea.editor {
+/* Content area */
+.cm-editor .cm-content {
     flex: 1;
-    border: 0;
+    border: none;
     padding-top: 6px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    font-size: 13px;
-    line-height: 20px;
-    color: var(--editor-text);
-    background: var(--editor-bg);
-    resize: none;
-    outline: none;
-    box-sizing: border-box;
+    line-height: 19px;
+    
+    /*background: var(--editor-bg); /* SELECTION*/ 
     white-space: pre;
-    tab-size: 4;
     overflow-x: auto;
     overflow-y: hidden;
     background-clip: padding-box;
-    max-width: 650px;
+    max-width: 600px;
+}
+.cm-editor .cm-scroller .cm-content .cm-line {
+    /*display: flex;*/
+    /*overflow: hidden;*/
+    /*flex-grow: 1;*/
+    /*min-height: 20px;*/
+}
+
+.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
+.cm-editor .cm-selectionBackground {
+    background-color: var(--cm-selection-bg) !important;
+    color: var(--cm-selection-text) !important;
+}
+
+.cm-editor.cm-focused {
+    outline: none !important;
+}
+
+.cm-editor .cm-scroller .cm-content .cm-activeLine  {
+    background: var(--cm-activeline-bg) !important;
+}
+
+.cm-editor .cm-gutterElement.cm-activeLineGutter {
+    background: var(--cm-activeline-bg) !important;
+    font-weight: bold;
+}
+
+.cm-cursor {
+    border-left: 2px solid var(--cm-cursor) !important;
+}
+
+
+.cm-editor .cm-gutters .cm-gutterElement {
+    color: var(--muted);
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.cm-editor::selection {
+    background: rgb(255, 255, 255);
 }
 
 /* Terminal */
 .terminal {
-    padding: 12px;
+    padding: 6px 2px 0 6px;
     min-width: 0;
     min-height: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    font-size: 13px;
-    line-height: 20px;
+    line-height: 19px;
     color: var(--editor-text);
     background: transparent;
     box-sizing: border-box;
