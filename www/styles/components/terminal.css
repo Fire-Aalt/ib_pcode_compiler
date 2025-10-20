@@ -1,0 +1,18 @@
+.terminal {
+    padding: 4px 2px 0 6px;
+    min-width: 0;
+    min-height: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    line-height: 19px;
+    color: var(--editor-text);
+    background: transparent;
+    box-sizing: border-box;
+    white-space: pre;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-clip: padding-box;
+}
+
+.editor-tab {
+    overflow: auto;
+}

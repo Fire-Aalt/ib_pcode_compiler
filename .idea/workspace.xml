@@ -11,23 +11,31 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add bootstrap.js + fix prod build">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix small issues">
+      <change afterPath="$PROJECT_DIR$/www/styles/_variables.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/base.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/controls.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/docs.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/editor.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/file-label.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/modal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/panels.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/tables.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/terminal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/components/toolbar.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/.appveyor.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/.github/dependabot.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/Cargo.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/LICENSE_APACHE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/LICENSE_MIT" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/src/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/worker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,8 +47,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
@@ -114,14 +122,14 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www\styles" />
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www\styles\components" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www\src" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
-      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web" />
-      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web\modules" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.serve">
+  <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pseudocompiler --bin ib_pseudocompiler" />
@@ -200,8 +208,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.build" />
         <item itemvalue="JavaScript Debug.index.html" />
+        <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
   </component>
@@ -224,7 +232,7 @@
       <workItem from="1760858647904" duration="5234000" />
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
-      <workItem from="1760956300828" duration="11140000" />
+      <workItem from="1760956300828" duration="18147000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -450,7 +458,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760973420550</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Fix small issues">
+      <option name="closed" value="true" />
+      <created>1760975352362</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1760975352362</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -460,7 +476,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix editor line height + add tabs support + remove line info" />
     <MESSAGE value="Add rough docs tab" />
     <MESSAGE value="Fix scrolls + fix some styling + add light/dark themes" />
     <MESSAGE value="Fix code blocks styling in docs" />
@@ -485,6 +500,7 @@
     <MESSAGE value="Fix flex on main page" />
     <MESSAGE value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
     <MESSAGE value="Add bootstrap.js + fix prod build" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add bootstrap.js + fix prod build" />
+    <MESSAGE value="Fix small issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix small issues" />
   </component>
 </project>

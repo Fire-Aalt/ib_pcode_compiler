@@ -1,0 +1,30 @@
+/* Tables — use variables (applies to panel and docs) */
+.panel table,
+.docs-container table {
+    width: var(--table-width);
+    border-collapse: collapse;
+    background: var(--table-bg);
+}
+
+
+.panel table th,
+.panel table td,
+.docs-container table th,
+.docs-container table td {
+    border: 1px var(--table-border-style) var(--table-border-color);
+    padding: var(--table-cell-padding);
+    text-align: left;
+    color: var(--table-text);
+}
+
+
+.panel table thead,
+.docs-container table thead {
+    background: var(--table-head-bg);
+}
+
+
+.panel table tbody tr:nth-child(even),
+.docs-container table tbody tr:nth-child(even) {
+    background: var(--table-row-alt-bg);
+}

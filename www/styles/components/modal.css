@@ -1,0 +1,40 @@
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2,6,23,0.48);
+    z-index: 60;
+}
+
+.modal .sheet {
+    background: var(--panel);
+    padding: 15px;
+    border-radius: var(--radius);
+    min-width: 320px;
+    box-shadow: 0 30px 80px rgba(2,6,23,0.4);
+    border: 1px solid var(--border-color);
+}
+
+.modal label {
+    display: block;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.modal input {
+    width: 300px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text);
+}
+
+.modal .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}

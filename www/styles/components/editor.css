@@ -1,0 +1,54 @@
+.cm-editor .cm-content {
+    border: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    line-height: 19px;
+    /*background: var(--editor-bg); APPLIES TO SELECTION*/
+    white-space: pre;
+    background-clip: padding-box;
+}
+
+/* Gutter container */
+.cm-editor .cm-gutters {
+    background: var(--panel);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    box-sizing: border-box;
+    border-right: 1px solid var(--border-color);
+}
+
+.cm-editor .cm-gutters .cm-gutterElement {
+    text-align: right;
+    box-sizing: border-box;
+    line-height: 19px;
+}
+
+.cm-editor .cm-scroller .cm-content .cm-line {
+    padding: 0 0 0 1px !important;
+}
+
+.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, /* unfocused selection */
+.cm-editor .cm-selectionBackground {
+    background-color: var(--cm-selection-bg) !important;
+    color: var(--cm-selection-text) !important;
+}
+
+.cm-editor.cm-focused {
+    outline: none !important;
+}
+
+.cm-editor .cm-scroller .cm-content .cm-activeLine  {
+    background: var(--cm-activeline-bg) !important;
+}
+
+.cm-editor .cm-gutterElement.cm-activeLineGutter {
+    background: var(--cm-activeline-bg) !important;
+    font-weight: bold;
+}
+
+.cm-cursor {
+    border-left: 2px solid var(--cm-cursor) !important;
+}
+
+.cm-editor .cm-gutters .cm-gutterElement {
+    padding-left: 8px;
+    padding-right: 24px;
+}

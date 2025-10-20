@@ -1,0 +1,84 @@
+.docs-container {
+    padding: 18px;
+    line-height: 1.6;
+    color: var(--text);
+    flex: 1;
+    height: calc(100% - 0px);
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.docs-container a {
+    color: var(--link-color);
+    text-decoration: underline;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+
+.docs-container a:hover {
+    color: var(--link-hover-color);
+}
+
+.docs-container a:visited {
+    opacity: 0.85;
+}
+
+/* Strongly enforce the background and colors for code blocks and pre */
+.docs-container pre {
+    background: var(--code-bg) !important;
+    color: var(--code-text) !important;
+    border: 1px solid var(--code-border) !important;
+    border-radius: calc(var(--radius, 6px) - 2px);
+    box-sizing: border-box;
+    padding: 10px 12px; /* tighter top padding */
+    margin: 0 0 16px 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre;
+    overflow: auto;
+}
+
+/* prevent extra offset/indent added by <code> */
+.docs-container pre code {
+    display: block;
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+}
+
+/* Inline code */
+.docs-container code {
+    background: var(--code-inline-bg) !important;
+    color: var(--code-text) !important;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.95em;
+    white-space: pre-wrap;
+}
+
+.docs-container pre[class*="language-"],
+.docs-container .hljs,
+.docs-container code[class*="language-"],
+.docs-container .token {
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.docs-container pre[class*="language-"] {
+    background: var(--code-bg) !important;
+    color: var(--code-text) !important;
+}
+
+@media (max-width: 700px) {
+    .docs-container pre {
+        font-size: 12px;
+        padding: 10px;
+    }
+}
+
+

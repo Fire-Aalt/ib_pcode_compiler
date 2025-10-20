@@ -1,0 +1,61 @@
+/* responsive */
+@media (max-width: 900px) {
+    .workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .spacer {
+        display: none;
+    }
+}
+
+/* Scrollbar styling for internal elements (WebKit + Firefox) */
+.terminal,
+.docs-container,
+.editor-tab {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+.terminal::-webkit-scrollbar,
+.docs-container::-webkit-scrollbar,
+.editor-tab::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.terminal::-webkit-scrollbar-track,
+.docs-container::-webkit-scrollbar-track,
+.editor-tab::-webkit-scrollbar-track {
+    background: var(--scroll-track);
+    border-radius: 8px;
+}
+
+.terminal::-webkit-scrollbar-thumb,
+.docs-container::-webkit-scrollbar-thumb,
+.editor-tab::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+
+.terminal::-webkit-scrollbar-thumb:hover,
+.docs-container::-webkit-scrollbar-thumb:hover,
+.editor-tab::-webkit-scrollbar-thumb:hover {
+    filter: brightness(0.95);
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    scrollbar-width: none;
+}
+
+/* small helper */
+pre code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    font-size: 13px;
+}

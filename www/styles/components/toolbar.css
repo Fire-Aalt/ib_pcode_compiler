@@ -1,0 +1,45 @@
+/* toolbar */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    padding: 10px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 10px var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+
+.logo {
+    font-weight: 700;
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: calc(var(--radius) - 2px);
+    background: linear-gradient(90deg, rgba(10,132,255,0.08), transparent);
+}
+
+
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-left: 12px;
+}
+
+
+.tab {
+    background: transparent;
+    border: 0;
+    color: var(--muted-2);
+    padding: 8px 12px;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+}
+
+
+.tab.active {
+    background: var(--tab-active-bg);
+    color: var(--text);
+    box-shadow: 0 4px 10px var(--shadow);
+    border: 1px solid var(--border-color);
+}

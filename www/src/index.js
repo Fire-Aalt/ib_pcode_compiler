@@ -188,8 +188,8 @@ runBtn.addEventListener('click', () => {
 /* Worker messaging */
 worker.onmessage = (ev) => {
     const msg = ev.data;
-    if (msg.type === 'wasm-ready') {
-        console.log('wasm-ready', msg);
+    if (msg.type === 'started') {
+        worker.postMessage({ type: 'init', controlSab: sab });
     } else if (msg.type === 'request-input') {
         lastRequestId = msg.id;
         showModalPrompt(msg.prompt);
@@ -206,7 +206,6 @@ worker.onmessage = (ev) => {
         if (msg.text) appendOutput(msg.text);
     }
 };
-worker.postMessage({ type: 'init', controlSab: sab });
 
 function writeResponseAndWake(text) {
     const enc = new TextEncoder();

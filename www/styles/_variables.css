@@ -1,0 +1,85 @@
+/* Theme variables — default = light */
+:root{
+    --bg: #ffffff;
+    --panel: #f3f4f6;
+    --muted: #6b7280;
+    --accent: #0a84ff;
+    --text: #0f172a;
+    --muted-2: #9ca3af;
+    --editor-bg: #ffffff;
+    --editor-text: #0b1726;
+    --gutter-bg: #f8fafc;
+    --shadow: rgba(12,20,30,0.03);
+    --scroll-thumb: rgba(11,22,38,0.12);
+    --scroll-track: rgba(0,0,0,0.03);
+    --border-color: rgba(0,0,0,0.06);
+    --tab-active-bg: rgba(0,0,0,0.06);
+    --radius: 6px;
+    --code-bg: #eae9e9;
+    --code-text: #0b1726;
+    --code-border: rgba(0,0,0,0.06);
+    --code-inline-bg: rgba(0,0,0,0.04);
+    --link-color: #0a84ff;
+    --link-hover-color: #005ce6;
+    --hover-bg: #f1f5f9;
+    --cm-selection-bg: rgba(10,132,255,0.15);
+    --cm-selection-text: #0b1726;
+    --cm-activeline-bg: rgba(80,80,80,0.1);
+    --cm-cursor: black;
+
+    /* table vars */
+    --table-width: 100%;
+    --table-bg: transparent;
+    --table-border-style: solid;
+    --table-border-color: rgba(0,0,0,0.06);
+    --table-cell-padding: 8px;
+    --table-head-bg: #f7f7f7;
+    --table-row-alt-bg: #f2f2f2;
+    --table-text: var(--text);
+    --table-border-radius: 4px;
+
+    /* hr vars */
+    --hr-color: rgba(0,0,0,0.3);
+    --hr-height: 1px;
+    --hr-margin: 12px 0;
+    --hr-radius: 1px;
+    --hr-opacity: 1;
+}
+
+/* Dark theme overrides (kept here for convenience) */
+body[data-theme="dark"] {
+    --bg: #1e1e1e;
+    --panel: #252526;
+    --muted: #9ca3af;
+    --accent: #5696ff;
+    --text: #d4d4d4;
+    --muted-2: #a3aab6;
+    --editor-bg: #1e1e1e;
+    --editor-text: #d4d4d4;
+    --gutter-bg: #2a2a2a;
+    --shadow: rgba(0,0,0,0.18);
+    --scroll-thumb: rgba(255,255,255,0.06);
+    --scroll-track: rgba(255,255,255,0.02);
+    --border-color: rgba(255,255,255,0.06);
+    --tab-active-bg: rgba(255,255,255,0.04);
+    --code-bg: #212124;
+    --code-text: #dbeafe;
+    --code-border: rgba(255,255,255,0.04);
+    --code-inline-bg: rgba(255,255,255,0.03);
+    --link-color: #5696ff;
+    --link-hover-color: #91b8ff;
+    --hover-bg: #2a2a2a;
+    --cm-selection-bg: rgba(86,150,255,0.30);
+    --cm-selection-text: #d4d4d4;
+    --cm-activeline-bg: rgba(159,159,159,0.2);
+    --cm-cursor: white;
+
+    /* table overrides */
+    --table-bg: transparent;
+    --table-border-color: rgba(255,255,255,0.06);
+    --table-head-bg: #222222;
+    --table-row-alt-bg: #292929;
+    --table-text: var(--text);
+
+    --hr-color: rgba(255,255,255,0.3);
+}

@@ -5,23 +5,18 @@ let control = null;
 let respBuf = null; // Uint8Array view
 let reqId = 0;
 
-self.onmessage = async (ev) => {
+self.onmessage = (ev) => {
     const msg = ev.data;
     
     if (msg.type === 'init') {
         controlSab = msg.controlSab;
         control = new Int32Array(controlSab, 0, 1);
         respBuf = new Uint8Array(controlSab, Int32Array.BYTES_PER_ELEMENT);
-
-        try {
-            console.log("[worker] Initializing wasm init()...");
-            console.log("[worker] wasm initialized");
-        } catch (e) {
-            console.error("[worker] wasm init() failed:", e);
-        }
+        
+        console.log("[worker] wasm initialized");
     } else if (msg.type === 'run') {
         try {
-            console.log("[worker] ▶ Running wasm program...");
+            console.log("[worker] Running wasm program...");
             wasm.run_program_wasm(msg.source);
             self.postMessage({ type: 'finish', text: "Program finished successfully" });
             console.log("[worker] Program finished");
@@ -31,6 +26,8 @@ self.onmessage = async (ev) => {
         }
     }
 };
+
+self.postMessage({ type: 'started' });
 
 // This is synchronous from the worker's point of view:
 // 1) set control to "waiting" (1)

@@ -2,6 +2,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const RemarkHTML = require('remark-html');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isDev = argv.mode === 'development' || env.WEBPACK_SERVE;
@@ -21,24 +22,12 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            'style-loader',
+            MiniCssExtractPlugin.loader,
             {
               loader: 'css-loader',
-              options: {
-                import: false,
-                modules: true
-              }
+              options: { importLoaders: 1, sourceMap: isDev }
             }
           ],
-          include: /\.module\.css$/
-        },
-        {
-          test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader'
-          ],
-          exclude: /\.module\.css$/
         },
           // MARKDOWN rule
         {
@@ -69,8 +58,8 @@ module.exports = (env, argv) => {
     },
 
     plugins: [
-      new CopyWebpackPlugin({ patterns: [{ from: "index.html" }] }),
-      new MiniCssExtractPlugin({ filename: "styles.css" })
+      new HtmlWebpackPlugin({ template: 'index.html' }),
+      new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' })
     ],
   };
 } 

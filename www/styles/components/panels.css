@@ -1,0 +1,92 @@
+/* content & panels */
+.content {
+    display: block;
+    height: calc(100vh - 128px);
+    box-sizing: border-box;
+}
+
+.tab-panel {
+    height: 100%;
+}
+
+/* workspace */
+.workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    min-height: 520px;
+    box-sizing: border-box;
+}
+
+
+.panel {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 18px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--border-color);
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.panel .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.panel .header h3 {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.panel hr {
+    border: none;
+    height: var(--hr-height);
+    background-color: var(--hr-color);
+    opacity: var(--hr-opacity);
+    margin: var(--hr-margin);
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--hr-radius);
+}
+
+
+.panel table {
+    width: var(--table-width);
+    border-collapse: collapse;
+    background: var(--table-bg);
+}
+
+.panel table th,
+.panel table td {
+    border: 1px var(--table-border-style) var(--table-border-color);
+    padding: var(--table-cell-padding);
+    text-align: left;
+    color: var(--table-text);
+}
+
+.panel table thead {
+    background: var(--table-head-bg);
+}
+
+.panel table tbody tr:nth-child(even) {
+    background: var(--table-row-alt-bg);
+}
+
+.panel .footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--border-color);
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
