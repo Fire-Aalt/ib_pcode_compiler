@@ -16,7 +16,7 @@ self.onmessage = async (ev) => {
 
         try {
             console.log("[worker] Initializing wasm init()...");
-            console.log("[worker] ✅ wasm initialized");
+            console.log("[worker] wasm initialized");
         } catch (e) {
             console.error("[worker] wasm init() failed:", e);
         }
@@ -24,7 +24,8 @@ self.onmessage = async (ev) => {
         try {
             console.log("[worker] ▶ Running wasm program...");
             wasm.run_program_wasm(msg.source);
-            console.log("[worker] ✅ Program finished");
+            self.postMessage({ type: 'finish', text: "Program finished successfully" });
+            console.log("[worker] Program finished");
         } catch (e) {
             console.error("[worker] Error during run:", e);
             if (e && e.stack) console.error(e.stack);

@@ -310,7 +310,6 @@ button.ghost {
 /* Content area */
 .cm-editor .cm-content {
     border: none;
-    padding-top: 6px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     line-height: 19px;
     /*background: var(--editor-bg); APPLIES TO SELECTION*/
@@ -367,7 +366,7 @@ button.ghost {
 
 /* Terminal */
 .terminal {
-    padding: 6px 2px 0 6px;
+    padding: 4px 2px 0 6px;
     min-width: 0;
     min-height: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;

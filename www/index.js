@@ -217,6 +217,11 @@ worker.onmessage = (ev) => {
         showModalPrompt(msg.prompt);
     } else if (msg.type === 'output') {
         appendOutput(msg.text);
+    } else if (msg.type === 'finish') {
+        if (terminal.innerText.length !== 0) {
+            appendOutput("\n");
+        }
+        appendOutput(msg.text);
     } else if (msg.type === 'error') {
         appendOutput('ERROR: ' + msg.message);
     } else {
@@ -262,7 +267,9 @@ function showModalPrompt(promptText) {
 }
 
 function appendOutput(text) {
-    terminal.innerHTML += text + '\n';
+    let node = document.createElement('div');
+    node.innerHTML = text;
+    terminal.appendChild(node);
     terminal.scrollTop = terminal.scrollHeight;
 }
 

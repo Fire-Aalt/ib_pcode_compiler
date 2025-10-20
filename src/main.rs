@@ -15,9 +15,6 @@ fn main() {
         ib_pcode_compiler::ensure_dependency();
     }
 }
-// TODO: use real IDE text editor
-// TODO: add "Program finished" output in the terminal
-
 // TODO: tabs
 // At line: 2
 // |
