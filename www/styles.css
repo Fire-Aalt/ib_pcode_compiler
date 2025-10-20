@@ -26,6 +26,20 @@
     --cm-selection-text: #0b1726;
     --cm-activeline-bg: rgba(80, 80, 80, 0.1);
     --cm-cursor: black;
+    --table-width: 100%;
+    --table-bg: transparent;
+    --table-border-style: solid;
+    --table-border-color: rgba(0,0,0,0.06);
+    --table-cell-padding: 8px;
+    --table-head-bg: #f7f7f7;
+    --table-row-alt-bg: #f2f2f2;
+    --table-text: var(--text);
+    --table-border-radius: 4px; /* optional if you want rounded table corners later */
+    --hr-color: rgba(0,0,0,0.3);
+    --hr-height: 1px;
+    --hr-margin: 12px 0;
+    --hr-radius: 1px; /* subtle rounding if you want */
+    --hr-opacity: 1;
     select { background-color: var(--panel); }
 }
 
@@ -56,6 +70,12 @@ body[data-theme="dark"] {
     --cm-selection-text: #d4d4d4;
     --cm-activeline-bg: rgba(159, 159, 159, 0.2);
     --cm-cursor: white;
+    --table-bg: transparent;
+    --table-border-color: rgba(255,255,255,0.06);
+    --table-head-bg: #222222;
+    --table-row-alt-bg: #292929;
+    --table-text: var(--text);
+    --hr-color: rgba(255,255,255,0.3);
     select { background-color: var(--panel); }
 }
 
@@ -70,7 +90,6 @@ select {
     border-radius: 6px;
     padding: 6px 32px 6px 10px;
     cursor: pointer;
-    transition: background 0.15s, border 0.15s;
 }
 
 /* Themed arrow made with CSS (no image) */
@@ -139,7 +158,7 @@ body {
 .app {
     grid-template-rows: 64px 1fr;
     padding: 14px;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 10px auto;
     box-sizing: border-box;
     display: flex;
@@ -291,6 +310,40 @@ button.ghost {
     color: var(--text);
 }
 
+.panel hr {
+    border: none;                      
+    height: var(--hr-height);          
+    background-color: var(--hr-color);
+    opacity: var(--hr-opacity);
+    margin: var(--hr-margin);
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--hr-radius);
+}
+
+
+.panel table {
+    width: var(--table-width);
+    border-collapse: collapse;
+    background: var(--table-bg);
+}
+
+.panel table th,
+.panel table td {
+    border: 1px var(--table-border-style) var(--table-border-color);
+    padding: var(--table-cell-padding);
+    text-align: left;
+    color: var(--table-text);
+}
+
+.panel table thead {
+    background: var(--table-head-bg);
+}
+
+.panel table tbody tr:nth-child(even) {
+    background: var(--table-row-alt-bg);
+}
+
 .panel .footer {
     display: flex;
     align-items: center;
@@ -319,9 +372,8 @@ button.ghost {
 
 /* Gutter container */
 .cm-editor .cm-gutters {
-    background: var(--gutter-bg);
+    background: var(--panel);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    color: var(--muted-2);
     box-sizing: border-box;
     border-right: 1px solid var(--border-color);
 }

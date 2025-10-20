@@ -1,4 +1,3 @@
-// worker.js (module)
 import * as wasm from 'ib_pcode_compiler';
 
 let controlSab = null;

@@ -6,12 +6,10 @@ const RemarkHTML = require('remark-html');
 module.exports = (env, argv) => {
   const isDev = argv.mode === 'development' || env.WEBPACK_SERVE;
   const buildRoot = path.resolve(__dirname, "dist");
-  const srcRoot = path.resolve(__dirname, "src"); 
-  const sourceMap = isDev;
 
   return {
     mode: isDev ? "development" : "production",
-    devtool: sourceMap ? "source-map" : false,
+    devtool: isDev ? "source-map" : false,
     entry: "./bootstrap.js",
     output: {
       filename: "bootstrap.js",

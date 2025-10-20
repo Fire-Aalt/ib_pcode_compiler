@@ -1,8 +1,8 @@
 [package]
 name = "ib_pcode_compiler"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
-description = "A comprehensive compiler that translates Pcode into an Abstract Syntax Tree (AST) in Rust. This is done with Pest Parser, AST Builder, AST Validator, and AST Evaluator"
+description = "A comprehensive compiler that translates Pcode into an Abstract Syntax Tree (AST) in Rust"
 repository = "https://github.com/Fire-Aalt/ib_pseudocompiler"
 license = "MIT"
 

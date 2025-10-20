@@ -1,8 +1,7 @@
 {
   "name": "ib_pcode_compiler",
-  "version": "0.5.0",
-  "description": "create an app to consume rust-generated wasm packages",
-  "main": "index.js",
+  "version": "1.0.0",
+  "description": "Rust powered IB pseudocode compiler",
   "scripts": {
     "build": "webpack --config webpack.config.js --mode production",
     "serve": "webpack serve --config webpack.config.js --open --mode development",
@@ -27,7 +26,6 @@
   "dependencies": {
     "@codemirror/commands": "^6.9.0",
     "@codemirror/language": "^6.11.3",
-    "@codemirror/search": "^6.5.11",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.6",
     "ib_pcode_compiler": "file:pkg",

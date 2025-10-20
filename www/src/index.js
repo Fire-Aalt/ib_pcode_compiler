@@ -109,7 +109,7 @@ themeToggle.addEventListener('click', () => {
 /* Report button opens GitHub issues directly (prefills snapshot) */
 reportBtn.addEventListener('click', () => {
     const title = encodeURIComponent('Bug report: [short description]');
-    const body = encodeURIComponent(`**Describe the bug or feedback**\n\n**Editor snapshot:**\n\`\`\`\n${editorView.state.doc.toString()}\n\`\`\`\n\n*(Add steps to reproduce, browser, OS, WASM version, etc.)*`);
+    const body = encodeURIComponent(`**Describe the bug or feedback**`);
     const url = `https://github.com/${GH_OWNER}/${GH_REPO}/issues/new?title=${title}&body=${body}`;
     window.open(url, '_blank', 'noopener');
 });
