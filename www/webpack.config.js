@@ -3,19 +3,18 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const RemarkHTML = require('remark-html');
 
-module.exports = env => {
+module.exports = (env, argv) => {
+  const isDev = argv.mode === 'development' || env.WEBPACK_SERVE;
   const buildRoot = path.resolve(__dirname, "dist");
   const srcRoot = path.resolve(__dirname, "src"); 
-  const isDev = true;//env === "dev";
   const sourceMap = isDev;
-  const minimize = !isDev; //we only minimize in production env
 
   return {
     mode: isDev ? "development" : "production",
     devtool: sourceMap ? "source-map" : false,
-    entry: "./index.js",
+    entry: "./bootstrap.js",
     output: {
-      filename: "index.js",
+      filename: "bootstrap.js",
       path: buildRoot,
     },
     module: {
@@ -49,6 +48,9 @@ module.exports = env => {
           use: [
             {
               loader: "html-loader",
+              options: {
+                minimize: false
+              }
             },
             {
               loader: "remark-loader",

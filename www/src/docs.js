@@ -1,5 +1,5 @@
 const marked = require("marked");
-import docsString from "./pkg/README.md";
+import docsString from "../pkg/README.md";
 
 const docsContainer = document.getElementById('docsContainer');
 

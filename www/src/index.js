@@ -1,27 +1,6 @@
-// main.js (type=module)
 import { createMinimalEditor } from "./editor.js";
 import { samples } from "./samples.js";
 import { loadReadme } from "./docs.js";
-import "./styles.css";
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register(new URL("./sw.js", import.meta.url)).then(
-        (registration) => {
-            console.log("COOP/COEP Service Worker registered", registration.scope);
-            if (registration.active && !navigator.serviceWorker.controller) {
-                //window.location.reload();
-            }
-        },
-        (err) => {
-            console.log("COOP/COEP Service Worker failed to register", err);
-        }
-    );
-} else {
-    console.warn("Cannot register a service worker");
-}
-
-
-
 
 const container = document.getElementById("editor");
 const editorView = createMinimalEditor(container);
@@ -34,7 +13,7 @@ const sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT + RESPONSE_BYTES)
 const control = new Int32Array(sab, 0, 1);
 const respBuf = new Uint8Array(sab, Int32Array.BYTES_PER_ELEMENT, RESPONSE_BYTES);
 control[0] = 0;
-const worker = new Worker(new URL('./modules/worker.js', import.meta.url), { type: 'module' });
+const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
 /* DOM handles */
 const terminal = document.getElementById('terminal');
@@ -57,7 +36,6 @@ const fileLabel = document.querySelector('.file-label');
 let lastRequestId = null;
 let currentRunWindow = null;
 
-/* Tabs: update toolbar visibility on tab change */
 function setActiveTab(tabName) {
     // tabName is 'editor'|'docs' etc.
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));

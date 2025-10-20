@@ -6,7 +6,6 @@ fn main() {
     {
         let mut contents =
             std::fs::read_to_string(SOURCE).expect("Should have been able to read the file");
-        contents.push('\n');
 
         ib_pcode_compiler::run_program_native(contents.as_str());
     }
@@ -15,8 +14,3 @@ fn main() {
         ib_pcode_compiler::ensure_dependency();
     }
 }
-// TODO: tabs
-// At line: 2
-// |
-// 2 | 						zxczxczxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-// |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in 

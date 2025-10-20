@@ -1,4 +1,4 @@
-import {Extension, EditorState} from "@codemirror/state"
+import {EditorState} from "@codemirror/state"
 import {
     EditorView, keymap, drawSelection,
     highlightActiveLine, dropCursor, rectangularSelection,

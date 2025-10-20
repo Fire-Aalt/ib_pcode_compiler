@@ -11,13 +11,20 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix flex on main page">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source" beforeDir="false" afterPath="$PROJECT_DIR$/source" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/docs.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/docs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/editor.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/editor.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/modules/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/modules/worker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/modules/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/samples.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/samples.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,13 +110,14 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www\src" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web" />
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\web\modules" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.serve">
+  <component name="RunManager" selected="JavaScript Debug.index.html (1)">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pseudocompiler --bin ib_pseudocompiler" />
@@ -145,6 +153,9 @@
       <method v="2">
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="index.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ib_pcode_compiler/www/dist/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
     </configuration>
     <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ib_pcode_compiler/www/index.html" useBuiltInWebServerPort="true">
       <method v="2">
@@ -183,6 +194,7 @@
     <list>
       <item itemvalue="Cargo.Run ib_pcode_compiler" />
       <item itemvalue="Cargo.Test ib_pcode_compiler" />
+      <item itemvalue="JavaScript Debug.index.html (1)" />
       <item itemvalue="JavaScript Debug.index.html" />
       <item itemvalue="npm.serve" />
       <item itemvalue="npm.build" />
@@ -190,6 +202,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.index.html (1)" />
         <item itemvalue="npm.build" />
         <item itemvalue="JavaScript Debug.index.html" />
       </list>
@@ -214,7 +227,7 @@
       <workItem from="1760858647904" duration="5234000" />
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
-      <workItem from="1760956300828" duration="6718000" />
+      <workItem from="1760956300828" duration="9225000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -424,7 +437,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760969945672</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal">
+      <option name="closed" value="true" />
+      <created>1760970861731</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1760970861731</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -434,7 +455,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Update the repository name" />
     <MESSAGE value="Update rough UI" />
     <MESSAGE value="Fix editor line height + add tabs support + remove line info" />
     <MESSAGE value="Add rough docs tab" />
@@ -459,6 +479,7 @@
     <MESSAGE value="Fix flex problems with the editor" />
     <MESSAGE value="Fix gutter styling" />
     <MESSAGE value="Fix flex on main page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix flex on main page" />
+    <MESSAGE value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
   </component>
 </project>
