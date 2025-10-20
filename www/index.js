@@ -1,4 +1,5 @@
 // main.js (type=module)
+import { createMinimalEditor } from "./editor.js";
 import { samples } from "./samples.js";
 import { loadReadme } from "./docs.js";
 import "./styles.css";
@@ -21,11 +22,9 @@ if ("serviceWorker" in navigator) {
 
 
 
-import { createMinimalEditor } from "./editor.js";
-import {EditorState} from "@codemirror/state";
 
 const container = document.getElementById("editor");
-const editorView = createMinimalEditor(container, `fn main() {\n  println!("Hello");\n}`);
+const editorView = createMinimalEditor(container);
 
 const GH_OWNER = 'Fire-Aalt';
 const GH_REPO = 'ib_pcode_compiler';

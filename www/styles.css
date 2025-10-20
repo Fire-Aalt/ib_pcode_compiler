@@ -311,10 +311,8 @@ button.ghost {
     padding-top: 6px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     line-height: 19px;
-    /*background: var(--editor-bg);*/
+    /*background: var(--editor-bg); APPLIES TO SELECTION*/
     white-space: pre;
-    /*overflow-x: auto;*/
-    /*overflow-y: hidden;*/
     background-clip: padding-box;
 }
 
@@ -330,6 +328,7 @@ button.ghost {
 .cm-editor .cm-gutters .cm-gutterElement {
     text-align: right;
     box-sizing: border-box;
+    line-height: 19px;
 }
 
 .cm-editor .cm-scroller .cm-content .cm-line {
@@ -553,7 +552,6 @@ button.ghost {
 }
 
 /* Scrollbar styling for internal elements (WebKit + Firefox) */
-.editor-container,
 .terminal,
 .docs-container,
 .editor-tab {
@@ -561,7 +559,6 @@ button.ghost {
     scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
 
-.editor-container::-webkit-scrollbar,
 .terminal::-webkit-scrollbar,
 .docs-container::-webkit-scrollbar,
 .editor-tab::-webkit-scrollbar {
@@ -569,7 +566,6 @@ button.ghost {
     height: 12px;
 }
 
-.editor-container::-webkit-scrollbar-track,
 .terminal::-webkit-scrollbar-track,
 .docs-container::-webkit-scrollbar-track,
 .editor-tab::-webkit-scrollbar-track {
@@ -577,7 +573,6 @@ button.ghost {
     border-radius: 8px;
 }
 
-.editor-container::-webkit-scrollbar-thumb,
 .terminal::-webkit-scrollbar-thumb,
 .docs-container::-webkit-scrollbar-thumb,
 .editor-tab::-webkit-scrollbar-thumb {
@@ -587,7 +582,6 @@ button.ghost {
     background-clip: padding-box;
 }
 
-.editor-container::-webkit-scrollbar-thumb:hover,
 .terminal::-webkit-scrollbar-thumb:hover,
 .docs-container::-webkit-scrollbar-thumb:hover,
 .editor-tab::-webkit-scrollbar-thumb:hover {

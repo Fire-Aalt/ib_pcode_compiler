@@ -5,24 +5,20 @@ import {
     crosshairCursor, lineNumbers, highlightActiveLineGutter
 } from "@codemirror/view"
 import {
-    bracketMatching, foldKeymap
+    bracketMatching, indentUnit
 } from "@codemirror/language"
 import {
     defaultKeymap, history, historyKeymap, indentWithTab
 } from "@codemirror/commands"
 
-// import {
-//     closeBrackets,
-//     closeBracketsKeymap
-// } from "@codemirror/autocomplete"
-
-
-export function createMinimalEditor(parentElement, initialText = "") {
+export function createMinimalEditor(parentElement) {
     const view = new EditorView({
-        doc: initialText,
         parent: parentElement,
         extensions: [
-            EditorState.tabSize.of(16),
+            // Allow multiple cursors/selections
+            EditorState.allowMultipleSelections.of(true),
+            // Set tab to be 4 spaces, not 2
+            indentUnit.of("    "),
             // A line number gutter
             lineNumbers(),
             // The undo history
@@ -31,8 +27,6 @@ export function createMinimalEditor(parentElement, initialText = "") {
             drawSelection(),
             // Show a drop cursor when dragging over the editor
             dropCursor(),
-            // Allow multiple cursors/selections
-            EditorState.allowMultipleSelections.of(true),
             // Highlight matching brackets near cursor
             bracketMatching(),
             // Allow alt-drag to select rectangular regions
@@ -49,11 +43,8 @@ export function createMinimalEditor(parentElement, initialText = "") {
                 ...defaultKeymap,
                 // Redo/undo keys
                 ...historyKeymap,
-                // Code folding bindings
-                ...foldKeymap,
             ])
         ]
     })
-
     return view;
 }
