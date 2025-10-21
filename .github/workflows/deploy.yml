@@ -1,0 +1,73 @@
+name: Build & Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build frontend + wasm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install wasm-pack
+        run: |
+          cargo install wasm-pack
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install npm dependencies
+        working-directory: ./www
+        run: npm ci
+
+      - name: Build wasm (release for bundler target)
+        working-directory: ./www
+        run: |
+          wasm-pack build --target bundler --out-dir ./pkg --release
+
+      - name: Build webpack (production)
+        working-directory: ./www
+        run: |
+          npx webpack --config webpack.config.js --mode production
+
+      - name: Prepare dist for deployment (add .nojekyll)
+        # Ensure `.nojekyll` is present so GitHub Pages does not skip files
+        run: |
+          echo "" > ./www/dist/.nojekyll
+
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./www/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
