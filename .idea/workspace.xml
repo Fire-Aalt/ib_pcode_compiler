@@ -11,9 +11,10 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add reload page back to apply COOP/COEP headers">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update documentation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/docs.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/docs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles/components/toolbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/components/toolbar.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +212,7 @@
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
-      <workItem from="1761028048154" duration="6964000" />
+      <workItem from="1761028048154" duration="8372000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -525,7 +526,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761032394275</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Update documentation">
+      <option name="closed" value="true" />
+      <created>1761035139534</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1761035139534</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Update documentation">
+      <option name="closed" value="true" />
+      <created>1761035622287</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1761035622287</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -535,7 +552,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix usings to ib_pcode_compiler" />
     <MESSAGE value="Fix scrolls" />
     <MESSAGE value="Nicify dropdown names" />
     <MESSAGE value="Add all samples to web" />
@@ -560,6 +576,7 @@
     <MESSAGE value="Fix relative path + set node version to 20" />
     <MESSAGE value="Change upload workflow action step" />
     <MESSAGE value="Add reload page back to apply COOP/COEP headers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add reload page back to apply COOP/COEP headers" />
+    <MESSAGE value="Update documentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update documentation" />
   </component>
 </project>

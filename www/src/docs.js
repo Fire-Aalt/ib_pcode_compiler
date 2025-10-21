@@ -1,10 +1,10 @@
+const marked = require("marked");
 import docsString from "../pkg/README.md";
 
 const docsContainer = document.getElementById('docsContainer');
 
 export async function loadReadme() {
     try {
-        const marked = await import("marked");
         const rawHtml = marked.parse(docsString);
         docsContainer.innerHTML = rawHtml;
 
