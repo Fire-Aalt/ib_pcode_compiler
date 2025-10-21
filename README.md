@@ -1,11 +1,12 @@
 # IB Pseudocode Compiler — User Documentation
 
-This documentation explains how to **write pseudocode** programs for the Rust-based pseudocode compiler. It describes the language features implemented in the grammar and shows short examples for each feature.
+This documentation explains how to write IB approved pseudocode programs. It describes the language features implemented in the grammar and shows short examples for each feature.
 
 ---
 
 ## Table of Contents
 
+* [Conventions](#conventions)
 * [Basic syntax](#basic-syntax)
     * [Comments](#comments)
     * [Whitespace & line endings](#whitespace--line-endings)
@@ -47,15 +48,24 @@ This documentation explains how to **write pseudocode** programs for the Rust-ba
 * [Example program](#example-program)
 
 ---
+## Conventions
+| Topic               | Details          | Example        |
+|---------------------|------------------|----------------|
+| Variable names      | Are all capitals | `CITY`         |
+| Method names        | Are mixed case   | `getRecord`    |
+| Class names         | Are PascalCase   | `BankRegistry` |
+| Pseudocode keywords | Are lower case   | `loop`, `if`   |
+
 
 ## Basic syntax
 
 ### Comments
 
-Use `//` to write a comment.
+Use `//` to write a comment. Comments are mostly used to describe parts of the code.
 
 ```text
 // This is a comment
+RESET = true // Mark for reset as ... is not needed anymore
 ```
 
 ### Whitespace & line endings
@@ -112,10 +122,18 @@ Supports arithmetic, comparison, logical operators and parentheses.
 ```text
 x = 3 + 2 * 5
 y = 10 / 2
-z = 2 ^ 3       // power (2³ = 8)
 a = 7 div 2     // integer division (3)
 b = 7 mod 2     // remainder (1)
 ```
+
+|       Symbol | Definition               | Examples       | Example usage |
+|-------------:|--------------------------|----------------|---------------|
+|          `+` | addition                 | `2 + 2 = 4`    | `A = B + 2`   |
+|          `-` | substraction             | `6 - 7 = -1`   | `A = B - 7`   |
+|          `*` | multiplication           | `15 * 4 = 60`  | `A = B * 5`   |
+|          `/` | division                 | `60 / 12 = 5`  | `A = B / 9`   |
+|   `mod`, `%` | modulo                   | `15 mod 7 = 1` | `A = B mod 9` |
+|        `div` | integer part of quotient | `15 div 7 = 2` | `A = B div 9` |
 
 ### Comparison
 
@@ -133,6 +151,18 @@ a && b      // AND operation can be written as `&&` or `AND`
 a || b      // OR operation can be written as `||` or `OR`
 !a          // NOT operation can be written as `!` or `NOT`
 ```
+
+|       Symbol | Definition                  | Examples           | Example usage             |
+|-------------:|-----------------------------|--------------------|---------------------------|
+|    `=`, `==` | is equal to                 | `X = 4`, `X = K`   | `if X = 4`                |
+|          `>` | is greater than             | `X > 4`            | `if X > 4 then`           |
+|         `>=` | is greater than or equal to | `X >= 6`           | `loop while X >= 6`       |
+|          `<` | is less than                | `VALUE[Y] < 7`     | `loop until VALUE[Y] < 7` |
+|         `<=` | is less than or equal to    | `VALUE[] <= 12`    | `if VALUE[Y] <= 12 then`  |
+|   `!=`, `<>` | not equal to                | `X != 4`, `X != K` | `if X != 10 then`         |
+|  `AND`, `&&` | logical AND                 | `A AND B`          | `if X < 7 AND Y > 2 then` |
+| `OR`, `\|\|` | logical OR                  | `A OR B`           | `if X < 7 OR Y > 2 then`  |
+|   `NOT`, `!` | logical NOT                 | `NOT A`            | `if NOT X = 7 then`       |
 
 ---
 

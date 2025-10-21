@@ -11,8 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Change upload workflow action step">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add reload page back to apply COOP/COEP headers">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +211,7 @@
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
-      <workItem from="1761028048154" duration="4270000" />
+      <workItem from="1761028048154" duration="6964000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -516,7 +517,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761032168173</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Add reload page back to apply COOP/COEP headers">
+      <option name="closed" value="true" />
+      <created>1761032394275</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1761032394275</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -526,7 +535,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix links color in docs + simplify input prompt element" />
     <MESSAGE value="Fix usings to ib_pcode_compiler" />
     <MESSAGE value="Fix scrolls" />
     <MESSAGE value="Nicify dropdown names" />
@@ -551,6 +559,7 @@
     <MESSAGE value="Remove remark" />
     <MESSAGE value="Fix relative path + set node version to 20" />
     <MESSAGE value="Change upload workflow action step" />
-    <option name="LAST_COMMIT_MESSAGE" value="Change upload workflow action step" />
+    <MESSAGE value="Add reload page back to apply COOP/COEP headers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add reload page back to apply COOP/COEP headers" />
   </component>
 </project>
