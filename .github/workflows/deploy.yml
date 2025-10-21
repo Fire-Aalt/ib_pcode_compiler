@@ -1,9 +1,12 @@
 name: Build & Deploy to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'Environment to deploy'
+        required: true
+        default: 'production'
 
 permissions:
   contents: read
@@ -26,8 +29,7 @@ jobs:
           override: true
 
       - name: Install wasm-pack
-        run: |
-          cargo install wasm-pack
+        run: cargo install wasm-pack
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -38,24 +40,22 @@ jobs:
         working-directory: ./www
         run: npm ci
 
-      - name: Build wasm (release for bundler target)
+      - name: Build wasm (release, bundler target)
         working-directory: ./www
         run: |
           wasm-pack build --target bundler --out-dir ./pkg --release
 
       - name: Build webpack (production)
         working-directory: ./www
-        run: |
-          npx webpack --config webpack.config.js --mode production
+        run: npx webpack --config webpack.config.js --mode production
 
       - name: Prepare dist for deployment (add .nojekyll)
-        # Ensure `.nojekyll` is present so GitHub Pages does not skip files
-        run: |
-          echo "" > ./www/dist/.nojekyll
+        run: echo "" > ./www/dist/.nojekyll
 
-      - name: Upload artifact for Pages
-        uses: actions/upload-pages-artifact@v1
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: github-pages
           path: ./www/dist
 
   deploy:
@@ -67,6 +67,8 @@ jobs:
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
 
     environment:
       name: github-pages
