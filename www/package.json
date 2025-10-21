@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Rust powered IB pseudocode compiler",
   "scripts": {
-    "build": "webpack --config webpack.config.js --mode production",
+    "build": "npx webpack --config webpack.config.js --mode production",
     "serve": "webpack serve --config webpack.config.js --open --mode development",
     "start": "webpack-dev-server"
   },
