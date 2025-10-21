@@ -1,12 +1,18 @@
 name: Build & Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
-    inputs:
-      deploy_env:
-        description: 'Environment to deploy'
-        required: true
-        default: 'production'
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+#on:
+#  workflow_dispatch:
+#    inputs:
+#      deploy_env:
+#        description: 'Environment to deploy'
+#        required: true
+#        default: 'production'
 
 permissions:
   contents: read

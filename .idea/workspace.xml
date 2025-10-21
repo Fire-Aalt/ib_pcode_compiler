@@ -11,9 +11,12 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix adaptive style for scrolling">
-      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/src/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/worker.js" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add compiler initialized output message">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles/base.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/base.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles/utilities.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +215,7 @@
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
       <workItem from="1761028048154" duration="9180000" />
-      <workItem from="1761067343255" duration="5000000" />
+      <workItem from="1761067343255" duration="6120000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -574,7 +577,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761073310630</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Add compiler initialized output message">
+      <option name="closed" value="true" />
+      <created>1761074065819</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1761074065819</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -584,7 +595,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Successfully switch to using webpack" />
     <MESSAGE value="Push www" />
     <MESSAGE value="Add basic codemirror editor" />
     <MESSAGE value="Style codemirror editor" />
@@ -609,6 +619,7 @@
     <MESSAGE value="Add adaptive styles" />
     <MESSAGE value="Add more adaptive styles" />
     <MESSAGE value="Fix adaptive style for scrolling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix adaptive style for scrolling" />
+    <MESSAGE value="Add compiler initialized output message" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add compiler initialized output message" />
   </component>
 </project>
