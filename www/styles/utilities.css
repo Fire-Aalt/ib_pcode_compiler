@@ -9,6 +9,11 @@
 
 /* For very narrow screens (mobile) */
 @media (max-width: 767px) {
+    .app {
+        padding: 10px;
+        margin: 0 auto;
+    }
+    
     .workspace {
         display: flex;
         flex-direction: column;
@@ -20,6 +25,14 @@
     .toolbar {
         flex-wrap: wrap;
         font-size: small;
+    }
+
+    .tabs {
+        margin-left: 0;
+    }
+    
+    option {
+        height: 5px;
     }
 
     .logo {
