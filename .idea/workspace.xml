@@ -11,10 +11,12 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update documentation">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix flex wrap for mobile">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/src/docs.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/docs.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles/components/toolbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/components/toolbar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles/components/panels.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/components/panels.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/styles/utilities.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +110,7 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.index.html">
+  <component name="RunManager" selected="npm.serve">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pseudocompiler --bin ib_pseudocompiler" />
@@ -212,7 +214,8 @@
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
-      <workItem from="1761028048154" duration="8372000" />
+      <workItem from="1761028048154" duration="9180000" />
+      <workItem from="1761067343255" duration="2381000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -542,7 +545,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761035622287</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Fix flex wrap for mobile">
+      <option name="closed" value="true" />
+      <created>1761036933690</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1761036933690</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -552,7 +563,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix scrolls" />
     <MESSAGE value="Nicify dropdown names" />
     <MESSAGE value="Add all samples to web" />
     <MESSAGE value="Reorganize files" />
@@ -577,6 +587,7 @@
     <MESSAGE value="Change upload workflow action step" />
     <MESSAGE value="Add reload page back to apply COOP/COEP headers" />
     <MESSAGE value="Update documentation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update documentation" />
+    <MESSAGE value="Fix flex wrap for mobile" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix flex wrap for mobile" />
   </component>
 </project>

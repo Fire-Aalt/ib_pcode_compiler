@@ -1,13 +1,59 @@
-/* responsive */
-@media (max-width: 900px) {
+/* For screens wider than 768px (tablet+) change layout */
+@media (min-width: 768px) {
     .workspace {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
+}
 
+/* For very narrow screens (mobile) */
+@media (max-width: 767px) {
+    .workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
     .spacer {
         display: none;
     }
+    .toolbar {
+        flex-wrap: wrap;
+        font-size: small;
+    }
+
+    .logo {
+        display: none;
+    }
+    
+    button {
+        height: 24px;
+        padding: 3px 4px;
+    }
+    
+    .controls {
+
+    }
+    
+    .file-label {
+        padding: 3px 4px;
+    }
+    
+    .tab {
+        padding: 3px 4px;
+    }
+    
+    .panel {
+        height: auto;   /* allow them to grow naturally */
+    }
+
+    .editor-container,
+    .terminal {
+        width: 100%;
+        min-width: 0;
+    }
 }
+
 
 /* Scrollbar styling for internal elements (WebKit + Firefox) */
 .terminal,

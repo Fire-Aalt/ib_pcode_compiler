@@ -24,14 +24,12 @@ const modalPrompt = document.getElementById('modalPrompt');
 const modalInput = document.getElementById('modalInput');
 const modalOk = document.getElementById('modalOk');
 
+const controls = document.querySelector('.controls');
 const themeToggle = document.getElementById('themeToggle');
 const reportBtn = document.getElementById('reportBtn');
 const githubBtn = document.getElementById('githubBtn');
 const runBtn = document.getElementById('runBtn');
 const saveBtn = document.getElementById('saveBtn');
-const fileLabel = document.querySelector('.file-label');
-
-
 
 let lastRequestId = null;
 let currentRunWindow = null;
@@ -48,10 +46,7 @@ function setActiveTab(tabName) {
 
     // hide toolbar controls when docs tab active
     const hide = (tabName === 'docs');
-    sampleSelect.style.display = hide ? 'none' : '';
-    saveBtn.style.display = hide ? 'none' : '';
-    fileLabel.style.display = hide ? 'none' : '';
-    runBtn.style.display = hide ? 'none' : '';
+    controls.style.display = hide ? 'none' : '';
 }
 
 // wire tab buttons
