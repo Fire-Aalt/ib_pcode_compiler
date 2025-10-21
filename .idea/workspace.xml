@@ -11,7 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix relative path + set node version to 20" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Change upload workflow action step">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -208,7 +210,7 @@
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
-      <workItem from="1761028048154" duration="3666000" />
+      <workItem from="1761028048154" duration="4270000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -506,7 +508,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761031218409</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Change upload workflow action step">
+      <option name="closed" value="true" />
+      <created>1761032168173</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1761032168173</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -516,7 +526,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix popup prompt + rearrange buttons for easier navigation" />
     <MESSAGE value="Fix links color in docs + simplify input prompt element" />
     <MESSAGE value="Fix usings to ib_pcode_compiler" />
     <MESSAGE value="Fix scrolls" />
@@ -541,6 +550,7 @@
     <MESSAGE value="Fix gh workflow" />
     <MESSAGE value="Remove remark" />
     <MESSAGE value="Fix relative path + set node version to 20" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix relative path + set node version to 20" />
+    <MESSAGE value="Change upload workflow action step" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change upload workflow action step" />
   </component>
 </project>
