@@ -11,12 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add compiler initialized output message">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Remove unneeded workflow">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles/base.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/base.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles/utilities.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +212,7 @@
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
       <workItem from="1761028048154" duration="9180000" />
-      <workItem from="1761067343255" duration="6120000" />
+      <workItem from="1761067343255" duration="7175000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -585,7 +582,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761074065819</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Fix mobile styling footer issue">
+      <option name="closed" value="true" />
+      <created>1761075071291</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1761075071291</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Remove unneeded workflow">
+      <option name="closed" value="true" />
+      <created>1761075223819</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1761075223819</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -595,8 +608,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Push www" />
-    <MESSAGE value="Add basic codemirror editor" />
     <MESSAGE value="Style codemirror editor" />
     <MESSAGE value="Fix flex problems with the editor" />
     <MESSAGE value="Fix gutter styling" />
@@ -620,6 +631,8 @@
     <MESSAGE value="Add more adaptive styles" />
     <MESSAGE value="Fix adaptive style for scrolling" />
     <MESSAGE value="Add compiler initialized output message" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add compiler initialized output message" />
+    <MESSAGE value="Fix mobile styling footer issue" />
+    <MESSAGE value="Remove unneeded workflow" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove unneeded workflow" />
   </component>
 </project>

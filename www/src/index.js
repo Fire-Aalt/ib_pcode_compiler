@@ -180,12 +180,15 @@ runBtn.addEventListener('click', () => {
     worker.postMessage({ type: 'run', source: src, runId: Date.now() });
 });
 
+const GREEN = "<span style=\"color:green;\">"
+const RESET = "</span>"
+
 /* Worker messaging */
 worker.onmessage = (ev) => {
     const msg = ev.data;
     if (msg.type === 'started') {
         worker.postMessage({ type: 'init', controlSab: sab });
-        appendOutput(msg.text);
+        appendOutput(GREEN + msg.text + RESET);
     } else if (msg.type === 'request-input') {
         lastRequestId = msg.id;
         showModalPrompt(msg.prompt);
@@ -195,7 +198,7 @@ worker.onmessage = (ev) => {
         if (terminal.innerText.length !== 0) {
             appendOutput("\n");
         }
-        appendOutput(msg.text);
+        appendOutput(GREEN + msg.text + RESET);
     } else if (msg.type === 'error') {
         appendOutput('ERROR: ' + msg.message);
     } else {
