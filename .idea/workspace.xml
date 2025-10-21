@@ -11,10 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add more adaptive styles">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/www/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/styles/utilities.css" beforeDir="false" afterPath="$PROJECT_DIR$/www/styles/utilities.css" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix adaptive style for scrolling">
+      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/worker.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +212,7 @@
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
       <workItem from="1761028048154" duration="9180000" />
-      <workItem from="1761067343255" duration="4276000" />
+      <workItem from="1761067343255" duration="5000000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -567,7 +566,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761070327222</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Fix adaptive style for scrolling">
+      <option name="closed" value="true" />
+      <created>1761073310630</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1761073310630</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -577,7 +584,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Reorganize files" />
     <MESSAGE value="Successfully switch to using webpack" />
     <MESSAGE value="Push www" />
     <MESSAGE value="Add basic codemirror editor" />
@@ -602,6 +608,7 @@
     <MESSAGE value="Fix flex wrap for mobile" />
     <MESSAGE value="Add adaptive styles" />
     <MESSAGE value="Add more adaptive styles" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add more adaptive styles" />
+    <MESSAGE value="Fix adaptive style for scrolling" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix adaptive style for scrolling" />
   </component>
 </project>

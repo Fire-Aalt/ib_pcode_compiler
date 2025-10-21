@@ -27,7 +27,7 @@ self.onmessage = (ev) => {
     }
 };
 
-self.postMessage({ type: 'started' });
+self.postMessage({ type: 'started', text: "Compiler initialized successfully" });
 
 // This is synchronous from the worker's point of view:
 // 1) set control to "waiting" (1)

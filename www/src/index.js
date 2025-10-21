@@ -185,6 +185,7 @@ worker.onmessage = (ev) => {
     const msg = ev.data;
     if (msg.type === 'started') {
         worker.postMessage({ type: 'init', controlSab: sab });
+        appendOutput(msg.text);
     } else if (msg.type === 'request-input') {
         lastRequestId = msg.id;
         showModalPrompt(msg.prompt);
