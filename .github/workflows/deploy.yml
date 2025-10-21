@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install npm dependencies
         working-directory: ./www
@@ -43,7 +43,7 @@ jobs:
       - name: Build wasm (release, bundler target)
         working-directory: ./www
         run: |
-          wasm-pack build --target bundler --out-dir ./pkg --release
+          wasm-pack build --target bundler --out-dir ./www/pkg --release
 
       - name: Build webpack (production)
         working-directory: ./www
