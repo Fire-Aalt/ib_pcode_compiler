@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
-const RemarkHTML = require('remark-html');
 
 module.exports = (env, argv) => {
   const isDev = argv.mode === 'development' || env.WEBPACK_SERVE;
@@ -37,16 +36,6 @@ module.exports = (env, argv) => {
               options: {
                 minimize: false
               }
-            },
-            {
-              loader: "remark-loader",
-              options: {
-                remarkOptions: {
-                  plugins: [
-                    RemarkHTML,
-                  ],
-                },
-              },
             },
           ],
         },

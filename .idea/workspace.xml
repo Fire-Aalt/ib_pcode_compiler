@@ -11,10 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update to upload-artifact@v4">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix gh workflow">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/src/docs.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/docs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +211,7 @@
       <workItem from="1760867244454" duration="19958000" />
       <workItem from="1760947267712" duration="6756000" />
       <workItem from="1760956300828" duration="19960000" />
-      <workItem from="1761028048154" duration="1834000" />
+      <workItem from="1761028048154" duration="2369000" />
     </task>
     <task id="LOCAL-00001" summary="Update the repository name">
       <option name="closed" value="true" />
@@ -478,7 +477,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761029118221</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Fix require issue">
+      <option name="closed" value="true" />
+      <created>1761029996626</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1761029996626</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Fix gh workflow">
+      <option name="closed" value="true" />
+      <created>1761030206067</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1761030206067</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -488,8 +503,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix started whitespace in code blocks in docs" />
-    <MESSAGE value="Fix colored terminal output" />
     <MESSAGE value="Add GitHub and report issue links" />
     <MESSAGE value="Improve performance of outputting lines" />
     <MESSAGE value="Fix popup prompt + rearrange buttons for easier navigation" />
@@ -513,6 +526,8 @@
     <MESSAGE value="Remove CopyWebpackPlugin" />
     <MESSAGE value="Add deploy.yml" />
     <MESSAGE value="Update to upload-artifact@v4" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update to upload-artifact@v4" />
+    <MESSAGE value="Fix require issue" />
+    <MESSAGE value="Fix gh workflow" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix gh workflow" />
   </component>
 </project>
