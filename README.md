@@ -49,12 +49,12 @@ This documentation explains how to write IB approved pseudocode programs. It des
 
 ---
 ## Conventions
-| Topic               | Details          | Example        |
-|---------------------|------------------|----------------|
-| Variable names      | Are all capitals | `CITY`         |
-| Method names        | Are mixed case   | `getRecord`    |
-| Class names         | Are PascalCase   | `BankRegistry` |
-| Pseudocode keywords | Are lower case   | `loop`, `if`   |
+| Section             | Naming Convention | Example        |
+|---------------------|-------------------|----------------|
+| Variable names      | Are all capitals  | `CITY`         |
+| Method names        | Are mixed case    | `getRecord`    |
+| Class names         | Are PascalCase    | `BankRegistry` |
+| Pseudocode keywords | Are lower case    | `loop`, `if`   |
 
 
 ## Basic syntax
