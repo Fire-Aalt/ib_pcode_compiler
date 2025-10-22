@@ -44,7 +44,7 @@ impl AST {
                 env.assign(name_hash, Value::Number(0.0));
                 self.validate_expr(start_num, env, validator);
                 self.validate_expr(end_num, env, validator);
-
+                
                 self.validate_body(body, env, validator);
             }
             Stmt::Until(expr, body) => {

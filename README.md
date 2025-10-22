@@ -17,7 +17,6 @@ This documentation explains how to write IB approved pseudocode programs. It des
     * [Increment / Decrement](#increment--decrement)
 * [Expressions](#expressions)
     * [Arithmetic](#arithmetic)
-    * [Comparison](#comparison)
     * [Logical](#logical)
 * [Control flow](#control-flow)
     * [If / Else](#if--else)
@@ -51,10 +50,10 @@ This documentation explains how to write IB approved pseudocode programs. It des
 ## Conventions
 | Section             | Naming Convention | Example        |
 |---------------------|-------------------|----------------|
-| Variable names      | Are all capitals  | `CITY`         |
-| Method names        | Are mixed case    | `getRecord`    |
-| Class names         | Are PascalCase    | `BankRegistry` |
-| Pseudocode keywords | Are lower case    | `loop`, `if`   |
+| Variable names      | All capitals      | `CITY`         |
+| Method names        | camelCase         | `getRecord`    |
+| Class names         | PascalCase        | `BankRegistry` |
+| Pseudocode keywords | Lowercase         | `loop`, `if`   |
 
 
 ## Basic syntax
@@ -79,9 +78,9 @@ Whitespace and newlines are ignored except where needed to separate statements. 
 A program is a sequence of statements (one statement per line). Example:
 
 ```text
-x = 10
-y = 5
-output x + y
+X = 10
+Y = 5
+output X + Y
 ```
 
 ---
@@ -91,24 +90,24 @@ output x + y
 ### Basic assignment
 
 ```text
-a = 5
-b = "Hello"
+A = 5
+B = "Hello"
 ```
 
 ### Compound assignments
 
 ```text
-a += 2  // the same as `a = a + 2`
-b -= 3
-c *= 4
-d /= 2
+A += 2  // the same as `A = A + 2`
+B -= 3
+C *= 4
+D /= 2
 ```
 
 ### Increment / Decrement
 
 ```text
-counter++  // the same as `counter = counter + 1`
-index--
+COUNTER++  // the same as `COUNTER = COUNTER + 1`
+INDEX--
 ```
 
 ---
@@ -119,38 +118,16 @@ Supports arithmetic, comparison, logical operators and parentheses.
 
 ### Arithmetic
 
-```text
-x = 3 + 2 * 5
-y = 10 / 2
-a = 7 div 2     // integer division (3)
-b = 7 mod 2     // remainder (1)
-```
-
-|       Symbol | Definition               | Examples       | Example usage |
-|-------------:|--------------------------|----------------|---------------|
-|          `+` | addition                 | `2 + 2 = 4`    | `A = B + 2`   |
-|          `-` | substraction             | `6 - 7 = -1`   | `A = B - 7`   |
-|          `*` | multiplication           | `15 * 4 = 60`  | `A = B * 5`   |
-|          `/` | division                 | `60 / 12 = 5`  | `A = B / 9`   |
-|   `mod`, `%` | modulo                   | `15 mod 7 = 1` | `A = B mod 9` |
-|        `div` | integer part of quotient | `15 div 7 = 2` | `A = B div 9` |
-
-### Comparison
-
-```text
-x == y
-x != y
-x > y
-x <= y
-```
+|     Symbol | Definition               | Examples       | Example usage |
+|-----------:|--------------------------|----------------|---------------|
+|        `+` | addition                 | `2 + 2 = 4`    | `A = B + 2`   |
+|        `-` | substraction             | `6 - 7 = -1`   | `A = B - 7`   |
+|        `*` | multiplication           | `15 * 4 = 60`  | `A = B * 5`   |
+|        `/` | division                 | `60 / 12 = 5`  | `A = B / 9`   |
+| `mod`, `%` | modulo/remainder         | `15 mod 7 = 1` | `A = B mod 9` |
+|      `div` | integer part of quotient | `15 div 7 = 2` | `A = B div 9` |
 
 ### Logical
-
-```text
-a && b      // AND operation can be written as `&&` or `AND`
-a || b      // OR operation can be written as `||` or `OR`
-!a          // NOT operation can be written as `!` or `NOT`
-```
 
 |       Symbol | Definition                  | Examples           | Example usage             |
 |-------------:|-----------------------------|--------------------|---------------------------|
@@ -164,16 +141,27 @@ a || b      // OR operation can be written as `||` or `OR`
 | `OR`, `\|\|` | logical OR                  | `A OR B`           | `if X < 7 OR Y > 2 then`  |
 |   `NOT`, `!` | logical NOT                 | `NOT A`            | `if NOT X = 7 then`       |
 
+```text
+output !false && (1 + 6) div 7 == 1 && 5 > 4 mod 2
+// Outputs `true`
+```
+
 ---
 
 ## Control flow
 
+All the control blocks introduce a local scope. 
+What is in the local scope of an `if`, `loop`, `method` and `Class` statements, exists only in those statements. 
+So a variable defined in the body of a `for` statement will only exist in the body of that statement and all of its inner scopes. 
+This behavior is the same across all the programming languages.<br>
+*Note: due to how `for` loops are handled, the control variable for the `for` loop is declared in the outer scope of the statement.*
+
 ### If / Else
 
 ```text
-if x > 10 then        // one `if` clause with a condition
+if X > 10 then        // one `if` clause with a condition
     output "Large"
-else if x > 5 then    // any number of `else if` clauses with a condition
+else if X > 5 then    // any number of `else if` clauses with a condition
     output "Medium"
 else                  // optional `else` clause
     output "Small"
@@ -183,24 +171,26 @@ end if
 ### While loop
 
 ```text
-loop while x < 10
-    x++
+loop while X < 10
+    X++
 end loop
 ```
 
 ### For loop
 
 ```text
-loop i from 1 to 5
-    output i
+loop I from 1 to 5
+    output I
 end loop
+
+output I    // 6
 ```
 
 ### Until loop
 
 ```text
-loop until done == true
-    done = check_condition()
+loop until DONE == true
+    DONE = checkCondition()
 end loop
 ```
 
@@ -211,16 +201,16 @@ end loop
 ### Declaring a method
 
 ```text
-method greet(name)
-    output "Hello, " + name
+method greet(NAME)
+    output "Hello, " + NAME
 end method
 ```
 
 ### Returning a value
 
 ```text
-method square(x)
-    return x * x
+method square(X)
+    return X * X
 end method
 ```
 
@@ -228,7 +218,7 @@ end method
 
 ```text
 greet("Alice")
-result = square(5)
+RESULT = square(5)
 ```
 
 ---
@@ -238,13 +228,13 @@ result = square(5)
 ### Class declaration
 
 ```text
-Class Person(name, age)
-    public this.name = name
-    public this.age = age
+Class Person(NAME, AGE)
+    public this.NAME = NAME
+    public this.AGE = AGE
 
     this.greet = function()
     {
-        output "Hello, my name is " + this.name
+        output "Hello, my name is " + this.NAME
     }
 end Class
 ```
@@ -252,8 +242,8 @@ end Class
 ### Creating an object and calling methods
 
 ```text
-p = new Person("Alice", 25)
-p.greet()
+P = new Person("Alice", 25)
+P.greet()
 ```
 
 ### Static classes
@@ -264,9 +254,9 @@ Static classes hold global/static data and methods. Example usage:
 static Class HashUtil()
     public this.OFFSET = 8784213548
     
-    this.hash = function(x)
+    this.hash = function(X)
     {
-        return x + this.OFFSET
+        return X + this.OFFSET
     }
 end Class
 
@@ -280,15 +270,15 @@ output HashUtil.hash(5)
 ### Input
 
 ```text
-input name
+input NAME
 ```
 
-Stores user input in the variable `name`.
+Stores user input in the variable `NAME`.
 
 ### Output
 
 ```text
-output "Result:", x + y
+output "Result:", X + Y
 ```
 
 Multiple values may be provided separated by commas. The output string will join the values by whitespace. If any of the values produce strings which start or end with spaces — these spaces are trimmed.
@@ -297,10 +287,10 @@ Multiple values may be provided separated by commas. The output string will join
 
 ## Assertions
 
-Used for testing and validation:
+This feature is NOT part of IB guidelines and should only be used for debugging, testing and validation purposes:
 
 ```text
-assert(x + y, 10)
+assert(X + Y, 10)
 ```
 
 If the two expressions are not equal, the runtime will raise an assertion error.
@@ -312,15 +302,15 @@ If the two expressions are not equal, the runtime will raise an assertion error.
 ### Literals and creation
 
 ```text
-arr = [1, 2, 3]
-arr2 = new Array()
+ARR = [1, 2, 3]
+ARR2 = new Array()
 ```
 
 ### Accessing elements
 
 ```text
-x = arr[0]
-arr[1] = 5
+X = ARR[0]
+ARR[1] = 5
 ```
 
 ---
@@ -346,36 +336,30 @@ The compiler ships with several ready-to-use classes: **Collection**, **Queue**,
 
 A simple dynamic-list helper with iteration support.
 
-**Fields**
-
-* `array` — underlying array storage
-* `index` — number of items currently stored
-* `next` — iterator pointer for `getNext` / `hasNext`
-
 **Methods**
 
 * `addItem(item)` — append `item` to the collection.
 * `remove(item)` — remove the first occurrence of `item`; returns `true` if removed, otherwise `false`.
 * `contains(item)` — returns `true` if `item` exists in the collection.
-* `resetNext()` — set iteration pointer to start.
+* `resetNext()` — set an iteration pointer to start.
 * `hasNext()` — returns `true` if more items remain for iteration.
-* `getNext()` — returns next item and advances iterator.
-* `isEmpty()` — returns `true` if collection is empty.
+* `getNext()` — returns next item and advances iterator (does not remove the element).
+* `isEmpty()` — returns `true` if the collection is empty.
 
 **Examples**
 
 ```text
-c = new Collection()
-c.addItem(10)
-c.addItem(20)
-output c.contains(20)   // true
+C = new Collection()
+C.addItem(10)
+C.addItem(20)
+output C.contains(20)   // true
 
-loop while c.hasNext()
-    val = c.getNext()
-    output val
+loop while C.hasNext()
+    VAL = C.getNext()
+    output VAL
 end loop
 
-c.resetNext()           // reset is needed if the Collection will be iterated later
+C.resetNext()           // reset is needed if the Collection will be iterated later
 ```
 
 ---
@@ -384,28 +368,22 @@ c.resetNext()           // reset is needed if the Collection will be iterated la
 
 First-in-first-out queue.
 
-**Fields**
-
-* `array` — queue storage
-* `index` — position where next item will be enqueued
-* `head` — position of next item to dequeue
-
 **Methods**
 
 * `enqueue(item)` — push `item` to the back of the queue.
-* `dequeue()` — remove and return the front item (no safety check, check `isEmpty` before dequeueing for robustness).
+* `dequeue()` — remove and return the front item (no safety check, check `isEmpty` before dequeue for robustness).
 * `isEmpty()` — returns `true` if queue is empty.
 
 **Examples**
 
 ```text
-q = new Queue()
-q.enqueue(1)
-q.enqueue(2)
+Q = new Queue()
+Q.enqueue(1)
+Q.enqueue(2)
 
-while NOT q.isEmpty()
-    v = q.dequeue()
-    output v
+while NOT Q.isEmpty()
+    V = Q.dequeue()
+    output V
 end while
 ```
 
@@ -414,11 +392,6 @@ end while
 ### Stack
 
 Last-in-first-out stack.
-
-**Fields**
-
-* `array` — storage
-* `index` — next push position (also size)
 
 **Methods**
 
@@ -429,12 +402,12 @@ Last-in-first-out stack.
 **Examples**
 
 ```text
-s = new Stack()
-s.push(10)
-s.push(20)
-while NOT s.isEmpty()
-    v = s.pop()
-    output v
+S = new Stack()
+S.push(10)
+S.push(20)
+while NOT S.isEmpty()
+    V = S.pop()
+    output V
 end while
 ```
 
@@ -482,8 +455,8 @@ Use `Math.<name>` to access constants and functions.
 **Examples**
 
 ```text
-output Math.PI
-output Math.abs(-3.5)
+output Math.PI                // 3.14...
+output Math.abs(-3.5)         // 3.5
 output Math.pow(2, 10)        // 1024
 output Math.pow(9, 0.5)       // 3
 
@@ -494,7 +467,7 @@ output Math.log(-1)           // undefined
 output Math.sin(Math.PI / 2)  // ~1
 
 // random
-output Math.random()
+output Math.random()          // Random from 0 to 1
 ```
 
 ---
@@ -511,9 +484,9 @@ The compiler recognizes and rewrites a handful of special methods and field-look
 **Example**
 
 ```text
-x = div(7, 2)                 // 3
-name = input()                // : <user input>
-mood = input("How are you?")  // How are you?: <user input>
+X = div(7, 2)                 // 3
+NAME = input()                // : <user input>
+MOOD = input("How are you?")  // How are you?: <user input>
 ```
 
 ### Native field / property access
@@ -523,8 +496,8 @@ mood = input("How are you?")  // How are you?: <user input>
 **Example**
 
 ```text
-arr = [1,2,3]
-output arr.length    // native length call on `arr`
+ARR = [1,2,3]
+output ARR.length    // native length call on `ARR`
 ```
 
 ### Native instance methods
@@ -534,24 +507,24 @@ output arr.length    // native length call on `arr`
 **Example**
 
 ```text
-s = "Hello"
-output s.substring(1, 3)   // "el"
+S = "Hello"
+output S.substring(1, 3)   // "el"
 ```
 
 ## Example program
 
 ```text
-Class Counter(start)
-    public this.value = start
+Class Counter(START)
+    public this.VALUE = START
 
     this.increment = function()
     {
-        this.value++
+        this.VALUE++
     }
 
     this.print = function()
     {
-        output "Value:", this.value
+        output "Value:", this.VALUE
     }
 end Class
 

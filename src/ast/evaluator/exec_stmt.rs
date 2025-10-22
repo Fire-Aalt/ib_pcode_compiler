@@ -11,6 +11,8 @@ impl AST {
         stmt_node: &StmtNode,
         env: &mut Env,
     ) -> Result<Option<Value>, Diagnostic> {
+        let line = &stmt_node.line_info;
+
         match &stmt_node.stmt {
             Stmt::Assign(target, op, expr) => {
                 let val = self.eval_expr(expr, env)?;
@@ -79,9 +81,9 @@ impl AST {
 
                     control = env.get(ident).unwrap();
 
-                    if control.as_num(&stmt_node.line_info).is_err() {
+                    if control.as_num(line).is_err() {
                         return Err(diagnostic(
-                            &stmt_node.line_info,
+                            line,
                             ErrorType::InvalidType,
                             format!(
                                 "for loop requires that the control variable `{}` persists to be a number. Found `{}`",
@@ -91,7 +93,7 @@ impl AST {
                         ));
                     }
 
-                    control = control.add(&stmt_node.line_info, Value::Number(1.0))?;
+                    control = control.add(line, Value::Number(1.0))?;
                     env.assign(ident, control.clone());
                 }
                 Ok(None)
@@ -125,7 +127,16 @@ impl AST {
                 Ok(None)
             }
             Stmt::Assert(expr, expected) => {
-                assert_eq!(self.eval_expr(expr, env)?, self.eval_expr(expected, env)?);
+                let left = self.eval_expr(expr, env)?;
+                let right = self.eval_expr(expected, env)?;
+                if left != right {
+                    return Err(diagnostic(
+                        line,
+                        ErrorType::AssertionFailed,
+                        format!("left != right: {} != {}", left, right),
+                        "checked values were not the same",
+                    ));
+                };
                 Ok(None)
             }
             Stmt::MethodReturn(expr) => Ok(Some(self.eval_expr(expr, env)?)),
@@ -150,21 +161,23 @@ impl AST {
         val: Value,
         env: &mut Env,
     ) -> Result<(), Diagnostic> {
+        let line = &stmt_node.line_info;
+
         match target {
             AssignTarget::Ident(name) => {
                 match op {
                     AssignOperator::Assign => env.assign(name, val),
                     AssignOperator::AssignAdd => {
-                        env.assign(name, env.get(name).unwrap().add(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().add(line, val)?)
                     }
                     AssignOperator::AssignSubtract => {
-                        env.assign(name, env.get(name).unwrap().sub(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().sub(line, val)?)
                     }
                     AssignOperator::AssignMultiply => {
-                        env.assign(name, env.get(name).unwrap().mul(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().mul(line, val)?)
                     }
                     AssignOperator::AssignDivide => {
-                        env.assign(name, env.get(name).unwrap().div(&stmt_node.line_info, val)?)
+                        env.assign(name, env.get(name).unwrap().div(line, val)?)
                     }
                 }
                 Ok(())
@@ -201,24 +214,20 @@ impl AST {
 
                         let res = match op {
                             AssignOperator::Assign => val,
-                            AssignOperator::AssignAdd => {
-                                array[index].clone().add(&stmt_node.line_info, val)?
-                            }
+                            AssignOperator::AssignAdd => array[index].clone().add(line, val)?,
                             AssignOperator::AssignSubtract => {
-                                array[index].clone().sub(&stmt_node.line_info, val)?
+                                array[index].clone().sub(line, val)?
                             }
                             AssignOperator::AssignMultiply => {
-                                array[index].clone().mul(&stmt_node.line_info, val)?
+                                array[index].clone().mul(line, val)?
                             }
-                            AssignOperator::AssignDivide => {
-                                array[index].clone().div(&stmt_node.line_info, val)?
-                            }
+                            AssignOperator::AssignDivide => array[index].clone().div(line, val)?,
                         };
                         array[index] = res;
                         Ok(())
                     }
                     _ => Err(invalid_type_call_error(
-                        &stmt_node.line_info,
+                        line,
                         "assignment into an index expression",
                         &assign_val,
                         "arrays",

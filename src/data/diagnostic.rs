@@ -16,6 +16,7 @@ pub enum ErrorType {
     Uninitialized,
     Unsupported,
     DuplicateName,
+    AssertionFailed,
 }
 
 #[derive(Clone, Default)]
@@ -34,6 +35,7 @@ impl Debug for ErrorType {
             ErrorType::Uninitialized => "Uninitialized",
             ErrorType::Unsupported => "Unsupported",
             ErrorType::DuplicateName => "Duplicate Name",
+            ErrorType::AssertionFailed => "Assertion Failed",
         };
         write!(f, "{}", raw)
     }
