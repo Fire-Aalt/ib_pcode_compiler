@@ -11,13 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add proper README">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/DOCUMENTATION.md" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix for loop control variable incorrect scope + add info about numerical precision to docs">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/source" beforeDir="false" afterPath="$PROJECT_DIR$/source" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/evaluator/exec_stmt.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/evaluator/exec_stmt.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ast/validator/validate_stmt.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/validator/validate_stmt.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/lib_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/lib_tests.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -261,15 +257,7 @@
       <workItem from="1761067343255" duration="7216000" />
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
-      <workItem from="1761201587582" duration="847000" />
-    </task>
-    <task id="LOCAL-00003" summary="Fix editor line height + add tabs support + remove line info">
-      <option name="closed" value="true" />
-      <created>1760637746249</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1760637746249</updated>
+      <workItem from="1761201587582" duration="1258000" />
     </task>
     <task id="LOCAL-00004" summary="Add rough docs tab">
       <option name="closed" value="true" />
@@ -655,7 +643,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761155160384</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="Fix for loop control variable incorrect scope + add info about numerical precision to docs">
+      <option name="closed" value="true" />
+      <created>1761202818521</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1761202818522</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -668,7 +664,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix flex on main page" />
     <MESSAGE value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
     <MESSAGE value="Add bootstrap.js + fix prod build" />
     <MESSAGE value="Fix small issues" />
@@ -693,6 +688,7 @@
     <MESSAGE value="Style success outputs in green" />
     <MESSAGE value="Fix assert + improve documentation" />
     <MESSAGE value="Add proper README" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add proper README" />
+    <MESSAGE value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
   </component>
 </project>
