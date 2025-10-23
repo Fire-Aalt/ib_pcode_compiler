@@ -115,7 +115,13 @@ impl AST {
             Operand::Subtract => Value::Number(l - r),
             Operand::Multiply => Value::Number(l * r),
             Operand::Divide => Value::Number(l / r),
-            Operand::IntDivide => Value::Number((l as i64 / r as i64) as f64),
+            Operand::IntDivide => {
+                if l.is_finite() && r.is_finite() {
+                    Value::Number((l as i64 / r as i64) as f64)
+                } else  {
+                    Value::Number(l / r)
+                }
+            },
             Operand::Power => Value::Number(l.powf(r)),
             Operand::Modulo => Value::Number(l % r),
             Operand::Greater => Value::Bool(l > r),

@@ -114,9 +114,12 @@ static Class Math()
 
     this.log = function(x)
     {
-        if x <= 0 then
-            return undefined
+        if x < 0 then
+            return NaN
+        else if x == 0 then
+            return -Infinity
         end if
+        
         eps = 1e-14
         y = 0.0
         if x > this.E then
@@ -140,24 +143,31 @@ static Class Math()
 
     this.log1p = function(x)
     {
-        if x <= -1 then
-            return undefined
+        if x < -1 then
+            return NaN
+        else if x == 0 then
+            return 0
         end if
+    
         return this.log(1 + x)
     }
 
     this.log10 = function(x)
     {
-        if x <= 0 then
-            return undefined
+        if x < 0 then
+            return NaN
+        else if x == 0 then
+            return -Infinity
         end if
         return this.log(x) / this.LN10
     }
 
     this.log2 = function(x)
     {
-        if x <= 0 then
-            return undefined
+        if x < 0 then
+            return NaN
+        else if x == 0 then
+            return -Infinity
         end if
         return this.log(x) / this.LN2
     }
@@ -175,7 +185,7 @@ static Class Math()
             if y > 0 then
                 return 0
             end if
-            return undefined
+            return Infinity
         end if
 
         yi = this.trunc(y)
@@ -211,7 +221,7 @@ static Class Math()
 
             if origY < 0 then
                 if result == 0 then
-                    return undefined
+                    return NaN
                 end if
                 return 1.0 / result
             end if
@@ -220,7 +230,7 @@ static Class Math()
         end if
 
         if x < 0 then
-            return undefined
+            return NaN
         end if
 
         return this.exp(y * this.log(x))
@@ -229,7 +239,7 @@ static Class Math()
     this.sqrt = function(x)
     {
         if x < 0 then
-            return undefined
+            return NaN
         end if
         if x == 0 then
             return 0
@@ -332,7 +342,7 @@ static Class Math()
     {
         c = this.cos(x)
         if c == 0 then
-            return undefined
+            return 0
         end if
         return this.sin(x) / c
     }
@@ -340,7 +350,7 @@ static Class Math()
     this.asin = function(x)
     {
         if x < -1 OR x > 1 then
-            return undefined
+            return NaN
         end if
         y = x
         eps = 1e-14
@@ -363,7 +373,7 @@ static Class Math()
     this.acos = function(x)
     {
         if x < -1 OR x > 1 then
-            return undefined
+            return NaN
         end if
         return (this.PI / 2.0) - this.asin(x)
     }
@@ -435,7 +445,7 @@ static Class Math()
         enx = this.exp(-x)
         denom = ex + enx
         if denom == 0 then
-            return undefined
+            return 0
         end if
         return (ex - enx) / denom
     }
@@ -448,7 +458,7 @@ static Class Math()
     this.atanh = function(x)
     {
         if x <= -1 OR x >= 1 then
-            return undefined
+            return NaN
         end if
         return 0.5 * this.log((1.0 + x) / (1.0 - x))
     }
@@ -456,7 +466,7 @@ static Class Math()
     this.acosh = function(x)
     {
         if x < 1 then
-            return undefined
+            return NaN
         end if
         return this.log(x + this.sqrt(x * x - 1.0))
     }

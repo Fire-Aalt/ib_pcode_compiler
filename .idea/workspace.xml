@@ -11,15 +11,20 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update .gitignore">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update README">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Math" beforeDir="false" afterPath="$PROJECT_DIR$/include/Math" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source" beforeDir="false" afterPath="$PROJECT_DIR$/source" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ast/evaluator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/evaluator.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/grammar.pest" beforeDir="false" afterPath="$PROJECT_DIR$/src/grammar.pest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/lib_includes_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/lib_includes_tests.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -62,42 +67,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Cargo.Run ib_pcode_compiler.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test infinities.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test scopes.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Tests in 'tests'.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.index.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.20.0&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.18.12&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/forty/Documents/RustProjects/ib_pcode_compiler/www&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.serve.executor&quot;: &quot;Run&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\RustRover 2024.3.7\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
-    &quot;wasm-pack.Build.executor&quot;: &quot;Run&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Cargo.Run ib_pcode_compiler.executor": "Run",
+    "Cargo.Test infinities.executor": "Run",
+    "Cargo.Test math_all.executor": "Run",
+    "Cargo.Test math_edge_cases.executor": "Run",
+    "Cargo.Test scopes.executor": "Run",
+    "Cargo.Tests in 'tests'.executor": "Run",
+    "JavaScript Debug.index.html (1).executor": "Run",
+    "JavaScript Debug.index.html.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.nodejs.core.library.configured.version": "22.20.0",
+    "javascript.nodejs.core.library.typings.version": "22.18.12",
+    "last_opened_file_path": "C:/Users/forty/Documents/RustProjects/ib_pcode_compiler/www",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.serve.executor": "Run",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "language.rust.cargo.check",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\RustRover 2024.3.7\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true",
+    "wasm-pack.Build.executor": "Run"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler\www" />
@@ -110,7 +117,7 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.Test infinities">
+  <component name="RunManager" selected="Cargo.Tests in 'tests'">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pcode_compiler --bin ib_pcode_compiler" />
@@ -165,6 +172,42 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test math_all" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --package ib_pcode_compiler --test lib_includes_tests math_all -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test math_edge_cases" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --package ib_pcode_compiler --test lib_includes_tests math_edge_cases -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Test scopes" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="buildProfileId" value="test" />
       <option name="command" value="test --package ib_pcode_compiler --test lib_tests scopes -- --exact" />
@@ -201,9 +244,6 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
-    <configuration name="index.html" type="JavascriptDebugType" temporary="true" uri="http://localhost:63342/ib_pcode_compiler/www/dist/index.html" useBuiltInWebServerPort="true">
-      <method v="2" />
-    </configuration>
     <configuration name="Build" type="WasmPackCommandRunConfiguration" factoryName="wasm-pack" nameIsGenerated="true">
       <option name="command" value="build --target bundler --out-dir ./www/pkg --release" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -212,16 +252,6 @@
       <method v="2">
         <option name="WASM_PACK.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
-    </configuration>
-    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/www/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="build" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
     </configuration>
     <configuration name="serve" type="js.build_tools.npm" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/www/package.json" />
@@ -236,21 +266,21 @@
     <list>
       <item itemvalue="Cargo.Run ib_pcode_compiler" />
       <item itemvalue="Cargo.Test ib_pcode_compiler" />
+      <item itemvalue="Cargo.Test math_all" />
+      <item itemvalue="Cargo.Test math_edge_cases" />
       <item itemvalue="Cargo.Test infinities" />
       <item itemvalue="Cargo.Test scopes" />
       <item itemvalue="Cargo.Tests in 'tests'" />
-      <item itemvalue="JavaScript Debug.index.html" />
       <item itemvalue="npm.serve" />
-      <item itemvalue="npm.build" />
       <item itemvalue="wasm-pack.Build" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Cargo.Test infinities" />
         <item itemvalue="Cargo.Tests in 'tests'" />
+        <item itemvalue="Cargo.Test math_all" />
+        <item itemvalue="Cargo.Test math_edge_cases" />
+        <item itemvalue="Cargo.Test infinities" />
         <item itemvalue="Cargo.Test scopes" />
-        <item itemvalue="JavaScript Debug.index.html" />
-        <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
   </component>
@@ -279,15 +309,7 @@
       <workItem from="1761154121742" duration="4691000" />
       <workItem from="1761201587582" duration="5242000" />
       <workItem from="1761208433999" duration="770000" />
-      <workItem from="1761232171255" duration="487000" />
-    </task>
-    <task id="LOCAL-00011" summary="Improve performance of outputting lines">
-      <option name="closed" value="true" />
-      <created>1760651153670</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1760651153670</updated>
+      <workItem from="1761232171255" duration="4421000" />
     </task>
     <task id="LOCAL-00012" summary="Fix popup prompt + rearrange buttons for easier navigation">
       <option name="closed" value="true" />
@@ -673,7 +695,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761232275713</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="Update README">
+      <option name="closed" value="true" />
+      <created>1761232683986</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1761232683986</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -686,7 +716,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Add deploy.yml" />
     <MESSAGE value="Update to upload-artifact@v4" />
     <MESSAGE value="Fix require issue" />
     <MESSAGE value="Fix gh workflow" />
@@ -711,6 +740,7 @@
     <MESSAGE value="Add support for parsing infinities" />
     <MESSAGE value="Update LICENSE" />
     <MESSAGE value="Update .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update .gitignore" />
+    <MESSAGE value="Update README" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update README" />
   </component>
 </project>

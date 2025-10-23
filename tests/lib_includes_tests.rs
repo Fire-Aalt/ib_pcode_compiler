@@ -3,13 +3,9 @@ use crate::common::compile_run_check_logs;
 mod common;
 
 #[test]
-fn math() {
+fn math_all() {
     let code = r#"
 method norm(x)
-    //if x == "NaN" then
-    if x == undefined then
-        return "NaN"
-    end if
     return Math.round(x * 1e11) / 1e11
 end method
 
@@ -63,7 +59,78 @@ NaN
 0.99999977493
 2.77647228072
 NaN
-2.76865938331
+2.76865938331 
+"#,
+    );
+}
+
+#[test]
+fn math_edge_cases() {
+    let code = r#"
+method norm(x)
+    return Math.round(x * 1e11) / 1e11
+end method
+
+output norm(Math.pow(-5, 5))
+output norm(Math.pow(-5, -5))
+output norm(Math.pow(-5, -0.2))
+output "---"
+output norm(Math.log1p(0.2))
+output norm(Math.log1p(0))
+output norm(Math.log1p(-0.2))
+output norm(Math.log1p(-1))
+output norm(Math.log1p(-2))
+output "---"
+output norm(Math.log(0.2))
+output norm(Math.log(0))
+output norm(Math.log(-0.2))
+output norm(Math.log(-1))
+output norm(Math.log(-2))
+output "---"
+output norm(Math.log10(0.2))
+output norm(Math.log10(0))
+output norm(Math.log10(-0.2))
+output norm(Math.log10(-1))
+output norm(Math.log10(-2))
+output "---"
+output norm(Math.log2(0.2))
+output norm(Math.log2(0))
+output norm(Math.log2(-0.2))
+output norm(Math.log2(-1))
+output norm(Math.log2(-2))
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+-3125
+-0.00032
+NaN
+---
+0.18232155679
+0
+-0.22314355131
+-Infinity
+NaN
+---
+-1.60943791243
+-Infinity
+NaN
+NaN
+NaN
+---
+-0.69897000434
+-Infinity
+NaN
+NaN
+NaN
+---
+-2.32192809489
+-Infinity
+NaN
+NaN
+NaN 
 "#,
     );
 }
