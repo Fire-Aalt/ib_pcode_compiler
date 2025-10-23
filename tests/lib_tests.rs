@@ -76,3 +76,63 @@ true
 "#,
     );
 }
+
+#[test]
+fn scopes() {
+    let code = r#"
+I = "String"
+
+loop I from 1 to 5
+    output I, " outer before"
+    loop I from 1 to 5
+        output I, " inner"
+    end loop
+    output I, " outer after"
+end loop
+
+output I, " after loop"
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+1 outer before
+1 inner
+2 inner
+3 inner
+4 inner
+5 inner
+1 outer after
+2 outer before
+1 inner
+2 inner
+3 inner
+4 inner
+5 inner
+2 outer after
+3 outer before
+1 inner
+2 inner
+3 inner
+4 inner
+5 inner
+3 outer after
+4 outer before
+1 inner
+2 inner
+3 inner
+4 inner
+5 inner
+4 outer after
+5 outer before
+1 inner
+2 inner
+3 inner
+4 inner
+5 inner
+5 outer after
+String after loop
+"#,
+    );
+}

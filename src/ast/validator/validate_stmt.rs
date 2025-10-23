@@ -41,11 +41,17 @@ impl AST {
                 self.validate_body(body, env, validator);
             }
             Stmt::For(name_hash, start_num, end_num, body) => {
-                env.assign(name_hash, Value::Number(0.0));
+                let previous_value = env.get(name_hash); // Save previous state
+                env.assign(name_hash, Value::Number(0.0));  // Override control variable
+                
                 self.validate_expr(start_num, env, validator);
                 self.validate_expr(end_num, env, validator);
-                
                 self.validate_body(body, env, validator);
+                
+                match previous_value {
+                    None => env.undefine(name_hash), // Remove control variable
+                    Some(val) => env.assign(name_hash, val) // Restore previous state
+                }
             }
             Stmt::Until(expr, body) => {
                 self.validate_expr(expr, env, validator);

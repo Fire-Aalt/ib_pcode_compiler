@@ -70,6 +70,8 @@ impl AST {
             }
             Stmt::For(ident, start_num, end_num, body) => {
                 let mut control = self.eval_expr(start_num, env)?;
+
+                let previous_value = env.get(ident); // Save previous state
                 env.assign(ident, control.clone());
 
                 while control.as_num(&start_num.line_info)?
@@ -92,10 +94,16 @@ impl AST {
                             "",
                         ));
                     }
-
+                    
                     control = control.add(line, Value::Number(1.0))?;
                     env.assign(ident, control.clone());
                 }
+                
+                match previous_value {
+                    None => env.undefine(ident), // Remove control variable
+                    Some(val) => env.assign(ident, val) // Restore previous state
+                }
+                
                 Ok(None)
             }
             Stmt::Until(expr, body) => {

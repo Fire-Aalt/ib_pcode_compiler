@@ -154,7 +154,6 @@ All the control blocks introduce a local scope.
 What is in the local scope of an `if`, `loop`, `method` and `Class` statements, exists only in those statements.
 So a variable defined in the body of a `for` statement will only exist in the body of that statement and all of its inner scopes.
 This behavior is the same across all the programming languages.<br>
-*Note: due to how `for` loops are handled, the control variable for the `for` loop is declared in the outer scope of the statement.*
 
 ### If / Else
 
@@ -179,11 +178,13 @@ end loop
 ### For loop
 
 ```text
-loop I from 1 to 5
-    output I
+I = "Something not an integer"
+
+loop I from 1 to 5  // inclusive
+    output I        // 1... 2... 3... 4... 5
 end loop
 
-output I    // 6
+output I    // Something not an integer
 ```
 
 ### Until loop
@@ -325,6 +326,9 @@ ARR[1] = 5
 | Undefined      | `undefined`                |
 | Array          | `[1, 2, 3]`, `new Array()` |
 | Class instance | `new MyClass()`            |
+
+Numbers have limited precision up to 15 digits total. So if you have 15 digits before `.`, or 15 digits after, or 7 before and 8 after - it will result in the maximum precision without any rounding errors.
+All the numbers are represented as float64 to mimic the behavior of the "EZ Pseudocode" (c) Dave Mulkey 2012.*
 
 ---
 
