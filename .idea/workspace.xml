@@ -11,8 +11,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update .gitignore">
-      <change afterPath="$PROJECT_DIR$/source" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix COOP/COEP headers issue">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
     </list>
@@ -258,15 +257,7 @@
       <workItem from="1761067343255" duration="7216000" />
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
-      <workItem from="1761201587582" duration="2740000" />
-    </task>
-    <task id="LOCAL-00006" summary="Fix code blocks styling in docs">
-      <option name="closed" value="true" />
-      <created>1760647246436</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1760647246436</updated>
+      <workItem from="1761201587582" duration="3689000" />
     </task>
     <task id="LOCAL-00007" summary="Fix links jumping in docs">
       <option name="closed" value="true" />
@@ -652,7 +643,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761203083486</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="Fix COOP/COEP headers issue">
+      <option name="closed" value="true" />
+      <created>1761204628579</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1761204628579</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -665,7 +664,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Fix small issues" />
     <MESSAGE value="Separate styles" />
     <MESSAGE value="Remove CopyWebpackPlugin" />
     <MESSAGE value="Add deploy.yml" />
@@ -690,6 +688,7 @@
     <MESSAGE value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
     <MESSAGE value="Remove source.txt" />
     <MESSAGE value="Update .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update .gitignore" />
+    <MESSAGE value="Fix COOP/COEP headers issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix COOP/COEP headers issue" />
   </component>
 </project>

@@ -5,7 +5,7 @@ if ("serviceWorker" in navigator) {
         (registration) => {
             console.log("COOP/COEP Service Worker registered", registration.scope);
             
-            if (!registration.active && !navigator.serviceWorker.controller) {
+            if (!navigator.serviceWorker.controller) {
                 window.location.reload();
             }
         },
