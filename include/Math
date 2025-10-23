@@ -118,6 +118,8 @@ static Class Math()
             return NaN
         else if x == 0 then
             return -Infinity
+        else if x == Infinity then
+            return Infinity
         end if
         
         eps = 1e-14
