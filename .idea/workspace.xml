@@ -11,8 +11,10 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Remove source.txt">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update .gitignore">
+      <change afterPath="$PROJECT_DIR$/source" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +111,7 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.Run ib_pcode_compiler">
+  <component name="RunManager" selected="npm.serve">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pcode_compiler --bin ib_pcode_compiler" />
@@ -256,15 +258,7 @@
       <workItem from="1761067343255" duration="7216000" />
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
-      <workItem from="1761201587582" duration="1468000" />
-    </task>
-    <task id="LOCAL-00005" summary="Fix scrolls + fix some styling + add light/dark themes">
-      <option name="closed" value="true" />
-      <created>1760646569753</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1760646569753</updated>
+      <workItem from="1761201587582" duration="2740000" />
     </task>
     <task id="LOCAL-00006" summary="Fix code blocks styling in docs">
       <option name="closed" value="true" />
@@ -650,7 +644,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761202903710</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="Update .gitignore">
+      <option name="closed" value="true" />
+      <created>1761203083486</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1761203083486</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -663,7 +665,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Add bootstrap.js + fix prod build" />
     <MESSAGE value="Fix small issues" />
     <MESSAGE value="Separate styles" />
     <MESSAGE value="Remove CopyWebpackPlugin" />
@@ -688,6 +689,7 @@
     <MESSAGE value="Add proper README" />
     <MESSAGE value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
     <MESSAGE value="Remove source.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove source.txt" />
+    <MESSAGE value="Update .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update .gitignore" />
   </component>
 </project>

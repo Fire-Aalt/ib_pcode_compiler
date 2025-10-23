@@ -4,7 +4,8 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register(new URL("./sw.js", import.meta.url)).then(
         (registration) => {
             console.log("COOP/COEP Service Worker registered", registration.scope);
-            if (registration.active && !navigator.serviceWorker.controller) {
+            
+            if (!registration.active && !navigator.serviceWorker.controller) {
                 window.location.reload();
             }
         },
