@@ -127,6 +127,19 @@ Supports arithmetic, comparison, logical operators and parentheses.
 | `mod`, `%` | modulo/remainder         | `15 mod 7 = 1` | `A = B mod 9` |
 |      `div` | integer part of quotient | `15 div 7 = 2` | `A = B div 9` |
 
+Edge cases are solved as follows:
+
+| Expression            | Result    |
+|-----------------------|-----------|
+| n / ±Infinity         | 0         |
+| ±Infinity * ±Infinity | ±Infinity |
+| ±(non-zero) / 0       | ±Infinity |
+| Infinity + Infinity   | Infinity  |
+| ±0 / ±0               | NaN       |
+| Infinity - Infinity   | NaN       |
+| ±Infinity / ±Infinity | NaN       |
+| ±Infinity * 0         | NaN       |
+
 ### Logical
 
 |       Symbol | Definition                  | Examples           | Example usage             |
