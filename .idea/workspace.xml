@@ -6,14 +6,12 @@
   <component name="CargoProjects">
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml">
       <package file="$PROJECT_DIR$">
-        <enabledFeature name="default" />
+        <feature name="default" enabled="true" />
       </package>
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Add support for parsing infinities">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update LICENSE" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,7 +77,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.20.0&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.18.11&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.18.12&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/forty/Documents/RustProjects/ib_pcode_compiler/www&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -278,14 +276,7 @@
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
       <workItem from="1761201587582" duration="5242000" />
-    </task>
-    <task id="LOCAL-00009" summary="Fix colored terminal output">
-      <option name="closed" value="true" />
-      <created>1760649209091</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1760649209091</updated>
+      <workItem from="1761208433999" duration="770000" />
     </task>
     <task id="LOCAL-00010" summary="Add GitHub and report issue links">
       <option name="closed" value="true" />
@@ -671,7 +662,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761206379564</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="Update LICENSE">
+      <option name="closed" value="true" />
+      <created>1761208608375</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1761208608375</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -684,7 +683,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Remove CopyWebpackPlugin" />
     <MESSAGE value="Add deploy.yml" />
     <MESSAGE value="Update to upload-artifact@v4" />
     <MESSAGE value="Fix require issue" />
@@ -709,6 +707,7 @@
     <MESSAGE value="Update .gitignore" />
     <MESSAGE value="Fix COOP/COEP headers issue" />
     <MESSAGE value="Add support for parsing infinities" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add support for parsing infinities" />
+    <MESSAGE value="Update LICENSE" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update LICENSE" />
   </component>
 </project>
