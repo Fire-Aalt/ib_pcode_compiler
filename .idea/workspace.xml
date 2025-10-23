@@ -13,7 +13,8 @@
   <component name="ChangeListManager">
     <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix COOP/COEP headers issue">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/grammar.pest" beforeDir="false" afterPath="$PROJECT_DIR$/src/grammar.pest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/lib_tests.rs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/lib_tests.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,15 +258,7 @@
       <workItem from="1761067343255" duration="7216000" />
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
-      <workItem from="1761201587582" duration="3689000" />
-    </task>
-    <task id="LOCAL-00007" summary="Fix links jumping in docs">
-      <option name="closed" value="true" />
-      <created>1760647926642</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1760647926642</updated>
+      <workItem from="1761201587582" duration="4680000" />
     </task>
     <task id="LOCAL-00008" summary="Fix started whitespace in code blocks in docs">
       <option name="closed" value="true" />
@@ -651,7 +644,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761204628579</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="Fix COOP/COEP headers issue">
+      <option name="closed" value="true" />
+      <created>1761205360518</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1761205360518</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

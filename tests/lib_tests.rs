@@ -136,3 +136,25 @@ String after loop
 "#,
     );
 }
+
+#[test]
+fn infinities() {
+    let code = r#"
+A = 1 / 0
+B = -1 / 0
+C = 0 / Infinity
+D = 0 / -infinity
+E = inf / -inf
+output A, B, C, D, E
+    "#;
+
+    compile_run_check_logs(
+        code,
+        "",
+        r#"
+Infinity -Infinity 0 -0 NaN
+"#,
+    );
+}
+
+

@@ -130,7 +130,7 @@ class_var = { "." ~ ident }
 class_call = { "." ~ ident ~ call_param_list }
 index = { "[" ~ expr ~ "]" }
 
-number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
+number = @{ (int ~ ("." ~ ASCII_DIGIT*)? ~ ("e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?) | ("Infinity" | "infinity" | "inf") }
 int = @{ ASCII_DIGIT+ }
 string = @{ "\"" ~ ( "\\\"" | (!"\"" ~ ANY) )* ~ "\"" }
 bool = { "true" | "false" }
