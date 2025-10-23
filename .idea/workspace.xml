@@ -11,9 +11,8 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix for loop control variable incorrect scope + add info about numerical precision to docs">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Remove source.txt">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source" beforeDir="false" afterPath="$PROJECT_DIR$/source" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,15 +256,7 @@
       <workItem from="1761067343255" duration="7216000" />
       <workItem from="1761145429111" duration="4005000" />
       <workItem from="1761154121742" duration="4691000" />
-      <workItem from="1761201587582" duration="1258000" />
-    </task>
-    <task id="LOCAL-00004" summary="Add rough docs tab">
-      <option name="closed" value="true" />
-      <created>1760640971823</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1760640971823</updated>
+      <workItem from="1761201587582" duration="1468000" />
     </task>
     <task id="LOCAL-00005" summary="Fix scrolls + fix some styling + add light/dark themes">
       <option name="closed" value="true" />
@@ -651,7 +642,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761202818522</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="Remove source.txt">
+      <option name="closed" value="true" />
+      <created>1761202903710</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1761202903710</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -664,7 +663,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Add &quot;Program finished&quot; output in the terminal + add virtualization to terminal" />
     <MESSAGE value="Add bootstrap.js + fix prod build" />
     <MESSAGE value="Fix small issues" />
     <MESSAGE value="Separate styles" />
@@ -689,6 +687,7 @@
     <MESSAGE value="Fix assert + improve documentation" />
     <MESSAGE value="Add proper README" />
     <MESSAGE value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
+    <MESSAGE value="Remove source.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove source.txt" />
   </component>
 </project>
