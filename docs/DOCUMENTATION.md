@@ -331,14 +331,14 @@ ARR[1] = 5
 
 ## Data Types
 
-| Type           | Example                    |
-|----------------|----------------------------|
-| Number         | `5`, `3.14`, `2e10`        |
-| String         | `"Hello"`                  |
-| Boolean        | `true`, `false`            |
-| Undefined      | `undefined`                |
-| Array          | `[1, 2, 3]`, `new Array()` |
-| Class instance | `new MyClass()`            |
+| Type           | Example                                |
+|----------------|----------------------------------------|
+| Number         | `5`, `3.14`, `2e10`, `Infinity`, `NaN` |
+| String         | `"Hello"`                              |
+| Boolean        | `true`, `false`                        |
+| Undefined      | `undefined`                            |
+| Array          | `[1, 2, 3]`, `new Array()`             |
+| Class instance | `new MyClass()`                        |
 
 Numbers have limited precision up to 15 digits total. So if you have 15 digits before `.`, or 15 digits after, or 7 before and 8 after - it will result in the maximum precision without any rounding errors.
 All the numbers are represented as float64 to mimic the behavior of the "EZ Pseudocode" (c) Dave Mulkey 2012.*
@@ -450,16 +450,16 @@ Use `Math.<name>` to access constants and functions.
 **Exponential / Logarithm**
 
 * `exp(x)`, `expm1(x)` — exponential and exp(x)-1 approximations.
-* `log(x)`, `log1p(x)`, `log10(x)`, `log2(x)` — natural/log-base functions (return `undefined` for invalid inputs).
+* `log(x)`, `log1p(x)`, `log10(x)`, `log2(x)` — natural/log-base functions (return `NaN` for invalid inputs).
 
 **Power & roots**
 
-* `pow(x, y)` — supports integer exponents for negative bases; for non-integer `y` and negative `x` returns `undefined`. Special-cases: `0^0` => `1`, `0^neg` => `undefined`.
-* `sqrt(x)`, `cbrt(x)` — square and cube root (return `undefined` for invalid inputs when appropriate).
+* `pow(x, y)` — supports integer exponents for negative bases; for non-integer `y` and negative `x` returns `NaN`. Special-cases: `0^0` => `1`, `0^neg` => `NaN`.
+* `sqrt(x)`, `cbrt(x)` — square and cube root (return `NaN` for invalid inputs when appropriate).
 
 **Trigonometry**
 
-* `sin(x)`, `cos(x)`, `tan(x)`, `asin(x)`, `acos(x)`, `atan(x)`, `atan2(y,x)` — standard trigonometry and inverse trigonometry (return `undefined` on domain errors).
+* `sin(x)`, `cos(x)`, `tan(x)`, `asin(x)`, `acos(x)`, `atan(x)`, `atan2(y,x)` — standard trigonometry and inverse trigonometry (return `NaN` on domain errors).
 
 **Hyperbolic**
 
@@ -478,7 +478,7 @@ output Math.pow(2, 10)        // 1024
 output Math.pow(9, 0.5)       // 3
 
 // domain checks
-output Math.log(-1)           // undefined
+output Math.log(-1)           // NaN
 
 // trig
 output Math.sin(Math.PI / 2)  // ~1
