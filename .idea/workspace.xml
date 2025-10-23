@@ -11,7 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update LICENSE" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update .gitignore">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -238,9 +240,9 @@
       <item itemvalue="Cargo.Test scopes" />
       <item itemvalue="Cargo.Tests in 'tests'" />
       <item itemvalue="JavaScript Debug.index.html" />
-      <item itemvalue="wasm-pack.Build" />
-      <item itemvalue="npm.build" />
       <item itemvalue="npm.serve" />
+      <item itemvalue="npm.build" />
+      <item itemvalue="wasm-pack.Build" />
     </list>
     <recent_temporary>
       <list>
@@ -277,14 +279,7 @@
       <workItem from="1761154121742" duration="4691000" />
       <workItem from="1761201587582" duration="5242000" />
       <workItem from="1761208433999" duration="770000" />
-    </task>
-    <task id="LOCAL-00010" summary="Add GitHub and report issue links">
-      <option name="closed" value="true" />
-      <created>1760650385737</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1760650385737</updated>
+      <workItem from="1761232171255" duration="487000" />
     </task>
     <task id="LOCAL-00011" summary="Improve performance of outputting lines">
       <option name="closed" value="true" />
@@ -670,7 +665,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761208608375</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="Update .gitignore">
+      <option name="closed" value="true" />
+      <created>1761232275712</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1761232275713</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -704,10 +707,10 @@
     <MESSAGE value="Add proper README" />
     <MESSAGE value="Fix for loop control variable incorrect scope + add info about numerical precision to docs" />
     <MESSAGE value="Remove source.txt" />
-    <MESSAGE value="Update .gitignore" />
     <MESSAGE value="Fix COOP/COEP headers issue" />
     <MESSAGE value="Add support for parsing infinities" />
     <MESSAGE value="Update LICENSE" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update LICENSE" />
+    <MESSAGE value="Update .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update .gitignore" />
   </component>
 </project>
