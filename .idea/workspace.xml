@@ -11,8 +11,11 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix Math.log for infinities">
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Update DOCUMENTATION.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source" beforeDir="false" afterPath="$PROJECT_DIR$/source" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/compiler/error_print.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/compiler/error_print.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +115,7 @@
       <recent name="C:\Users\forty\Documents\RustProjects\ib_pcode_compiler" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.serve">
+  <component name="RunManager" selected="Cargo.Run ib_pcode_compiler">
     <configuration name="Run ib_pcode_compiler" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package ib_pcode_compiler --bin ib_pcode_compiler" />
@@ -307,14 +310,8 @@
       <workItem from="1761232171255" duration="4667000" />
       <workItem from="1761240437016" duration="2331000" />
       <workItem from="1761245018697" duration="220000" />
-    </task>
-    <task id="LOCAL-00015" summary="Fix scrolls">
-      <option name="closed" value="true" />
-      <created>1760693220997</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1760693220997</updated>
+      <workItem from="1761250354098" duration="149000" />
+      <workItem from="1762329567236" duration="521000" />
     </task>
     <task id="LOCAL-00016" summary="Nicify dropdown names">
       <option name="closed" value="true" />
@@ -700,7 +697,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761245127215</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="Update DOCUMENTATION.md">
+      <option name="closed" value="true" />
+      <created>1761250489272</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1761250489272</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -713,7 +718,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Remove remark" />
     <MESSAGE value="Fix relative path + set node version to 20" />
     <MESSAGE value="Change upload workflow action step" />
     <MESSAGE value="Add reload page back to apply COOP/COEP headers" />
@@ -738,6 +742,7 @@
     <MESSAGE value="Add support for NaN + update Math lib" />
     <MESSAGE value="Add table about numerical edge cases in docs" />
     <MESSAGE value="Fix Math.log for infinities" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix Math.log for infinities" />
+    <MESSAGE value="Update DOCUMENTATION.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update DOCUMENTATION.md" />
   </component>
 </project>

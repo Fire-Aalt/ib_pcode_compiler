@@ -76,7 +76,7 @@ pub fn print_parsing_error(program: &str, user_code_start_line: u32, err: Error<
     let user_start_line = start_line as isize - user_code_start_line as isize;
 
     let error_line = ErrorLine {
-        user_start_line,
+        user_start_line: user_start_line - 1,
         start_line: start_line - 1,
         start_col,
         end_col: end_col + 1,

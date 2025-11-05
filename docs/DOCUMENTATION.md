@@ -164,7 +164,7 @@ output !false && (1 + 6) div 7 == 1 && 5 > 4 mod 2
 ## Control flow
 
 All the control blocks introduce a local scope.
-What is in the local scope of an `if`, `loop`, `method` and `Class` statements, exists only in those statements.
+What is in the local scope of `if`, `loop`, `method` and `Class` statements, exists only in those statements.
 So a variable defined in the body of a `for` statement will only exist in the body of that statement and all of its inner scopes.
 This behavior is the same across all the programming languages.<br>
 
