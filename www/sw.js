@@ -14,10 +14,6 @@ self.addEventListener("fetch", function (event) {
     event.respondWith(
         fetch(event.request)
             .then(function (response) {
-                // It seems like we only need to set the headers for index.html
-                // If you want to be on the safe side, comment this out
-                // if (!response.url.includes("index.html")) return response;
-
                 const newHeaders = new Headers(response.headers);
                 newHeaders.set("Cross-Origin-Embedder-Policy", "require-corp");
                 newHeaders.set("Cross-Origin-Opener-Policy", "same-origin");
@@ -35,3 +31,7 @@ self.addEventListener("fetch", function (event) {
             })
     );
 });
+
+
+
+

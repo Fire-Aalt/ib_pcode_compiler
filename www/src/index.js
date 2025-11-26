@@ -13,7 +13,7 @@ const sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT + RESPONSE_BYTES)
 const control = new Int32Array(sab, 0, 1);
 const respBuf = new Uint8Array(sab, Int32Array.BYTES_PER_ELEMENT, RESPONSE_BYTES);
 control[0] = 0;
-const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+const worker = new Worker(new URL('./compiler_worker.js', import.meta.url), { type: 'module' });
 
 /* DOM handles */
 const terminal = document.getElementById('terminal');

@@ -86,7 +86,7 @@ impl AST {
         let line = &self.as_line_info(&first);
 
         let mut node = match first.as_rule() {
-            Rule::ident => Expr::Ident(self.hash(first.as_str())),
+            Rule::ident => Expr::Var(self.hash(first.as_str())),
             Rule::number => Expr::Data(Value::Number(first.as_str().parse().unwrap())),
             Rule::string => Expr::Data(Value::String(fix_quotes_plain(first.as_str()))),
             Rule::bool => Expr::Data(Value::Bool(first.as_str().parse().unwrap())),
@@ -94,7 +94,7 @@ impl AST {
             Rule::array => {
                 let inner = first.into_inner();
                 let data = inner.map(|inner| self.build_expr(inner)).collect();
-                Expr::Array(data)
+                Expr::ArrayNew(data)
             }
             Rule::method_call => {
                 let mut inner = first.into_inner();
@@ -113,8 +113,8 @@ impl AST {
                 const INPUT: NameHash = hash_const("input");
 
                 match method_name {
-                    INPUT => Expr::NativeMethodCall(NativeMethod::Input, None, fn_line, params),
-                    _ => Expr::LocalMethodCall(method_name, params),
+                    INPUT => Expr::NativeFunctionCall(NativeMethod::Input, None, fn_line, params),
+                    _ => Expr::LocalFunctionCall(method_name, params),
                 }
             }
             Rule::class_new => {
@@ -129,7 +129,7 @@ impl AST {
                     .collect();
                 Expr::ClassNew(self.hash(name), args)
             }
-            Rule::class_ident => Expr::Ident(self.hash(first.as_str())),
+            Rule::class_ident => Expr::Var(self.hash(first.as_str())),
             _ => self.build_expr(first).expr,
         };
 
@@ -142,7 +142,7 @@ impl AST {
                     let mut inner = post.into_inner();
                     let var_name = self.hash_with_this_keyword(inner.next().unwrap().as_str());
 
-                    if let Expr::Ident(static_class_name) = &node {
+                    if let Expr::Var(static_class_name) = &node {
                         if self.static_classes.contains(static_class_name) {
                             node = Expr::StaticGetVar(
                                 post_line.clone(),
@@ -151,7 +151,7 @@ impl AST {
                             );
                             continue; // static early out
                         } else {
-                            node = Expr::Ident(static_class_name.clone());
+                            node = Expr::Var(static_class_name.clone());
                         }
                     };
 
@@ -160,7 +160,7 @@ impl AST {
                     if !matches!(node, Expr::StaticGetVar(_, _, _)) {
                         match var_name {
                             LENGTH_VAR => {
-                                node = Expr::NativeMethodCall(
+                                node = Expr::NativeFunctionCall(
                                     NativeMethod::LengthCall,
                                     Some(Box::new(expr_node(line, node))),
                                     post_line.clone(),
@@ -191,11 +191,11 @@ impl AST {
                     const MATH_CLASS: NameHash = hash_const("Math");
                     const RANDOM_FN: NameHash = hash_const("this.random");
 
-                    if let Expr::Ident(static_class_name) = &node {
+                    if let Expr::Var(static_class_name) = &node {
                         if self.static_classes.contains(static_class_name) {
                             match (static_class_name, &fn_name) {
                                 (&MATH_CLASS, &RANDOM_FN) => {
-                                    node = Expr::NativeMethodCall(
+                                    node = Expr::NativeFunctionCall(
                                         NativeMethod::MathRandom,
                                         None,
                                         post_line.clone(),
@@ -203,7 +203,7 @@ impl AST {
                                     );
                                 }
                                 _ => {
-                                    node = Expr::StaticMethodCall(
+                                    node = Expr::StaticFunctionCall(
                                         post_line.clone(),
                                         static_class_name.clone(),
                                         fn_name,
@@ -213,16 +213,16 @@ impl AST {
                             }
                             continue; // static early out
                         } else {
-                            node = Expr::Ident(static_class_name.clone());
+                            node = Expr::Var(static_class_name.clone());
                         }
                     };
 
                     const SUBSTRING_FN: NameHash = hash_const("this.substring");
 
-                    if !matches!(node, Expr::StaticMethodCall(_, _, _, _)) {
+                    if !matches!(node, Expr::StaticFunctionCall(_, _, _, _)) {
                         match fn_name {
                             SUBSTRING_FN => {
-                                node = Expr::NativeMethodCall(
+                                node = Expr::NativeFunctionCall(
                                     NativeMethod::SubstringCall,
                                     Some(Box::new(expr_node(line, node))),
                                     post_line.clone(),
@@ -230,7 +230,7 @@ impl AST {
                                 );
                             }
                             _ => {
-                                node = Expr::ClassMethodCall {
+                                node = Expr::ClassFunctionCall {
                                     expr: Box::new(expr_node(line, node)),
                                     fn_line: post_line.clone(),
                                     fn_name,

@@ -14,9 +14,9 @@ impl AST {
     pub fn eval_expr(&self, expr_node: &ExprNode, env: &mut Env) -> Result<Value, Diagnostic> {
         let line = &expr_node.line_info;
         match &expr_node.expr {
-            Expr::Ident(name) => Ok(env.get(name).unwrap()),
+            Expr::Var(name) => Ok(env.get(name).unwrap()),
             Expr::Data(n) => Ok(n.clone()),
-            Expr::Array(data) => {
+            Expr::ArrayNew(data) => {
                 let mut array = VecDeque::new();
 
                 for expr in data {
@@ -76,7 +76,7 @@ impl AST {
                     None => Err(unsupported_operand_error(line, &left_val, op, &right_val)),
                 }
             }
-            Expr::NativeMethodCall(native_method, target, fn_line, params) => match native_method {
+            Expr::NativeFunctionCall(native_method, target, fn_line, params) => match native_method {
                 NativeMethod::Input => {
                     let text = if params.len() == 1 {
                         self.eval_expr(&params[0], env)?
@@ -126,7 +126,7 @@ impl AST {
                     }
                 }
             },
-            Expr::LocalMethodCall(fn_name, params) => {
+            Expr::LocalFunctionCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
                 let fn_def = self.get_function(class_name, fn_name).unwrap();
 
@@ -200,7 +200,7 @@ impl AST {
 
                 Ok(Value::InstanceId(id))
             }
-            Expr::ClassMethodCall {
+            Expr::ClassFunctionCall {
                 expr,
                 fn_line,
                 fn_name,
@@ -275,7 +275,7 @@ impl AST {
                     )),
                 }
             }
-            Expr::StaticMethodCall(_, class_name, fn_name, params) => {
+            Expr::StaticFunctionCall(_, class_name, fn_name, params) => {
                 let fn_def = self.get_function(class_name, fn_name).unwrap();
 
                 let mut resolved_params = Vec::new();

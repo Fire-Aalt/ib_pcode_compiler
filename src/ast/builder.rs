@@ -61,7 +61,7 @@ impl AST {
 
     fn get_assign_target(assignee: ExprNode, validator: &mut Validator) -> AssignTarget {
         match assignee.expr {
-            Expr::Ident(name) => AssignTarget::Ident(name),
+            Expr::Var(name) => AssignTarget::Ident(name),
             Expr::Index(array, index) => AssignTarget::Array(*array, *index),
             _ => {
                 compile_error(

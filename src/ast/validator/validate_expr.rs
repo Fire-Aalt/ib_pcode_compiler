@@ -12,7 +12,7 @@ impl AST {
     pub fn validate_expr(&self, expr_node: &ExprNode, env: &mut Env, validator: &mut Validator) {
         let line = &expr_node.line_info;
         match &expr_node.expr {
-            Expr::Ident(name) => {
+            Expr::Var(name) => {
                 let _ = env.get(name).ok_or_else(|| {
                     compile_error(
                         diagnostic(
@@ -26,7 +26,7 @@ impl AST {
                 });
             }
             Expr::Data(_) => {}
-            Expr::Array(data) => {
+            Expr::ArrayNew(data) => {
                 for expr in data {
                     self.validate_expr(expr, env, validator);
                 }
@@ -38,7 +38,7 @@ impl AST {
                 self.validate_expr(left, env, validator);
                 self.validate_expr(right, env, validator);
             }
-            Expr::LocalMethodCall(fn_name, params) => {
+            Expr::LocalFunctionCall(fn_name, params) => {
                 let class_name = &env.get_local_env().class_name.clone();
 
                 for expr in params {
@@ -63,7 +63,7 @@ impl AST {
                 }
                 Self::validate_fn_call(line, class_name, fn_name, fn_def, params, validator);
             }
-            Expr::StaticMethodCall(fn_line, class_name, fn_name, params) => {
+            Expr::StaticFunctionCall(fn_line, class_name, fn_name, params) => {
                 self.validate_class_get(line, class_name, validator);
 
                 for expr in params {
@@ -92,7 +92,7 @@ impl AST {
                     );
                 }
             }
-            Expr::ClassMethodCall {
+            Expr::ClassFunctionCall {
                 expr,
                 fn_line: _,
                 fn_name: _,
@@ -133,7 +133,7 @@ impl AST {
                 self.validate_expr(left, env, validator);
                 self.validate_expr(index, env, validator);
             }
-            Expr::NativeMethodCall(native_method, target, fn_line, params) => {
+            Expr::NativeFunctionCall(native_method, target, fn_line, params) => {
                 match native_method {
                     NativeMethod::Input => {
                         Self::valid_number_of_args(

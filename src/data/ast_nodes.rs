@@ -48,24 +48,24 @@ pub enum Stmt {
 
 #[derive(Debug)]
 pub enum Expr {
-    Ident(NameHash),
+    Var(NameHash),
     Data(Value),
-    Array(Vec<ExprNode>),
+    Index(Box<ExprNode>, Box<ExprNode>),
+    ArrayNew(Vec<ExprNode>),
+    ClassNew(NameHash, Vec<ExprNode>),
     Unary(UnaryOp, Box<ExprNode>),
     BinOp(Box<ExprNode>, Operand, Box<ExprNode>),
-    LocalMethodCall(NameHash, Vec<ExprNode>),
-    StaticMethodCall(LineInfo, NameHash, NameHash, Vec<ExprNode>),
-    StaticGetVar(LineInfo, NameHash, NameHash),
-    ClassGetVar(Box<ExprNode>, LineInfo, NameHash),
-    ClassNew(NameHash, Vec<ExprNode>),
-    ClassMethodCall {
+    NativeFunctionCall(NativeMethod, Option<Box<ExprNode>>, LineInfo, Vec<ExprNode>),
+    LocalFunctionCall(NameHash, Vec<ExprNode>),
+    StaticFunctionCall(LineInfo, NameHash, NameHash, Vec<ExprNode>),
+    ClassFunctionCall {
         expr: Box<ExprNode>,
         fn_line: LineInfo,
         fn_name: NameHash,
         params: Vec<ExprNode>,
     },
-    Index(Box<ExprNode>, Box<ExprNode>),
-    NativeMethodCall(NativeMethod, Option<Box<ExprNode>>, LineInfo, Vec<ExprNode>),
+    StaticGetVar(LineInfo, NameHash, NameHash),
+    ClassGetVar(Box<ExprNode>, LineInfo, NameHash),
 }
 
 #[derive(Debug)]

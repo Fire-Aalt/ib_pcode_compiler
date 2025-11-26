@@ -11,10 +11,16 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Fix parsing error line offset by 1">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
+    <list default="true" id="be7e573b-ea2c-4063-b432-25e702a4f146" name="Changes" comment="Remove unnecessary dependency">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/www/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/www/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ast/builder.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/builder.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ast/builder/build_expr.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/builder/build_expr.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ast/evaluator/eval_expr.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/evaluator/eval_expr.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ast/validator/validate_expr.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ast/validator/validate_expr.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/ast_nodes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/ast_nodes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/src/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/src/compiler_worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/www/sw.js" beforeDir="false" afterPath="$PROJECT_DIR$/www/sw.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -315,15 +321,7 @@
       <workItem from="1763976747626" duration="206000" />
       <workItem from="1764059214719" duration="2513000" />
       <workItem from="1764096863098" duration="1997000" />
-      <workItem from="1764141656408" duration="747000" />
-    </task>
-    <task id="LOCAL-00017" summary="Add all samples to web">
-      <option name="closed" value="true" />
-      <created>1760702015527</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1760702015527</updated>
+      <workItem from="1764141656408" duration="12255000" />
     </task>
     <task id="LOCAL-00018" summary="Reorganize files">
       <option name="closed" value="true" />
@@ -709,7 +707,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762330152317</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="Remove unnecessary dependency">
+      <option name="closed" value="true" />
+      <created>1764142426451</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1764142426451</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -722,7 +728,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/www" />
     </ignored-roots>
-    <MESSAGE value="Change upload workflow action step" />
     <MESSAGE value="Add reload page back to apply COOP/COEP headers" />
     <MESSAGE value="Update documentation" />
     <MESSAGE value="Fix flex wrap for mobile" />
@@ -747,6 +752,7 @@
     <MESSAGE value="Fix Math.log for infinities" />
     <MESSAGE value="Update DOCUMENTATION.md" />
     <MESSAGE value="Fix parsing error line offset by 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix parsing error line offset by 1" />
+    <MESSAGE value="Remove unnecessary dependency" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove unnecessary dependency" />
   </component>
 </project>
