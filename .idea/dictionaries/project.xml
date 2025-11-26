@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>bindgen</w>
+      <w>elifs</w>
     </words>
   </dictionary>
 </component>
